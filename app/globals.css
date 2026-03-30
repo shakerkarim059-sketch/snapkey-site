@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* optional Reset für sauberes Design */
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+}
