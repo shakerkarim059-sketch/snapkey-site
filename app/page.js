@@ -30,7 +30,6 @@ export default function SnapKeyLandingPage() {
 >
   Demo ansehen
 </a>
-</a>
               </div>
             </div>
 
