@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
 export default function EventPage() {
   const [uploading, setUploading] = useState(false);
+  const [images, setImages] = useState([]);
+  const [loadingImages, setLoadingImages] = useState(true);
 
   const handleUpload = async (event) => {
     const file = event.target.files?.[0];
@@ -25,8 +27,33 @@ export default function EventPage() {
       alert("Fehler beim Upload");
     } else {
       alert("Upload erfolgreich!");
+      loadImages(); // direkt neu laden
     }
   };
+
+  const loadImages = async () => {
+    setLoadingImages(true);
+
+    const { data, error } = await supabase.storage.from("photos").list("", {
+      limit: 100,
+      sortBy: { column: "created_at", order: "desc" },
+    });
+
+    if (!error && data) {
+      const imageUrls = data.map((file) => ({
+        name: file.name,
+        url: `https://vbzecunsigkxeupyntyb.supabase.co/storage/v1/object/public/photos/${file.name}`,
+      }));
+
+      setImages(imageUrls);
+    }
+
+    setLoadingImages(false);
+  };
+
+  useEffect(() => {
+    loadImages();
+  }, []);
 
   return (
     <div className="min-h-screen bg-stone-50 px-6 py-12">
@@ -44,6 +71,7 @@ export default function EventPage() {
           die schönsten Momente an.
         </p>
 
+        {/* Upload Button */}
         <div className="mt-8">
           <label className="inline-block cursor-pointer rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
             {uploading ? "Wird hochgeladen..." : "Fotos hochladen"}
@@ -56,17 +84,26 @@ export default function EventPage() {
           </label>
         </div>
 
+        {/* Galerie */}
         <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold">Galerie</h2>
-          <p className="mt-2 text-zinc-600">
-            Hier werden im nächsten Schritt alle hochgeladenen Bilder angezeigt.
-          </p>
 
-          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
-            <div className="aspect-square rounded-2xl bg-zinc-100" />
-            <div className="aspect-square rounded-2xl bg-zinc-100" />
-            <div className="aspect-square rounded-2xl bg-zinc-100" />
-          </div>
+          {loadingImages ? (
+            <p className="mt-4 text-zinc-600">Lade Bilder...</p>
+          ) : images.length === 0 ? (
+            <p className="mt-4 text-zinc-600">Noch keine Bilder vorhanden.</p>
+          ) : (
+            <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
+              {images.map((img) => (
+                <img
+                  key={img.name}
+                  src={img.url}
+                  alt=""
+                  className="aspect-square object-cover rounded-2xl"
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
