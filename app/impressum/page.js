@@ -10,7 +10,7 @@ export default function Impressum() {
 
         <div className="mt-4 text-zinc-700 leading-7">
           <p>Karim Shaker</p>
-          <p>Böblingerstraße 12 1</p>
+          <p>Böblingerstraße 12</p>
           <p>71034 Böblingen</p>
         </div>
 
