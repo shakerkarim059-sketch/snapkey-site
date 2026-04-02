@@ -115,3 +115,7 @@ export default function EventPage() {
     </div>
   );
 }
+<div className="mt-16 text-sm text-zinc-500 text-center">
+  <a href="/impressum" className="underline mr-4">Impressum</a>
+  <a href="/datenschutz" className="underline">Datenschutz</a>
+</div>
