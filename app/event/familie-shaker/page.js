@@ -122,4 +122,3 @@ export default function EventPage() {
     </div>
   );
 }
-Wenn das gemacht ist, schreib einfach: go.
