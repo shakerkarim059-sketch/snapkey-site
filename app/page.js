@@ -16,7 +16,10 @@ export default function SnapKeyLandingPage() {
                 Mit SnapKey sammeln Familie und Freunde alle Fotos eines besonderen Moments an einem Ort – einfach, privat und ohne Technikstress.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-mailto:karim.shaker@outlook.de?subject=SnapKey%20Event%20anfragen&body=Name:%0AEventdatum:%0AEventart:%0AAnzahl%20Personen:%0AOrt:%0ABesondere%20Wünsche:
+<a
+  href="mailto:karim.shaker@outlook.de?subject=SnapKey%20Event%20anfragen&body=Name:%0AEventdatum:%0AEventart:%0AAnzahl%20Personen:%0AOrt:%0ABesondere%20Wünsche:"
+  className="rounded-2xl bg-[#18181b] px-6 py-4 text-base font-medium text-white shadow-lg transition hover:-translate-y-0.5 inline-block text-center"
+>
   Event starten
 </a>
          <a
