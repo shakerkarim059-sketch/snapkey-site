@@ -84,9 +84,13 @@ export default function SnapKeyLandingPage() {
             <button className="rounded-2xl bg-white px-6 py-4 text-base font-medium text-[#18181b]">
               Jetzt starten
             </button>
-          </div>
+          {/* FOOTER (Impressum + Datenschutz) */}
+        <div className="mt-16 text-sm text-zinc-500 text-center">
+          <a href="/impressum" className="underline mr-4">Impressum</a>
+          <a href="/datenschutz" className="underline">Datenschutz</a>
         </div>
-      </section>
+
+      </div>
     </div>
   );
 }
