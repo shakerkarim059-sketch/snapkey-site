@@ -8,29 +8,6 @@ export default function EventPage() {
   const [images, setImages] = useState([]);
   const [loadingImages, setLoadingImages] = useState(true);
 
-  const handleUpload = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-
-    const fileName = `${Date.now()}-${file.name}`;
-
-    const { error } = await supabase.storage
-      .from("photos")
-      .upload(fileName, file);
-
-    setUploading(false);
-
-    if (error) {
-      console.error(error);
-      alert("Fehler beim Upload");
-    } else {
-      alert("Upload erfolgreich!");
-      loadImages();
-    }
-  };
-
   const loadImages = async () => {
     setLoadingImages(true);
 
@@ -57,6 +34,29 @@ export default function EventPage() {
     setLoadingImages(false);
   };
 
+  const handleUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from("photos")
+      .upload(fileName, file);
+
+    setUploading(false);
+
+    if (error) {
+      console.error(error);
+      alert("Fehler beim Upload");
+    } else {
+      alert("Upload erfolgreich!");
+      loadImages();
+    }
+  };
+
   useEffect(() => {
     loadImages();
   }, []);
@@ -77,7 +77,6 @@ export default function EventPage() {
           die schönsten Momente an.
         </p>
 
-        {/* Upload */}
         <div className="mt-8">
           <label className="inline-block cursor-pointer rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
             {uploading ? "Wird hochgeladen..." : "Fotos hochladen"}
@@ -90,7 +89,6 @@ export default function EventPage() {
           </label>
         </div>
 
-        {/* Galerie */}
         <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-semibold">Galerie</h2>
 
@@ -105,17 +103,23 @@ export default function EventPage() {
                   key={img.name}
                   src={img.url}
                   alt=""
-                  className="aspect-square object-cover rounded-2xl"
+                  className="aspect-square rounded-2xl object-cover"
                 />
               ))}
             </div>
           )}
         </div>
+
+        <div className="mt-16 text-center text-sm text-zinc-500">
+          <a href="/impressum" className="mr-4 underline">
+            Impressum
+          </a>
+          <a href="/datenschutz" className="underline">
+            Datenschutz
+          </a>
+        </div>
       </div>
     </div>
   );
 }
-<div className="mt-16 text-sm text-zinc-500 text-center">
-  <a href="/impressum" className="underline mr-4">Impressum</a>
-  <a href="/datenschutz" className="underline">Datenschutz</a>
-</div>
+Wenn das gemacht ist, schreib einfach: go.
