@@ -20,7 +20,7 @@ export default function SnapKeyLandingPage() {
   href="mailto:karim.shaker@outlook.de?subject=SnapKey%20Event%20anfragen&body=Name:%0D%0ATelefonnummer:%0D%0AEventdatum:%0D%0AEventart:%0D%0AAnzahl%20Personen:%0D%0AOrt:%0D%0ABesondere%20Wuensche:"
   className="rounded-2xl bg-[#18181b] px-6 py-4 text-base font-medium text-white shadow-lg transition hover:-translate-y-0.5 inline-block text-center"
 >
-  Event starten
+  Event anfragen
 </a>
          <a
   href="https://www.youtube.com/shorts/4_KiFcRlExM"
