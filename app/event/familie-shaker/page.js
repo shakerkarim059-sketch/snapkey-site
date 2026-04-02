@@ -27,7 +27,7 @@ export default function EventPage() {
       alert("Fehler beim Upload");
     } else {
       alert("Upload erfolgreich!");
-      loadImages(); // direkt neu laden
+      loadImages();
     }
   };
 
@@ -40,10 +40,16 @@ export default function EventPage() {
     });
 
     if (!error && data) {
-      const imageUrls = data.map((file) => ({
-        name: file.name,
-        url: `https://vbzecunsigkxeupyntyb.supabase.co/storage/v1/object/public/photos/${file.name}`,
-      }));
+      const imageUrls = data.map((file) => {
+        const { data: publicUrlData } = supabase.storage
+          .from("photos")
+          .getPublicUrl(file.name);
+
+        return {
+          name: file.name,
+          url: publicUrlData.publicUrl,
+        };
+      });
 
       setImages(imageUrls);
     }
@@ -71,7 +77,7 @@ export default function EventPage() {
           die schönsten Momente an.
         </p>
 
-        {/* Upload Button */}
+        {/* Upload */}
         <div className="mt-8">
           <label className="inline-block cursor-pointer rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
             {uploading ? "Wird hochgeladen..." : "Fotos hochladen"}
