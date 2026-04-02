@@ -1,27 +1,42 @@
 export default function EventPage() {
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col items-center px-6 py-12">
-      
-      <h1 className="text-3xl font-semibold mb-2">
-        Familien Erinnerungen 📸
-      </h1>
+    <div className="min-h-screen bg-stone-50 px-6 py-12">
+      <div className="mx-auto max-w-3xl">
+        <div className="mb-6 inline-flex rounded-full border border-zinc-200 bg-white/80 px-4 py-2 text-sm shadow-sm backdrop-blur">
+          SnapKey • Familien Erinnerungen
+        </div>
 
-      <p className="text-zinc-600 mb-8 text-center max-w-md">
-        Teile deine schönsten Momente mit der Familie. Lade Fotos hoch und schau dir alle Erinnerungen an einem Ort an.
-      </p>
+        <h1 className="text-3xl font-semibold tracking-tight md:text-5xl">
+          Familie Shaker 📸
+        </h1>
 
-      <div className="flex flex-col gap-4 w-full max-w-sm">
-        
-        <button className="bg-black text-white py-3 rounded-xl">
-          Fotos hochladen
-        </button>
+        <p className="mt-4 max-w-2xl text-lg leading-8 text-zinc-600">
+          Alle Erinnerungen an einem Ort. Lade Fotos hoch und schaut euch gemeinsam die schönsten Momente an.
+        </p>
 
-        <button className="border py-3 rounded-xl">
-          Galerie ansehen
-        </button>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <button className="rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
+            Fotos hochladen
+          </button>
 
+          <button className="rounded-2xl border border-zinc-300 bg-white px-6 py-4 text-base font-medium text-zinc-900">
+            Galerie ansehen
+          </button>
+        </div>
+
+        <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+          <h2 className="text-xl font-semibold">Galerie</h2>
+          <p className="mt-2 text-zinc-600">
+            Hier werden später alle Familienfotos angezeigt.
+          </p>
+
+          <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
+            <div className="aspect-square rounded-2xl bg-zinc-100" />
+            <div className="aspect-square rounded-2xl bg-zinc-100" />
+            <div className="aspect-square rounded-2xl bg-zinc-100" />
+          </div>
+        </div>
       </div>
-
     </div>
   );
 }
