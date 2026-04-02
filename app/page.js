@@ -16,9 +16,12 @@ export default function SnapKeyLandingPage() {
                 Mit SnapKey sammeln Familie und Freunde alle Fotos eines besonderen Moments an einem Ort – einfach, privat und ohne Technikstress.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button className="rounded-2xl bg-[#18181b] px-6 py-4 text-base font-medium text-white shadow-lg transition hover:-translate-y-0.5">
-                  Event starten
-                </button>
+             <a
+  href="mailto:karim.shaker@outlook.de?subject=SnapKey%20Event"
+  className="rounded-2xl bg-[#18181b] px-6 py-4 text-base font-medium text-white shadow-lg transition hover:-translate-y-0.5 inline-block text-center"
+>
+  Event starten
+</a>
                 <button className="rounded-2xl border border-[#d4d4d8] bg-white px-6 py-4 text-base font-medium text-zinc-900 transition hover:bg-[#f4f4f5]">
                   Demo ansehen
                 </button>
