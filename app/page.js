@@ -23,7 +23,7 @@ export default function SnapKeyLandingPage() {
   Event starten
 </a>
          <a
-  href="https://www.youtube.com/watch?v=ABC123XYZ"
+  href="https://www.youtube.com/shorts/4_KiFcRlExM"
   target="_blank"
   rel="noreferrer"
   className="rounded-2xl border border-[#d4d4d8] bg-white px-6 py-4 text-base font-medium text-zinc-900 transition hover:bg-[#f4f4f5] inline-block text-center"
