@@ -187,25 +187,11 @@ export default function EventPage() {
 
         {selectedImageIndex !== null && images[selectedImageIndex] && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
             onClick={closeLightbox}
           >
-            <button
-              onClick={closeLightbox}
-              className="absolute right-4 top-4 z-50 rounded-full bg-black/40 px-3 py-1 text-3xl font-bold text-white"
-            >
-              ×
-            </button>
-
-            <button
-              onClick={showPrevImage}
-              className="absolute left-2 z-50 rounded-full bg-black/40 px-3 py-2 text-3xl font-bold text-white"
-            >
-              ‹
-            </button>
-
             <div
-              className="flex h-full w-full items-center justify-center px-12"
+              className="relative flex h-full w-full items-center justify-center"
               onClick={(e) => e.stopPropagation()}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
@@ -214,16 +200,33 @@ export default function EventPage() {
               <img
                 src={images[selectedImageIndex].url}
                 alt=""
-                className="max-h-[90%] max-w-[90%] rounded-xl"
+                className="max-h-[95%] max-w-[95%] rounded-xl"
               />
-            </div>
 
-            <button
-              onClick={showNextImage}
-              className="absolute right-2 z-50 rounded-full bg-black/40 px-3 py-2 text-3xl font-bold text-white"
-            >
-              ›
-            </button>
+              {/* ❌ schließen */}
+              <button
+                onClick={closeLightbox}
+                className="absolute top-4 right-4 bg-black/40 text-white text-2xl px-3 py-1 rounded-full"
+              >
+                ×
+              </button>
+
+              {/* ⬅️ links */}
+              <button
+                onClick={showPrevImage}
+                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white text-3xl px-3 py-2 rounded-full"
+              >
+                ‹
+              </button>
+
+              {/* ➡️ rechts */}
+              <button
+                onClick={showNextImage}
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white text-3xl px-3 py-2 rounded-full"
+              >
+                ›
+              </button>
+            </div>
           </div>
         )}
 
