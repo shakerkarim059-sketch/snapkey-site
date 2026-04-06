@@ -6,6 +6,22 @@ import { supabase } from "../../../lib/supabase";
 
 const LOCAL_LIKE_STORAGE_KEY = "family-photo-liked-map";
 
+const PRINT_OPTIONS = [
+  { value: "10x15-portrait", label: "10x15 Hochformat", price: 3 },
+  { value: "15x10-landscape", label: "15x10 Querformat", price: 3 },
+  { value: "20x30-portrait", label: "20x30 Hochformat", price: 12 },
+  { value: "30x20-landscape", label: "30x20 Querformat", price: 12 },
+  { value: "30x40-portrait", label: "30x40 Hochformat", price: 19 },
+  { value: "40x30-landscape", label: "40x30 Querformat", price: 19 },
+];
+
+const FRAME_OPTIONS = [
+  { value: "none", label: "Kein Rahmen", price: 0 },
+  { value: "black", label: "Schwarz", price: 15 },
+  { value: "white", label: "Weiß", price: 15 },
+  { value: "wood", label: "Holz", price: 18 },
+];
+
 export default function EventPage() {
   const params = useParams();
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
@@ -54,6 +70,9 @@ export default function EventPage() {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
+
+  const [selectedPrintOption, setSelectedPrintOption] = useState("10x15-portrait");
+  const [selectedFrameOption, setSelectedFrameOption] = useState("none");
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -570,6 +589,17 @@ export default function EventPage() {
     selectedPhotoIds.includes(photo.id)
   );
 
+  const selectedPrint = PRINT_OPTIONS.find(
+    (option) => option.value === selectedPrintOption
+  );
+  const selectedFrame = FRAME_OPTIONS.find(
+    (option) => option.value === selectedFrameOption
+  );
+
+  const pricePerPhoto =
+    (selectedPrint?.price || 0) + (selectedFrame?.price || 0);
+  const totalPrice = pricePerPhoto * selectedPhotos.length;
+
   const coverPhoto = photos.length > 0 ? photos[0] : null;
   const currentPhoto =
     filteredPhotos[selectedPhotoIndex] || photos[selectedPhotoIndex];
@@ -1034,6 +1064,61 @@ export default function EventPage() {
                   {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
                 </div>
 
+                <div style={styles.orderOptionsGrid}>
+                  <div style={styles.orderOptionCard}>
+                    <label style={styles.orderLabel}>Format wählen</label>
+                    <select
+                      value={selectedPrintOption}
+                      onChange={(e) => setSelectedPrintOption(e.target.value)}
+                      style={styles.orderSelect}
+                    >
+                      {PRINT_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} • {option.price} €
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div style={styles.orderOptionCard}>
+                    <label style={styles.orderLabel}>Rahmen wählen</label>
+                    <select
+                      value={selectedFrameOption}
+                      onChange={(e) => setSelectedFrameOption(e.target.value)}
+                      style={styles.orderSelect}
+                    >
+                      {FRAME_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} • {option.price} €
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div style={styles.priceSummaryCard}>
+                  <div style={styles.priceRow}>
+                    <span>Format</span>
+                    <span>{selectedPrint?.label}</span>
+                  </div>
+                  <div style={styles.priceRow}>
+                    <span>Rahmen</span>
+                    <span>{selectedFrame?.label}</span>
+                  </div>
+                  <div style={styles.priceRow}>
+                    <span>Preis pro Bild</span>
+                    <span>{pricePerPhoto.toFixed(2)} €</span>
+                  </div>
+                  <div style={styles.priceRow}>
+                    <span>Anzahl Bilder</span>
+                    <span>{selectedPhotos.length}</span>
+                  </div>
+                  <div style={styles.totalRow}>
+                    <span>Gesamt</span>
+                    <span>{totalPrice.toFixed(2)} €</span>
+                  </div>
+                </div>
+
                 <div style={styles.cartGrid}>
                   {selectedPhotos.map((photo) => (
                     <div key={photo.id} style={styles.cartPhotoCard}>
@@ -1059,7 +1144,7 @@ export default function EventPage() {
                     style={styles.checkoutButton}
                     onClick={() =>
                       alert(
-                        "Nächster Schritt: Größen, Rahmen und echter Checkout."
+                        `Weiter mit echter Bestellung: ${selectedPhotos.length} Bild(er), ${selectedPrint?.label}, ${selectedFrame?.label}, Gesamt ${totalPrice.toFixed(2)} €.`
                       )
                     }
                   >
@@ -1599,6 +1684,61 @@ const styles = {
     fontSize: "15px",
     fontWeight: "700",
     color: "#334155",
+  },
+  orderOptionsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "14px",
+    marginBottom: "18px",
+  },
+  orderOptionCard: {
+    background: "#f8fafc",
+    border: "1px solid #e2e8f0",
+    borderRadius: "18px",
+    padding: "14px",
+  },
+  orderLabel: {
+    display: "block",
+    marginBottom: "8px",
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+  orderSelect: {
+    width: "100%",
+    padding: "12px 14px",
+    borderRadius: "12px",
+    border: "1px solid #cbd5e1",
+    fontSize: "14px",
+    backgroundColor: "#fff",
+    boxSizing: "border-box",
+  },
+  priceSummaryCard: {
+    background: "#ffffff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "18px",
+    padding: "16px",
+    marginBottom: "18px",
+    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.04)",
+  },
+  priceRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "12px",
+    padding: "6px 0",
+    color: "#334155",
+    fontSize: "14px",
+  },
+  totalRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "12px",
+    paddingTop: "12px",
+    marginTop: "8px",
+    borderTop: "1px solid #e2e8f0",
+    color: "#0f172a",
+    fontSize: "18px",
+    fontWeight: "800",
   },
   cartGrid: {
     display: "grid",
