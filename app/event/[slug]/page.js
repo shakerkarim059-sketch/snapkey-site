@@ -52,6 +52,7 @@ export default function EventPage() {
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -278,7 +279,9 @@ export default function EventPage() {
 
       if (uploadError) {
         console.error("Fehler beim Hochladen:", uploadError);
-        alert(`Foto "${file.name}" konnte nicht hochgeladen werden: ${uploadError.message}`);
+        alert(
+          `Foto "${file.name}" konnte nicht hochgeladen werden: ${uploadError.message}`
+        );
         uploadErrorFound = true;
         continue;
       }
@@ -353,6 +356,7 @@ export default function EventPage() {
       await fetchPhotosForEvent(eventData.id);
       await fetchAllLikes();
       await fetchAllComments();
+      setSelectedPhotoIds((prev) => prev.filter((id) => id !== photo.id));
       alert("Foto gelöscht.");
     }
   }
@@ -478,6 +482,14 @@ export default function EventPage() {
     return photoComments.filter((comment) => comment.photo_id === photoId);
   }
 
+  function togglePhotoSelection(photoId) {
+    setSelectedPhotoIds((prev) =>
+      prev.includes(photoId)
+        ? prev.filter((id) => id !== photoId)
+        : [...prev, photoId]
+    );
+  }
+
   function openLightbox(index) {
     setSelectedPhotoIndex(index);
     setLightboxOpen(true);
@@ -548,7 +560,8 @@ export default function EventPage() {
   }, [photos, selectedYearFilter, selectedMonthFilter]);
 
   const coverPhoto = photos.length > 0 ? photos[0] : null;
-  const currentPhoto = filteredPhotos[selectedPhotoIndex] || photos[selectedPhotoIndex];
+  const currentPhoto =
+    filteredPhotos[selectedPhotoIndex] || photos[selectedPhotoIndex];
 
   if (loadingEvent) {
     return (
@@ -600,7 +613,8 @@ export default function EventPage() {
         <div>
           <h1 style={styles.title}>{eventData.title}</h1>
           <p style={styles.subtitle}>
-            {eventData.description || "Fotos dieses Ereignisses ansehen, liken und kommentieren."}
+            {eventData.description ||
+              "Fotos dieses Ereignisses ansehen, liken und kommentieren."}
           </p>
           <p style={styles.accessInfo}>
             Zugang: {isAdmin ? "Admin" : "Gast"}
@@ -635,7 +649,9 @@ export default function EventPage() {
       >
         <div style={styles.heroShade} />
         <div style={styles.heroContent}>
-          <span style={styles.eventChip}>{eventData.category || "Ereignis"}</span>
+          <span style={styles.eventChip}>
+            {eventData.category || "Ereignis"}
+          </span>
           <h2 style={styles.heroTitle}>{eventData.title}</h2>
           <p style={styles.heroMeta}>
             {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
@@ -710,7 +726,9 @@ export default function EventPage() {
             disabled={updatingEvent}
             style={styles.primaryButton}
           >
-            {updatingEvent ? "Ereignis wird gespeichert..." : "Änderungen speichern"}
+            {updatingEvent
+              ? "Ereignis wird gespeichert..."
+              : "Änderungen speichern"}
           </button>
         </form>
       )}
@@ -802,6 +820,35 @@ export default function EventPage() {
         </button>
       </form>
 
+      <div style={styles.selectionBar}>
+        <div style={styles.selectionInfo}>
+          {selectedPhotoIds.length} Bild
+          {selectedPhotoIds.length === 1 ? "" : "er"} ausgewählt
+        </div>
+
+        <button
+          type="button"
+          style={{
+            ...styles.orderButton,
+            ...(selectedPhotoIds.length === 0 ? styles.orderButtonDisabled : {}),
+          }}
+          onClick={() => {
+            if (selectedPhotoIds.length === 0) {
+              alert("Bitte zuerst Bilder auswählen.");
+              return;
+            }
+
+            alert(
+              `${selectedPhotoIds.length} Bild` +
+                (selectedPhotoIds.length === 1 ? "" : "er") +
+                " wurden zur Bestellung vorgemerkt."
+            );
+          }}
+        >
+          Ausgewählte Bilder bestellen
+        </button>
+      </div>
+
       {loadingPhotos || loadingLikes || loadingComments ? (
         <div style={styles.emptyBox}>Inhalte werden geladen...</div>
       ) : filteredPhotos.length === 0 ? (
@@ -812,6 +859,7 @@ export default function EventPage() {
             const likesForPhoto = getLikesForPhoto(photo.id);
             const commentsForPhoto = getCommentsForPhoto(photo.id);
             const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
+            const isSelected = selectedPhotoIds.includes(photo.id);
 
             return (
               <div
@@ -850,6 +898,17 @@ export default function EventPage() {
                     <div style={styles.photoCaption}>{photo.caption}</div>
                   )}
 
+                  <button
+                    type="button"
+                    onClick={() => togglePhotoSelection(photo.id)}
+                    style={{
+                      ...styles.selectPhotoButton,
+                      ...(isSelected ? styles.selectPhotoButtonActive : {}),
+                    }}
+                  >
+                    {isSelected ? "Ausgewählt ✓" : "Auswählen"}
+                  </button>
+
                   {eventData.likes_enabled !== false && (
                     <div style={styles.likeRow}>
                       <button
@@ -858,7 +917,9 @@ export default function EventPage() {
                         disabled={likingPhotoId === photo.id}
                         style={{
                           ...styles.likeButton,
-                          ...(likedByThisBrowser ? styles.likeButtonActive : {}),
+                          ...(likedByThisBrowser
+                            ? styles.likeButtonActive
+                            : {}),
                         }}
                       >
                         {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
@@ -952,7 +1013,11 @@ export default function EventPage() {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <button type="button" style={styles.closeButton} onClick={closeLightbox}>
+            <button
+              type="button"
+              style={styles.closeButton}
+              onClick={closeLightbox}
+            >
               ✕
             </button>
 
@@ -987,7 +1052,9 @@ export default function EventPage() {
                 {selectedPhotoIndex + 1} / {filteredPhotos.length}
               </div>
               {currentPhoto.caption && (
-                <div style={styles.lightboxCaption}>{currentPhoto.caption}</div>
+                <div style={styles.lightboxCaption}>
+                  {currentPhoto.caption}
+                </div>
               )}
             </div>
           </div>
@@ -1217,6 +1284,37 @@ const styles = {
     fontSize: "14px",
     fontWeight: "600",
   },
+  selectionBar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    flexWrap: "wrap",
+    background: "#ffffff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "20px",
+    padding: "18px 20px",
+    marginBottom: "28px",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+  },
+  selectionInfo: {
+    fontSize: "15px",
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+  orderButton: {
+    backgroundColor: "#0f172a",
+    color: "#fff",
+    border: "none",
+    padding: "12px 16px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "700",
+  },
+  orderButtonDisabled: {
+    backgroundColor: "#94a3b8",
+  },
   photoGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -1262,6 +1360,20 @@ const styles = {
     fontSize: "14px",
     color: "#334155",
     lineHeight: "1.5",
+  },
+  selectPhotoButton: {
+    backgroundColor: "#e2e8f0",
+    color: "#0f172a",
+    border: "none",
+    padding: "10px 14px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "700",
+  },
+  selectPhotoButtonActive: {
+    backgroundColor: "#dcfce7",
+    color: "#166534",
   },
   likeRow: {
     display: "flex",
