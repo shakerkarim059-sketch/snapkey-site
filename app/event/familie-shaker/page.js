@@ -115,10 +115,10 @@ export default function EventPage() {
     setUploadingPhoto(true);
 
     const fileExt = selectedFile.name.split(".").pop();
-    const fileName = `${Date.now()}-${Math.random()
+    const generatedFileName = `${Date.now()}-${Math.random()
       .toString(36)
       .substring(2)}.${fileExt}`;
-    const filePath = `event-photos/${fileName}`;
+    const filePath = `event-photos/${generatedFileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from("photos")
@@ -142,6 +142,8 @@ export default function EventPage() {
       .insert([
         {
           event_id: selectedEvent,
+          file_name: generatedFileName,
+          file_path: filePath,
           image_url: imageUrl,
           caption: caption || null,
         },
@@ -152,6 +154,8 @@ export default function EventPage() {
       console.error("Fehler beim Speichern in DB:", insertError);
       console.error("Gesendete Daten:", {
         event_id: selectedEvent,
+        file_name: generatedFileName,
+        file_path: filePath,
         image_url: imageUrl,
         caption: caption || null,
       });
@@ -328,7 +332,7 @@ export default function EventPage() {
                 <div key={photo.id} style={styles.photoCard}>
                   <img
                     src={photo.image_url}
-                    alt={photo.caption || "Foto"}
+                    alt={photo.caption || photo.file_name || "Foto"}
                     style={styles.photo}
                   />
                   {photo.caption && (
