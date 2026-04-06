@@ -21,81 +21,48 @@ export default function EventPage() {
   const [endDate, setEndDate] = useState("");
   const [description, setDescription] = useState("");
 
-  const [selectedImageIndex, setSelectedImageIndex] = useState(null);
-  const [touchStartX, setTouchStartX] = useState(null);
-  const [touchEndX, setTouchEndX] = useState(null);
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
-  const loadEvents = async () => {
+  async function fetchEvents() {
     setLoadingEvents(true);
 
-    const { data: eventsData, error: eventsError } = await supabase
+    const { data, error } = await supabase
       .from("events")
       .select("*")
       .order("start_date", { ascending: false });
 
-    if (eventsError) {
-      console.error(eventsError);
-      setEvents([]);
-      setLoadingEvents(false);
-      return;
+    if (error) {
+      console.error("Fehler beim Laden der Events:", error);
+    } else {
+      setEvents(data || []);
     }
 
-    const { data: photosData, error: photosError } = await supabase
-      .from("photos")
-      .select("event_id");
-
-    if (photosError) {
-      console.error(photosError);
-    }
-
-    const photoCounts = {};
-    (photosData || []).forEach((photo) => {
-      photoCounts[photo.event_id] = (photoCounts[photo.event_id] || 0) + 1;
-    });
-
-    const eventsWithCounts = (eventsData || []).map((event) => ({
-      ...event,
-      photo_count: photoCounts[event.id] || 0,
-    }));
-
-    setEvents(eventsWithCounts);
     setLoadingEvents(false);
-  };
+  }
 
-  const loadPhotos = async (eventId) => {
+  async function fetchPhotos(eventId) {
     setLoadingPhotos(true);
+    setSelectedEvent(eventId);
 
     const { data, error } = await supabase
       .from("photos")
       .select("*")
       .eq("event_id", eventId)
-      .order("uploaded_at", { ascending: false });
+      .order("created_at", { ascending: false });
 
-    if (!error && data) {
-      setPhotos(data);
+    if (error) {
+      console.error("Fehler beim Laden der Fotos:", error);
     } else {
-      console.error(error);
-      setPhotos([]);
+      setPhotos(data || []);
     }
 
     setLoadingPhotos(false);
-  };
+  }
 
-  const resetCreateForm = () => {
-    setTitle("");
-    setLocation("");
-    setCategory("");
-    setStartDate("");
-    setEndDate("");
-    setDescription("");
-  };
-
-  const handleCreateEvent = async () => {
-    if (!title.trim()) {
-      alert("Bitte gib einen Titel ein.");
-      return;
-    }
-
+  async function handleCreateEvent(e) {
+    e.preventDefault();
     setCreatingEvent(true);
 
     const { error } = await supabase.from("events").insert([
@@ -103,396 +70,271 @@ export default function EventPage() {
         title,
         location,
         category,
-        start_date: startDate || null,
-        end_date: endDate || null,
+        start_date: startDate,
+        end_date: endDate,
         description,
       },
     ]);
 
-    setCreatingEvent(false);
-
     if (error) {
-      console.error(error);
-      alert("Fehler beim Erstellen des Ereignisses");
-      return;
+      console.error("Fehler beim Erstellen:", error);
+      alert("Ereignis konnte nicht erstellt werden.");
+    } else {
+      alert("Ereignis erstellt.");
+      setTitle("");
+      setLocation("");
+      setCategory("");
+      setStartDate("");
+      setEndDate("");
+      setDescription("");
+      setShowCreateForm(false);
+      fetchEvents();
     }
 
-    resetCreateForm();
-    setShowCreateForm(false);
-    await loadEvents();
-    alert("Ereignis erstellt!");
-  };
+    setCreatingEvent(false);
+  }
 
-  const handlePhotoUpload = async (event) => {
-    const file = event.target.files?.[0];
-    if (!file || !selectedEvent) return;
-
-    setUploadingPhoto(true);
-
-    try {
-      const fileName = `${Date.now()}-${file.name}`;
-      const filePath = fileName;
-
-      const { error: uploadError } = await supabase.storage
-        .from("photos")
-        .upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data: publicUrlData } = supabase.storage
-        .from("photos")
-        .getPublicUrl(filePath);
-
-      const publicUrl = publicUrlData.publicUrl;
-
-      const { error: insertError } = await supabase.from("photos").insert([
-        {
-          event_id: selectedEvent.id,
-          file_name: file.name,
-          file_path: filePath,
-          public_url: publicUrl,
-        },
-      ]);
-
-      if (insertError) throw insertError;
-
-      await loadPhotos(selectedEvent.id);
-      await loadEvents();
-      alert("Bild hochgeladen!");
-    } catch (error) {
-      console.error(error);
-      alert("Fehler beim Hochladen");
-    } finally {
-      setUploadingPhoto(false);
-      event.target.value = "";
-    }
-  };
-
-  const openEvent = async (eventItem) => {
-    setSelectedEvent(eventItem);
-    setSelectedImageIndex(null);
-    await loadPhotos(eventItem.id);
-  };
-
-  const closeEvent = () => {
-    setSelectedEvent(null);
-    setPhotos([]);
-    setSelectedImageIndex(null);
-  };
-
-  const closeLightbox = () => {
-    setSelectedImageIndex(null);
-  };
-
-  const showPrevImage = (e) => {
-    if (e) e.stopPropagation();
-    setSelectedImageIndex((prev) =>
-      prev === 0 ? photos.length - 1 : prev - 1
-    );
-  };
-
-  const showNextImage = (e) => {
-    if (e) e.stopPropagation();
-    setSelectedImageIndex((prev) =>
-      prev === photos.length - 1 ? 0 : prev + 1
-    );
-  };
-
-  const handleTouchStart = (e) => {
-    setTouchEndX(null);
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStartX === null || touchEndX === null) return;
-
-    const distance = touchStartX - touchEndX;
-    const minSwipeDistance = 50;
-
-    if (distance > minSwipeDistance) {
-      showNextImage();
-    } else if (distance < -minSwipeDistance) {
-      showPrevImage();
-    }
-  };
-
-  useEffect(() => {
-    loadEvents();
-  }, []);
+  function formatDate(dateString) {
+    if (!dateString) return "";
+    return new Date(dateString).toLocaleDateString("de-DE");
+  }
 
   return (
-    <div className="min-h-screen bg-stone-50 px-6 py-12">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-3xl font-semibold md:text-5xl">
-          Familien Erinnerungen 📸
-        </h1>
+    <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "32px", fontWeight: "bold", marginBottom: "20px" }}>
+        Familien-Ereignisse
+      </h1>
 
-        <p className="mt-4 text-zinc-600">
-          Alle Ereignisse und Momente auf einen Blick.
-        </p>
+      <button
+        onClick={() => setShowCreateForm(!showCreateForm)}
+        style={{
+          backgroundColor: "#111827",
+          color: "white",
+          border: "none",
+          padding: "12px 18px",
+          borderRadius: "10px",
+          cursor: "pointer",
+          marginBottom: "24px",
+          fontSize: "15px",
+          fontWeight: "600",
+        }}
+      >
+        {showCreateForm ? "Schließen" : "Ereignis erstellen"}
+      </button>
 
-        {!selectedEvent ? (
-          <>
-            <div className="mt-10 flex items-center justify-between gap-3">
-              <h2 className="text-2xl font-semibold">Ereignisse</h2>
+      {showCreateForm && (
+        <form
+          onSubmit={handleCreateEvent}
+          style={{
+            display: "grid",
+            gap: "12px",
+            background: "#f9fafb",
+            padding: "20px",
+            borderRadius: "14px",
+            marginBottom: "32px",
+            border: "1px solid #e5e7eb",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Titel"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            style={inputStyle}
+          />
 
-              <button
-                onClick={() => setShowCreateForm((prev) => !prev)}
-                className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white"
+          <input
+            type="text"
+            placeholder="Ort"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="text"
+            placeholder="Kategorie"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            style={inputStyle}
+          />
+
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            style={inputStyle}
+          />
+
+          <textarea
+            placeholder="Beschreibung"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            style={{ ...inputStyle, resize: "vertical" }}
+          />
+
+          <button
+            type="submit"
+            disabled={creatingEvent}
+            style={{
+              backgroundColor: "#2563eb",
+              color: "white",
+              border: "none",
+              padding: "12px 18px",
+              borderRadius: "10px",
+              cursor: "pointer",
+              fontWeight: "600",
+            }}
+          >
+            {creatingEvent ? "Erstelle..." : "Speichern"}
+          </button>
+        </form>
+      )}
+
+      <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "16px" }}>
+        Alle Ereignisse
+      </h2>
+
+      {loadingEvents ? (
+        <p>Events werden geladen...</p>
+      ) : events.length === 0 ? (
+        <p>Noch keine Ereignisse vorhanden.</p>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+            gap: "20px",
+            marginBottom: "40px",
+          }}
+        >
+          {events.map((event) => (
+            <div
+              key={event.id}
+              onClick={() => fetchPhotos(event.id)}
+              style={{
+                background: "white",
+                border: selectedEvent === event.id ? "2px solid #2563eb" : "1px solid #e5e7eb",
+                borderRadius: "16px",
+                padding: "18px",
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
+                transition: "0.2s ease",
+              }}
+            >
+              <div
+                style={{
+                  width: "100%",
+                  height: "140px",
+                  background: "linear-gradient(135deg, #dbeafe, #bfdbfe)",
+                  borderRadius: "12px",
+                  marginBottom: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "36px",
+                }}
               >
-                {showCreateForm ? "Schließen" : "Ereignis erstellen"}
-              </button>
-            </div>
-
-            {showCreateForm && (
-              <div className="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-                <h3 className="text-xl font-semibold">Neues Ereignis erstellen</h3>
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                  <input
-                    type="text"
-                    placeholder="Titel des Ereignisses"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Ort"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                  />
-
-                  <input
-                    type="text"
-                    placeholder="Kategorie (z. B. Urlaub, Geburtstag)"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                  />
-
-                  <input
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                  />
-
-                  <input
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                  />
-
-                  <div></div>
-                </div>
-
-                <textarea
-                  placeholder="Beschreibung (optional)"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="mt-4 min-h-[120px] w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                />
-
-                <div className="mt-4 flex flex-wrap gap-3">
-                  <button
-                    onClick={handleCreateEvent}
-                    disabled={creatingEvent}
-                    className="rounded-2xl bg-zinc-900 px-6 py-3 font-medium text-white"
-                  >
-                    {creatingEvent ? "Wird erstellt..." : "Speichern"}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      resetCreateForm();
-                      setShowCreateForm(false);
-                    }}
-                    className="rounded-2xl border border-zinc-300 px-6 py-3 font-medium text-zinc-700"
-                  >
-                    Abbrechen
-                  </button>
-                </div>
+                📸
               </div>
-            )}
 
-            <div className="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              {loadingEvents ? (
-                <p className="text-zinc-600">Lade Ereignisse...</p>
-              ) : events.length === 0 ? (
-                <p className="text-zinc-600">Noch keine Ereignisse vorhanden.</p>
-              ) : (
-                <div className="grid gap-4 sm:grid-cols-2">
-                  {events.map((event) => (
-                    <button
-                      key={event.id}
-                      onClick={() => openEvent(event)}
-                      className="rounded-2xl border border-zinc-200 p-5 text-left transition hover:shadow-md"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <h3 className="text-lg font-semibold">{event.title}</h3>
-                        <span className="shrink-0 rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600">
-                          {event.photo_count === 0
-                            ? "Noch keine Bilder"
-                            : `${event.photo_count} ${
-                                event.photo_count === 1 ? "Bild" : "Bilder"
-                              }`}
-                        </span>
-                      </div>
+              <h3 style={{ fontSize: "20px", fontWeight: "700", marginBottom: "8px" }}>
+                {event.title}
+              </h3>
 
-                      {event.location && (
-                        <p className="mt-2 text-sm text-zinc-500">
-                          📍 {event.location}
-                        </p>
-                      )}
+              <p style={{ margin: "4px 0", color: "#374151" }}>
+                <strong>Ort:</strong> {event.location || "Kein Ort"}
+              </p>
 
-                      {event.start_date && (
-                        <p className="mt-1 text-sm text-zinc-500">
-                          📅 {event.start_date}
-                          {event.end_date ? ` bis ${event.end_date}` : ""}
-                        </p>
-                      )}
+              <p style={{ margin: "4px 0", color: "#374151" }}>
+                <strong>Kategorie:</strong> {event.category || "Keine Kategorie"}
+              </p>
 
-                      {event.category && (
-                        <p className="mt-2 inline-block rounded-full bg-zinc-100 px-3 py-1 text-xs">
-                          {event.category}
-                        </p>
-                      )}
+              <p style={{ margin: "4px 0", color: "#374151" }}>
+                <strong>Datum:</strong>{" "}
+                {formatDate(event.start_date)}
+                {event.end_date ? ` - ${formatDate(event.end_date)}` : ""}
+              </p>
 
-                      {event.description && (
-                        <p className="mt-3 text-sm text-zinc-600">
-                          {event.description}
-                        </p>
-                      )}
-                    </button>
-                  ))}
-                </div>
+              {event.description && (
+                <p
+                  style={{
+                    marginTop: "10px",
+                    color: "#6b7280",
+                    fontSize: "14px",
+                    lineHeight: "1.5",
+                  }}
+                >
+                  {event.description}
+                </p>
               )}
             </div>
-          </>
-        ) : (
-          <div className="mt-10 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <button
-                  onClick={closeEvent}
-                  className="mb-3 text-sm text-zinc-500 underline"
-                >
-                  ← Zurück zu den Ereignissen
-                </button>
-
-                <h2 className="text-2xl font-semibold">{selectedEvent.title}</h2>
-
-                {selectedEvent.location && (
-                  <p className="mt-1 text-sm text-zinc-500">
-                    📍 {selectedEvent.location}
-                  </p>
-                )}
-
-                {selectedEvent.start_date && (
-                  <p className="mt-1 text-sm text-zinc-500">
-                    📅 {selectedEvent.start_date}
-                    {selectedEvent.end_date ? ` bis ${selectedEvent.end_date}` : ""}
-                  </p>
-                )}
-              </div>
-
-              <label className="inline-block cursor-pointer rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
-                {uploadingPhoto ? "Wird hochgeladen..." : "Bild hochladen"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="hidden"
-                  disabled={uploadingPhoto}
-                />
-              </label>
-            </div>
-
-            {selectedEvent.description && (
-              <p className="mt-4 text-zinc-600">{selectedEvent.description}</p>
-            )}
-
-            {loadingPhotos ? (
-              <p className="mt-6 text-zinc-600">Lade Bilder...</p>
-            ) : photos.length === 0 ? (
-              <p className="mt-6 text-zinc-600">
-                Noch keine Bilder in diesem Ereignis.
-              </p>
-            ) : (
-              <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
-                {photos.map((photo, index) => (
-                  <img
-                    key={photo.id}
-                    src={photo.public_url}
-                    alt=""
-                    onClick={() => setSelectedImageIndex(index)}
-                    className="aspect-square cursor-pointer rounded-2xl object-cover transition hover:scale-105"
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {selectedImageIndex !== null && photos[selectedImageIndex] && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-            onClick={closeLightbox}
-          >
-            <div
-              className="relative flex h-full w-full items-center justify-center"
-              onClick={(e) => e.stopPropagation()}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-            >
-              <img
-                src={photos[selectedImageIndex].public_url}
-                alt=""
-                className="max-h-[95%] max-w-[95%] rounded-xl"
-              />
-
-              <button
-                onClick={closeLightbox}
-                className="absolute top-4 right-4 rounded-full bg-black/40 px-3 py-1 text-2xl text-white"
-              >
-                ×
-              </button>
-
-              <button
-                onClick={showPrevImage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/30 px-3 py-2 text-3xl text-white"
-              >
-                ‹
-              </button>
-
-              <button
-                onClick={showNextImage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/30 px-3 py-2 text-3xl text-white"
-              >
-                ›
-              </button>
-            </div>
-          </div>
-        )}
-
-        <div className="mt-16 text-center text-sm text-zinc-500">
-          <a href="/impressum" className="mr-4 underline">
-            Impressum
-          </a>
-          <a href="/datenschutz" className="underline">
-            Datenschutz
-          </a>
+          ))}
         </div>
-      </div>
+      )}
+
+      {selectedEvent && (
+        <div style={{ marginTop: "20px" }}>
+          <h2 style={{ fontSize: "24px", fontWeight: "600", marginBottom: "16px" }}>
+            Fotos zum Ereignis
+          </h2>
+
+          {loadingPhotos ? (
+            <p>Fotos werden geladen...</p>
+          ) : photos.length === 0 ? (
+            <p>Noch keine Fotos in diesem Ereignis.</p>
+          ) : (
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: "16px",
+              }}
+            >
+              {photos.map((photo) => (
+                <div
+                  key={photo.id}
+                  style={{
+                    borderRadius: "14px",
+                    overflow: "hidden",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    background: "#fff",
+                  }}
+                >
+                  <img
+                    src={photo.image_url}
+                    alt={photo.caption || "Foto"}
+                    style={{
+                      width: "100%",
+                      height: "180px",
+                      objectFit: "cover",
+                      display: "block",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "12px 14px",
+  borderRadius: "10px",
+  border: "1px solid #d1d5db",
+  fontSize: "15px",
+  outline: "none",
+};
