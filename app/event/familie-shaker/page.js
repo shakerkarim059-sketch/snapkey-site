@@ -3,7 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
+const FAMILY_PASSWORD = "familie123";
+const ADMIN_PASSWORD = "admin123";
+
 export default function EventPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+
   const [events, setEvents] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [openEventId, setOpenEventId] = useState(null);
@@ -14,6 +21,9 @@ export default function EventPage() {
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const [editingEventId, setEditingEventId] = useState(null);
+  const [updatingEvent, setUpdatingEvent] = useState(false);
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -34,6 +44,8 @@ export default function EventPage() {
   const touchEndX = useRef(0);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
+
     fetchEvents();
     fetchAllPhotos();
 
@@ -42,7 +54,7 @@ export default function EventPage() {
       document.body.style.overflowX = "hidden";
       document.body.style.margin = "0";
     }
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -60,6 +72,33 @@ export default function EventPage() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxOpen, selectedPhotoIndex, lightboxPhotos]);
+
+  function handleLogin() {
+    if (passwordInput === FAMILY_PASSWORD) {
+      setIsAuthenticated(true);
+      setIsAdmin(false);
+      return;
+    }
+
+    if (passwordInput === ADMIN_PASSWORD) {
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      return;
+    }
+
+    alert("Falsches Passwort.");
+  }
+
+  function handleLogout() {
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    setPasswordInput("");
+    setOpenEventId(null);
+    setSelectedEvent(null);
+    setEditingEventId(null);
+    setShowCreateForm(false);
+    setLightboxOpen(false);
+  }
 
   async function fetchEvents() {
     setLoadingEvents(true);
@@ -97,6 +136,15 @@ export default function EventPage() {
     setLoadingPhotos(false);
   }
 
+  function resetEventForm() {
+    setTitle("");
+    setLocation("");
+    setCategory("");
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+  }
+
   async function handleCreateEvent(e) {
     e.preventDefault();
     setCreatingEvent(true);
@@ -117,17 +165,65 @@ export default function EventPage() {
       alert("Ereignis konnte nicht erstellt werden: " + error.message);
     } else {
       alert("Ereignis erstellt.");
-      setTitle("");
-      setLocation("");
-      setCategory("");
-      setStartDate("");
-      setEndDate("");
-      setDescription("");
+      resetEventForm();
       setShowCreateForm(false);
       fetchEvents();
     }
 
     setCreatingEvent(false);
+  }
+
+  function startEditingEvent(event) {
+    setEditingEventId(event.id);
+    setTitle(event.title || "");
+    setLocation(event.location || "");
+    setCategory(event.category || "");
+    setStartDate(event.start_date ? event.start_date.slice(0, 10) : "");
+    setEndDate(event.end_date ? event.end_date.slice(0, 10) : "");
+    setDescription(event.description || "");
+    setShowCreateForm(false);
+
+    if (openEventId !== event.id) {
+      setOpenEventId(event.id);
+      setSelectedEvent(event.id);
+    }
+  }
+
+  function cancelEditingEvent() {
+    setEditingEventId(null);
+    resetEventForm();
+  }
+
+  async function handleUpdateEvent(e) {
+    e.preventDefault();
+
+    if (!editingEventId) return;
+
+    setUpdatingEvent(true);
+
+    const { error } = await supabase
+      .from("events")
+      .update({
+        title,
+        location,
+        category,
+        start_date: startDate || null,
+        end_date: endDate || null,
+        description,
+      })
+      .eq("id", editingEventId);
+
+    if (error) {
+      console.error("Fehler beim Aktualisieren:", error);
+      alert("Ereignis konnte nicht aktualisiert werden: " + error.message);
+    } else {
+      alert("Ereignis aktualisiert.");
+      setEditingEventId(null);
+      resetEventForm();
+      fetchEvents();
+    }
+
+    setUpdatingEvent(false);
   }
 
   async function handlePhotoUpload(e) {
@@ -213,6 +309,33 @@ export default function EventPage() {
     setUploadingPhoto(false);
   }
 
+  async function handleDeletePhoto(photo) {
+    if (!isAdmin) return;
+
+    const confirmDelete = window.confirm("Foto wirklich löschen?");
+    if (!confirmDelete) return;
+
+    if (photo.file_path) {
+      const { error: storageError } = await supabase.storage
+        .from("photos")
+        .remove([photo.file_path]);
+
+      if (storageError) {
+        console.error("Fehler beim Löschen aus Storage:", storageError);
+      }
+    }
+
+    const { error } = await supabase.from("photos").delete().eq("id", photo.id);
+
+    if (error) {
+      console.error("Fehler beim Löschen aus DB:", error);
+      alert("Fehler beim Löschen: " + error.message);
+    } else {
+      await fetchAllPhotos();
+      alert("Foto gelöscht.");
+    }
+  }
+
   function formatDate(dateString) {
     if (!dateString) return "Kein Datum";
     return new Date(dateString).toLocaleDateString("de-DE");
@@ -291,6 +414,34 @@ export default function EventPage() {
   const currentPhoto = lightboxPhotos[selectedPhotoIndex];
   const selectedEventData = getSelectedEventData();
 
+  if (!isAuthenticated) {
+    return (
+      <div style={styles.page}>
+        <div style={styles.loginBox}>
+          <h1 style={styles.title}>Familien-Ereignisse</h1>
+          <p style={styles.subtitle}>
+            Bitte Passwort eingeben, um die Familienfotos zu sehen.
+          </p>
+
+          <input
+            type="password"
+            placeholder="Passwort eingeben"
+            value={passwordInput}
+            onChange={(e) => setPasswordInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleLogin();
+            }}
+            style={styles.input}
+          />
+
+          <button onClick={handleLogin} style={styles.primaryButton}>
+            Einloggen
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.page}>
       <div style={styles.header}>
@@ -299,17 +450,28 @@ export default function EventPage() {
           <p style={styles.subtitle}>
             Fotos nach Urlauben, Feiern und besonderen Momenten geordnet.
           </p>
+          <p style={styles.accessInfo}>
+            Zugang: {isAdmin ? "Admin" : "Familie"}
+          </p>
         </div>
 
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          style={styles.primaryButton}
-        >
-          {showCreateForm ? "Formular schließen" : "Ereignis erstellen"}
-        </button>
+        <div style={styles.headerButtons}>
+          {!editingEventId && (
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              style={styles.primaryButton}
+            >
+              {showCreateForm ? "Formular schließen" : "Ereignis erstellen"}
+            </button>
+          )}
+
+          <button onClick={handleLogout} style={styles.secondaryButton}>
+            Abmelden
+          </button>
+        </div>
       </div>
 
-      {showCreateForm && (
+      {showCreateForm && !editingEventId && (
         <form onSubmit={handleCreateEvent} style={styles.formCard}>
           <h2 style={styles.formTitle}>Neues Ereignis</h2>
 
@@ -367,6 +529,77 @@ export default function EventPage() {
             style={styles.primaryButton}
           >
             {creatingEvent ? "Ereignis wird erstellt..." : "Ereignis speichern"}
+          </button>
+        </form>
+      )}
+
+      {editingEventId && (
+        <form onSubmit={handleUpdateEvent} style={styles.formCard}>
+          <div style={styles.editHeader}>
+            <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
+            <button
+              type="button"
+              onClick={cancelEditingEvent}
+              style={styles.cancelButton}
+            >
+              Abbrechen
+            </button>
+          </div>
+
+          <input
+            type="text"
+            placeholder="Titel"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            style={styles.input}
+          />
+
+          <input
+            type="text"
+            placeholder="Ort"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            style={styles.input}
+          />
+
+          <input
+            type="text"
+            placeholder="Kategorie"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            style={styles.input}
+          />
+
+          <div style={styles.twoCol}>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={styles.input}
+            />
+          </div>
+
+          <textarea
+            placeholder="Beschreibung"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            style={{ ...styles.input, resize: "vertical" }}
+          />
+
+          <button
+            type="submit"
+            disabled={updatingEvent}
+            style={styles.primaryButton}
+          >
+            {updatingEvent ? "Ereignis wird gespeichert..." : "Änderungen speichern"}
           </button>
         </form>
       )}
@@ -438,6 +671,19 @@ export default function EventPage() {
                     {event.description && (
                       <p style={styles.eventDescription}>{event.description}</p>
                     )}
+
+                    <div
+                      style={styles.eventActionRow}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => startEditingEvent(event)}
+                        style={styles.editButton}
+                      >
+                        Bearbeiten
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -519,11 +765,26 @@ export default function EventPage() {
                               alt={photo.caption || photo.file_name || "Foto"}
                               style={styles.photo}
                             />
+
                             <div style={styles.photoOverlay}>
                               <span style={styles.photoOverlayText}>
                                 Vergrößern
                               </span>
                             </div>
+
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleDeletePhoto(photo);
+                                }}
+                                style={styles.deleteButton}
+                              >
+                                Löschen
+                              </button>
+                            )}
+
                             {photo.caption && (
                               <div style={styles.photoCaption}>{photo.caption}</div>
                             )}
@@ -547,13 +808,14 @@ export default function EventPage() {
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <button style={styles.closeButton} onClick={closeLightbox}>
+            <button type="button" style={styles.closeButton} onClick={closeLightbox}>
               ✕
             </button>
 
             {lightboxPhotos.length > 1 && (
               <>
                 <button
+                  type="button"
                   style={{ ...styles.navButton, left: "16px" }}
                   onClick={showPrevPhoto}
                 >
@@ -561,6 +823,7 @@ export default function EventPage() {
                 </button>
 
                 <button
+                  type="button"
                   style={{ ...styles.navButton, right: "16px" }}
                   onClick={showNextPhoto}
                 >
@@ -602,6 +865,17 @@ const styles = {
     boxSizing: "border-box",
     touchAction: "pan-y",
   },
+  loginBox: {
+    maxWidth: "420px",
+    margin: "120px auto",
+    display: "grid",
+    gap: "14px",
+    background: "#fff",
+    padding: "24px",
+    borderRadius: "20px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+  },
   header: {
     display: "flex",
     justifyContent: "space-between",
@@ -609,6 +883,11 @@ const styles = {
     gap: "16px",
     flexWrap: "wrap",
     marginBottom: "28px",
+  },
+  headerButtons: {
+    display: "flex",
+    gap: "12px",
+    flexWrap: "wrap",
   },
   title: {
     fontSize: "34px",
@@ -621,6 +900,13 @@ const styles = {
     marginBottom: 0,
     color: "#475569",
     fontSize: "15px",
+  },
+  accessInfo: {
+    marginTop: "10px",
+    marginBottom: 0,
+    color: "#0f172a",
+    fontSize: "14px",
+    fontWeight: "700",
   },
   sectionHeader: {
     marginBottom: "16px",
@@ -642,6 +928,13 @@ const styles = {
     fontSize: "20px",
     fontWeight: "700",
     color: "#0f172a",
+  },
+  editHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    flexWrap: "wrap",
   },
   formCard: {
     display: "grid",
@@ -700,6 +993,40 @@ const styles = {
     fontWeight: "700",
     minWidth: "170px",
     boxShadow: "0 8px 20px rgba(15, 23, 42, 0.12)",
+  },
+  cancelButton: {
+    backgroundColor: "#e2e8f0",
+    color: "#0f172a",
+    border: "none",
+    padding: "12px 16px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "700",
+  },
+  editButton: {
+    backgroundColor: "#e2e8f0",
+    color: "#0f172a",
+    border: "none",
+    padding: "10px 14px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "700",
+  },
+  deleteButton: {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    background: "rgba(220, 38, 38, 0.92)",
+    color: "#fff",
+    border: "none",
+    borderRadius: "10px",
+    padding: "8px 10px",
+    fontSize: "12px",
+    cursor: "pointer",
+    fontWeight: "700",
+    zIndex: 2,
   },
   uploadRow: {
     display: "grid",
@@ -763,7 +1090,7 @@ const styles = {
     inset: 0,
     display: "flex",
     alignItems: "flex-start",
-    justifyContent: "flex-end",
+    justifyContent: "space-between",
     padding: "14px",
   },
   eventChip: {
@@ -814,6 +1141,12 @@ const styles = {
     color: "#64748b",
     fontSize: "14px",
     lineHeight: "1.6",
+  },
+  eventActionRow: {
+    marginTop: "14px",
+    display: "flex",
+    gap: "10px",
+    flexWrap: "wrap",
   },
   inlineGallerySection: {
     marginTop: "-2px",
