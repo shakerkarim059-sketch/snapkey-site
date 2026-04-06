@@ -1066,7 +1066,8 @@ export default function EventPage() {
 
 const styles = {
   page: {
-    padding: "24px",
+   padding: "24px",
+paddingBottom: "120px",
     maxWidth: "1280px",
     margin: "0 auto",
     backgroundColor: "#f8fafc",
