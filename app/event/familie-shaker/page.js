@@ -3,14 +3,20 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
+const ADMIN_PASSWORD = "FAMILIE1234"; // <-- HIER DEIN PASSWORT ÄNDERN
+
 export default function EventPage() {
   const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [images, setImages] = useState([]);
   const [loadingImages, setLoadingImages] = useState(true);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
   const [imageError, setImageError] = useState("");
+
+  const [adminMode, setAdminMode] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
 
   const loadImages = async () => {
     setLoadingImages(true);
@@ -79,13 +85,59 @@ export default function EventPage() {
       if (error) throw error;
 
       alert("Upload erfolgreich!");
-      loadImages();
+      await loadImages();
     } catch (error) {
       console.error("Fehler beim Upload:", error);
       alert("Fehler beim Upload");
     } finally {
       setUploading(false);
+      event.target.value = "";
     }
+  };
+
+  const handleDelete = async (fileName) => {
+    const confirmed = window.confirm("Willst du dieses Bild wirklich löschen?");
+    if (!confirmed) return;
+
+    setDeleting(true);
+
+    try {
+      const { error } = await supabase.storage.from("photos").remove([fileName]);
+
+      if (error) throw error;
+
+      alert("Bild gelöscht.");
+
+      if (
+        selectedImageIndex !== null &&
+        images[selectedImageIndex] &&
+        images[selectedImageIndex].name === fileName
+      ) {
+        setSelectedImageIndex(null);
+      }
+
+      await loadImages();
+    } catch (error) {
+      console.error("Fehler beim Löschen:", error);
+      alert("Fehler beim Löschen");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleLogin = () => {
+    if (passwordInput === ADMIN_PASSWORD) {
+      setAdminMode(true);
+      sessionStorage.setItem("eventAdminMode", "true");
+      setPasswordInput("");
+    } else {
+      alert("Falsches Passwort");
+    }
+  };
+
+  const handleLogout = () => {
+    setAdminMode(false);
+    sessionStorage.removeItem("eventAdminMode");
   };
 
   const closeLightbox = () => {
@@ -130,6 +182,11 @@ export default function EventPage() {
 
   useEffect(() => {
     loadImages();
+
+    const savedAdminMode = sessionStorage.getItem("eventAdminMode");
+    if (savedAdminMode === "true") {
+      setAdminMode(true);
+    }
   }, []);
 
   return (
@@ -148,16 +205,58 @@ export default function EventPage() {
           die schönsten Momente an.
         </p>
 
-        <div className="mt-8">
-          <label className="inline-block cursor-pointer rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
-            {uploading ? "Wird hochgeladen..." : "Fotos hochladen"}
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleUpload}
-              className="hidden"
-            />
-          </label>
+        <div className="mt-8 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-semibold">Bearbeiten</h2>
+
+          {!adminMode ? (
+            <div className="mt-4">
+              <p className="mb-3 text-sm text-zinc-600">
+                Upload und Löschen sind geschützt.
+              </p>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <input
+                  type="password"
+                  placeholder="Passwort eingeben"
+                  value={passwordInput}
+                  onChange={(e) => setPasswordInput(e.target.value)}
+                  className="w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                />
+                <button
+                  onClick={handleLogin}
+                  className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white"
+                >
+                  Freischalten
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-4">
+              <div className="mb-4 flex flex-wrap items-center gap-3">
+                <label className="inline-block cursor-pointer rounded-2xl bg-zinc-900 px-6 py-4 text-base font-medium text-white shadow-lg shadow-zinc-900/10">
+                  {uploading ? "Wird hochgeladen..." : "Fotos hochladen"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUpload}
+                    className="hidden"
+                    disabled={uploading}
+                  />
+                </label>
+
+                <button
+                  onClick={handleLogout}
+                  className="rounded-2xl border border-zinc-300 px-5 py-4 font-medium text-zinc-700"
+                >
+                  Sperren
+                </button>
+              </div>
+
+              <p className="text-sm text-zinc-600">
+                Admin-Modus aktiv. Du kannst jetzt Bilder hochladen und löschen.
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="mt-12 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
@@ -172,14 +271,25 @@ export default function EventPage() {
           ) : (
             <div className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-3">
               {images.map((img, index) => (
-                <img
-                  key={img.name}
-                  src={img.url}
-                  alt=""
-                  loading="lazy"
-                  onClick={() => setSelectedImageIndex(index)}
-                  className="aspect-square cursor-pointer rounded-2xl object-cover transition hover:scale-105"
-                />
+                <div key={img.name} className="relative">
+                  <img
+                    src={img.url}
+                    alt=""
+                    loading="lazy"
+                    onClick={() => setSelectedImageIndex(index)}
+                    className="aspect-square w-full cursor-pointer rounded-2xl object-cover transition hover:scale-[1.02]"
+                  />
+
+                  {adminMode && (
+                    <button
+                      onClick={() => handleDelete(img.name)}
+                      disabled={deleting}
+                      className="absolute right-2 top-2 rounded-full bg-red-600/90 px-3 py-1 text-sm font-medium text-white shadow"
+                    >
+                      Löschen
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
           )}
@@ -203,29 +313,36 @@ export default function EventPage() {
                 className="max-h-[95%] max-w-[95%] rounded-xl"
               />
 
-              {/* ❌ schließen */}
               <button
                 onClick={closeLightbox}
-                className="absolute top-4 right-4 bg-black/40 text-white text-2xl px-3 py-1 rounded-full"
+                className="absolute right-4 top-4 rounded-full bg-black/40 px-3 py-1 text-2xl text-white"
               >
                 ×
               </button>
 
-              {/* ⬅️ links */}
               <button
                 onClick={showPrevImage}
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/30 text-white text-3xl px-3 py-2 rounded-full"
+                className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-black/30 px-3 py-2 text-3xl text-white"
               >
                 ‹
               </button>
 
-              {/* ➡️ rechts */}
               <button
                 onClick={showNextImage}
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/30 text-white text-3xl px-3 py-2 rounded-full"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-black/30 px-3 py-2 text-3xl text-white"
               >
                 ›
               </button>
+
+              {adminMode && (
+                <button
+                  onClick={() => handleDelete(images[selectedImageIndex].name)}
+                  disabled={deleting}
+                  className="absolute bottom-4 rounded-full bg-red-600/90 px-5 py-2 text-sm font-medium text-white"
+                >
+                  Bild löschen
+                </button>
+              )}
             </div>
           </div>
         )}
