@@ -28,15 +28,37 @@ export default function EventPage() {
   const loadEvents = async () => {
     setLoadingEvents(true);
 
-    const { data, error } = await supabase
+    const { data: eventsData, error: eventsError } = await supabase
       .from("events")
       .select("*")
       .order("start_date", { ascending: false });
 
-    if (!error && data) {
-      setEvents(data);
+    if (eventsError) {
+      console.error(eventsError);
+      setEvents([]);
+      setLoadingEvents(false);
+      return;
     }
 
+    const { data: photosData, error: photosError } = await supabase
+      .from("photos")
+      .select("event_id");
+
+    if (photosError) {
+      console.error(photosError);
+    }
+
+    const photoCounts = {};
+    (photosData || []).forEach((photo) => {
+      photoCounts[photo.event_id] = (photoCounts[photo.event_id] || 0) + 1;
+    });
+
+    const eventsWithCounts = (eventsData || []).map((event) => ({
+      ...event,
+      photo_count: photoCounts[event.id] || 0,
+    }));
+
+    setEvents(eventsWithCounts);
     setLoadingEvents(false);
   };
 
@@ -52,6 +74,7 @@ export default function EventPage() {
     if (!error && data) {
       setPhotos(data);
     } else {
+      console.error(error);
       setPhotos([]);
     }
 
@@ -134,6 +157,7 @@ export default function EventPage() {
       if (insertError) throw insertError;
 
       await loadPhotos(selectedEvent.id);
+      await loadEvents();
       alert("Bild hochgeladen!");
     } catch (error) {
       console.error(error);
@@ -312,10 +336,19 @@ export default function EventPage() {
                       onClick={() => openEvent(event)}
                       className="rounded-2xl border border-zinc-200 p-5 text-left transition hover:shadow-md"
                     >
-                      <h3 className="text-lg font-semibold">{event.title}</h3>
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-lg font-semibold">{event.title}</h3>
+                        <span className="shrink-0 rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600">
+                          {event.photo_count === 0
+                            ? "Noch keine Bilder"
+                            : `${event.photo_count} ${
+                                event.photo_count === 1 ? "Bild" : "Bilder"
+                              }`}
+                        </span>
+                      </div>
 
                       {event.location && (
-                        <p className="mt-1 text-sm text-zinc-500">
+                        <p className="mt-2 text-sm text-zinc-500">
                           📍 {event.location}
                         </p>
                       )}
