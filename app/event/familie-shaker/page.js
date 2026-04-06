@@ -22,9 +22,7 @@ export default function EventPage() {
         sortBy: { column: "created_at", order: "desc" },
       });
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (!data) {
         setImages([]);
@@ -78,9 +76,7 @@ export default function EventPage() {
         .from("photos")
         .upload(fileName, file);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       alert("Upload erfolgreich!");
       loadImages();
@@ -196,20 +192,20 @@ export default function EventPage() {
           >
             <button
               onClick={closeLightbox}
-              className="absolute right-6 top-6 z-50 text-4xl font-bold text-white"
+              className="absolute right-4 top-4 z-50 rounded-full bg-black/40 px-3 py-1 text-3xl font-bold text-white"
             >
               ×
             </button>
 
             <button
               onClick={showPrevImage}
-              className="absolute left-4 z-50 hidden text-4xl font-bold text-white md:block"
+              className="absolute left-2 z-50 rounded-full bg-black/40 px-3 py-2 text-3xl font-bold text-white"
             >
               ‹
             </button>
 
             <div
-              className="flex h-full w-full items-center justify-center"
+              className="flex h-full w-full items-center justify-center px-12"
               onClick={(e) => e.stopPropagation()}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
@@ -224,7 +220,7 @@ export default function EventPage() {
 
             <button
               onClick={showNextImage}
-              className="absolute right-4 z-50 hidden text-4xl font-bold text-white md:block"
+              className="absolute right-2 z-50 rounded-full bg-black/40 px-3 py-2 text-3xl font-bold text-white"
             >
               ›
             </button>
