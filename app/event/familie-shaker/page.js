@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../../../lib/supabase";
 
 export default function EventPage() {
@@ -24,9 +24,33 @@ export default function EventPage() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [caption, setCaption] = useState("");
 
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+
+  const fileInputRef = useRef(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+
   useEffect(() => {
     fetchEvents();
   }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (!lightboxOpen) return;
+
+      if (e.key === "Escape") {
+        closeLightbox();
+      } else if (e.key === "ArrowRight") {
+        showNextPhoto();
+      } else if (e.key === "ArrowLeft") {
+        showPrevPhoto();
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxOpen, photos, selectedPhotoIndex]);
 
   async function fetchEvents() {
     setLoadingEvents(true);
@@ -108,7 +132,7 @@ export default function EventPage() {
     }
 
     if (!selectedFile) {
-      alert("Bitte eine Datei auswählen.");
+      alert("Bitte zuerst ein Foto auswählen.");
       return;
     }
 
@@ -171,6 +195,9 @@ export default function EventPage() {
       alert("Foto erfolgreich hochgeladen.");
       setSelectedFile(null);
       setCaption("");
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
       fetchPhotos(selectedEvent);
     }
 
@@ -178,23 +205,73 @@ export default function EventPage() {
   }
 
   function formatDate(dateString) {
-    if (!dateString) return "";
+    if (!dateString) return "Kein Datum";
     return new Date(dateString).toLocaleDateString("de-DE");
   }
 
-  return (
-    <div style={styles.wrapper}>
-      <h1 style={styles.title}>Familien-Ereignisse</h1>
+  function getSelectedEventData() {
+    return events.find((event) => event.id === selectedEvent) || null;
+  }
 
-      <button
-        onClick={() => setShowCreateForm(!showCreateForm)}
-        style={styles.darkButton}
-      >
-        {showCreateForm ? "Schließen" : "Ereignis erstellen"}
-      </button>
+  function openLightbox(index) {
+    setSelectedPhotoIndex(index);
+    setLightboxOpen(true);
+  }
+
+  function closeLightbox() {
+    setLightboxOpen(false);
+  }
+
+  function showNextPhoto() {
+    if (!photos.length) return;
+    setSelectedPhotoIndex((prev) => (prev + 1) % photos.length);
+  }
+
+  function showPrevPhoto() {
+    if (!photos.length) return;
+    setSelectedPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+  }
+
+  function handleTouchStart(e) {
+    touchStartX.current = e.changedTouches[0].clientX;
+  }
+
+  function handleTouchEnd(e) {
+    touchEndX.current = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX.current;
+
+    if (diff > 50) {
+      showNextPhoto();
+    } else if (diff < -50) {
+      showPrevPhoto();
+    }
+  }
+
+  const currentPhoto = photos[selectedPhotoIndex];
+  const selectedEventData = getSelectedEventData();
+
+  return (
+    <div style={styles.page}>
+      <div style={styles.header}>
+        <div>
+          <h1 style={styles.title}>Familien-Ereignisse</h1>
+          <p style={styles.subtitle}>
+            Fotos nach Urlauben, Feiern und besonderen Momenten geordnet.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setShowCreateForm(!showCreateForm)}
+          style={styles.primaryButton}
+        >
+          {showCreateForm ? "Formular schließen" : "Ereignis erstellen"}
+        </button>
+      </div>
 
       {showCreateForm && (
-        <form onSubmit={handleCreateEvent} style={styles.form}>
+        <form onSubmit={handleCreateEvent} style={styles.formCard}>
+          <h2 style={styles.formTitle}>Neues Ereignis</h2>
+
           <input
             type="text"
             placeholder="Titel"
@@ -220,19 +297,20 @@ export default function EventPage() {
             style={styles.input}
           />
 
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            style={styles.input}
-          />
-
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.twoCol}>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={styles.input}
+            />
+          </div>
 
           <textarea
             placeholder="Beschreibung"
@@ -242,68 +320,99 @@ export default function EventPage() {
             style={{ ...styles.input, resize: "vertical" }}
           />
 
-          <button type="submit" disabled={creatingEvent} style={styles.blueButton}>
-            {creatingEvent ? "Erstelle..." : "Speichern"}
+          <button type="submit" disabled={creatingEvent} style={styles.primaryButton}>
+            {creatingEvent ? "Ereignis wird erstellt..." : "Ereignis speichern"}
           </button>
         </form>
       )}
 
-      <h2 style={styles.sectionTitle}>Alle Ereignisse</h2>
+      <div style={styles.sectionHeader}>
+        <h2 style={styles.sectionTitle}>Alle Ereignisse</h2>
+      </div>
 
       {loadingEvents ? (
         <p>Events werden geladen...</p>
       ) : events.length === 0 ? (
-        <p>Noch keine Ereignisse vorhanden.</p>
+        <div style={styles.emptyBox}>Noch keine Ereignisse vorhanden.</div>
       ) : (
-        <div style={styles.grid}>
+        <div style={styles.eventGrid}>
           {events.map((event) => (
             <div
               key={event.id}
               onClick={() => fetchPhotos(event.id)}
               style={{
-                ...styles.card,
-                border:
-                  selectedEvent === event.id
-                    ? "2px solid #2563eb"
-                    : "1px solid #e5e7eb",
+                ...styles.eventCard,
+                ...(selectedEvent === event.id ? styles.eventCardActive : {}),
               }}
             >
-              <div style={styles.cardImage}>📸</div>
+              <div style={styles.eventCover}>
+                <div style={styles.eventCoverOverlay}>
+                  <span style={styles.eventChip}>
+                    {event.category || "Ereignis"}
+                  </span>
+                </div>
+              </div>
 
-              <h3 style={styles.cardTitle}>{event.title}</h3>
+              <div style={styles.eventContent}>
+                <h3 style={styles.eventTitle}>{event.title}</h3>
 
-              <p style={styles.cardText}>
-                <strong>Ort:</strong> {event.location || "Kein Ort"}
-              </p>
+                <div style={styles.metaList}>
+                  <p style={styles.metaText}>
+                    <strong>Ort:</strong> {event.location || "Kein Ort"}
+                  </p>
+                  <p style={styles.metaText}>
+                    <strong>Datum:</strong> {formatDate(event.start_date)}
+                    {event.end_date ? ` - ${formatDate(event.end_date)}` : ""}
+                  </p>
+                </div>
 
-              <p style={styles.cardText}>
-                <strong>Kategorie:</strong> {event.category || "Keine Kategorie"}
-              </p>
-
-              <p style={styles.cardText}>
-                <strong>Datum:</strong> {formatDate(event.start_date)}
-                {event.end_date ? ` - ${formatDate(event.end_date)}` : ""}
-              </p>
-
-              {event.description && (
-                <p style={styles.cardDescription}>{event.description}</p>
-              )}
+                {event.description && (
+                  <p style={styles.eventDescription}>{event.description}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>
       )}
 
       {selectedEvent && (
-        <div style={{ marginTop: "30px" }}>
-          <h2 style={styles.sectionTitle}>Fotos zum Ereignis</h2>
+        <div style={styles.gallerySection}>
+          <div style={styles.galleryHeader}>
+            <div>
+              <h2 style={styles.sectionTitle}>
+                {selectedEventData?.title || "Ausgewähltes Ereignis"}
+              </h2>
+              <p style={styles.selectedEventSub}>
+                {selectedEventData?.location || "Kein Ort"} •{" "}
+                {formatDate(selectedEventData?.start_date)}
+              </p>
+            </div>
+          </div>
 
-          <form onSubmit={handlePhotoUpload} style={styles.form}>
+          <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
+            <h3 style={styles.formTitle}>Foto hinzufügen</h3>
+
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
               onChange={(e) => setSelectedFile(e.target.files[0])}
-              style={styles.input}
+              style={{ display: "none" }}
             />
+
+            <div style={styles.uploadRow}>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                style={styles.secondaryButton}
+              >
+                Datei auswählen
+              </button>
+
+              <div style={styles.fileNameBox}>
+                {selectedFile ? selectedFile.name : "Noch keine Datei ausgewählt"}
+              </div>
+            </div>
 
             <input
               type="text"
@@ -316,25 +425,32 @@ export default function EventPage() {
             <button
               type="submit"
               disabled={uploadingPhoto}
-              style={styles.greenButton}
+              style={styles.primaryButton}
             >
-              {uploadingPhoto ? "Lade hoch..." : "Foto hochladen"}
+              {uploadingPhoto ? "Foto wird hochgeladen..." : "Foto hochladen"}
             </button>
           </form>
 
           {loadingPhotos ? (
             <p>Fotos werden geladen...</p>
           ) : photos.length === 0 ? (
-            <p>Noch keine Fotos in diesem Ereignis.</p>
+            <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
           ) : (
             <div style={styles.photoGrid}>
-              {photos.map((photo) => (
-                <div key={photo.id} style={styles.photoCard}>
+              {photos.map((photo, index) => (
+                <div
+                  key={photo.id}
+                  style={styles.photoCard}
+                  onClick={() => openLightbox(index)}
+                >
                   <img
                     src={photo.public_url || photo.image_url}
                     alt={photo.caption || photo.file_name || "Foto"}
                     style={styles.photo}
                   />
+                  <div style={styles.photoOverlay}>
+                    <span style={styles.photoOverlayText}>Vergrößern</span>
+                  </div>
                   {photo.caption && (
                     <div style={styles.photoCaption}>{photo.caption}</div>
                   )}
@@ -344,132 +460,374 @@ export default function EventPage() {
           )}
         </div>
       )}
+
+      {lightboxOpen && currentPhoto && (
+        <div style={styles.lightboxBackdrop} onClick={closeLightbox}>
+          <div
+            style={styles.lightboxContent}
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
+            <button style={styles.closeButton} onClick={closeLightbox}>
+              ✕
+            </button>
+
+            {photos.length > 1 && (
+              <>
+                <button
+                  style={{ ...styles.navButton, left: "16px" }}
+                  onClick={showPrevPhoto}
+                >
+                  ‹
+                </button>
+
+                <button
+                  style={{ ...styles.navButton, right: "16px" }}
+                  onClick={showNextPhoto}
+                >
+                  ›
+                </button>
+              </>
+            )}
+
+            <img
+              src={currentPhoto.public_url || currentPhoto.image_url}
+              alt={currentPhoto.caption || currentPhoto.file_name || "Foto"}
+              style={styles.lightboxImage}
+            />
+
+            <div style={styles.lightboxFooter}>
+              <div style={styles.lightboxCounter}>
+                {selectedPhotoIndex + 1} / {photos.length}
+              </div>
+              {currentPhoto.caption && (
+                <div style={styles.lightboxCaption}>{currentPhoto.caption}</div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 const styles = {
-  wrapper: {
+  page: {
     padding: "24px",
-    maxWidth: "1200px",
+    maxWidth: "1280px",
     margin: "0 auto",
+    backgroundColor: "#f8fafc",
+    minHeight: "100vh",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "16px",
+    flexWrap: "wrap",
+    marginBottom: "28px",
   },
   title: {
-    fontSize: "32px",
-    fontWeight: "bold",
-    marginBottom: "20px",
+    fontSize: "34px",
+    fontWeight: "800",
+    margin: 0,
+    color: "#0f172a",
+  },
+  subtitle: {
+    marginTop: "8px",
+    marginBottom: 0,
+    color: "#475569",
+    fontSize: "15px",
+  },
+  sectionHeader: {
+    marginBottom: "16px",
   },
   sectionTitle: {
     fontSize: "24px",
-    fontWeight: "600",
-    marginBottom: "16px",
+    fontWeight: "700",
+    margin: 0,
+    color: "#0f172a",
   },
-  form: {
+  selectedEventSub: {
+    marginTop: "6px",
+    color: "#64748b",
+    fontSize: "14px",
+  },
+  formTitle: {
+    margin: 0,
+    marginBottom: "6px",
+    fontSize: "20px",
+    fontWeight: "700",
+    color: "#0f172a",
+  },
+  formCard: {
     display: "grid",
     gap: "12px",
-    background: "#f9fafb",
-    padding: "20px",
-    borderRadius: "14px",
+    background: "#ffffff",
+    padding: "22px",
+    borderRadius: "20px",
     marginBottom: "32px",
-    border: "1px solid #e5e7eb",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+  },
+  uploadCard: {
+    display: "grid",
+    gap: "14px",
+    background: "#ffffff",
+    padding: "22px",
+    borderRadius: "20px",
+    marginBottom: "28px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+  },
+  twoCol: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "12px",
   },
   input: {
     width: "100%",
-    padding: "12px 14px",
-    borderRadius: "10px",
-    border: "1px solid #d1d5db",
+    padding: "14px 16px",
+    borderRadius: "14px",
+    border: "1px solid #cbd5e1",
     fontSize: "15px",
     outline: "none",
+    backgroundColor: "#fff",
+    boxSizing: "border-box",
   },
-  darkButton: {
-    backgroundColor: "#111827",
+  primaryButton: {
+    backgroundColor: "#0f172a",
     color: "white",
     border: "none",
-    padding: "12px 18px",
-    borderRadius: "10px",
+    padding: "14px 18px",
+    borderRadius: "14px",
     cursor: "pointer",
-    marginBottom: "24px",
     fontSize: "15px",
-    fontWeight: "600",
+    fontWeight: "700",
+    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.18)",
   },
-  blueButton: {
-    backgroundColor: "#2563eb",
-    color: "white",
+  secondaryButton: {
+    backgroundColor: "#1e293b",
+    color: "#fff",
     border: "none",
-    padding: "12px 18px",
-    borderRadius: "10px",
+    padding: "14px 18px",
+    borderRadius: "14px",
     cursor: "pointer",
-    fontWeight: "600",
+    fontSize: "15px",
+    fontWeight: "700",
+    minWidth: "170px",
+    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.12)",
   },
-  greenButton: {
-    backgroundColor: "#16a34a",
-    color: "white",
-    border: "none",
-    padding: "12px 18px",
-    borderRadius: "10px",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-  grid: {
+  uploadRow: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "20px",
-    marginBottom: "40px",
+    gridTemplateColumns: "auto 1fr",
+    gap: "12px",
+    alignItems: "center",
   },
-  card: {
-    background: "white",
-    borderRadius: "16px",
-    padding: "18px",
-    cursor: "pointer",
-    boxShadow: "0 4px 14px rgba(0,0,0,0.06)",
-    transition: "0.2s ease",
-  },
-  cardImage: {
-    width: "100%",
-    height: "140px",
-    background: "linear-gradient(135deg, #dbeafe, #bfdbfe)",
-    borderRadius: "12px",
-    marginBottom: "14px",
+  fileNameBox: {
+    minHeight: "50px",
+    borderRadius: "14px",
+    border: "1px solid #cbd5e1",
+    backgroundColor: "#f8fafc",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    fontSize: "36px",
+    padding: "0 14px",
+    color: "#475569",
+    fontSize: "14px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   },
-  cardTitle: {
-    fontSize: "20px",
+  eventGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gap: "22px",
+    marginBottom: "36px",
+  },
+  eventCard: {
+    background: "#fff",
+    borderRadius: "22px",
+    overflow: "hidden",
+    cursor: "pointer",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.06)",
+    transition: "all 0.2s ease",
+  },
+  eventCardActive: {
+    border: "2px solid #0f172a",
+    transform: "translateY(-2px)",
+  },
+  eventCover: {
+    height: "170px",
+    background:
+      "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #334155 100%)",
+    position: "relative",
+  },
+  eventCoverOverlay: {
+    position: "absolute",
+    inset: 0,
+    display: "flex",
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
+    padding: "14px",
+  },
+  eventChip: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    color: "#fff",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    fontSize: "13px",
     fontWeight: "700",
-    marginBottom: "8px",
+    backdropFilter: "blur(4px)",
   },
-  cardText: {
-    margin: "4px 0",
-    color: "#374151",
+  eventContent: {
+    padding: "18px",
   },
-  cardDescription: {
-    marginTop: "10px",
-    color: "#6b7280",
+  eventTitle: {
+    fontSize: "21px",
+    fontWeight: "800",
+    margin: 0,
+    marginBottom: "10px",
+    color: "#0f172a",
+  },
+  metaList: {
+    display: "grid",
+    gap: "6px",
+  },
+  metaText: {
+    margin: 0,
+    color: "#334155",
     fontSize: "14px",
     lineHeight: "1.5",
   },
+  eventDescription: {
+    marginTop: "12px",
+    color: "#64748b",
+    fontSize: "14px",
+    lineHeight: "1.6",
+  },
+  gallerySection: {
+    marginTop: "12px",
+  },
+  galleryHeader: {
+    marginBottom: "16px",
+  },
   photoGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "16px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "18px",
   },
   photoCard: {
-    borderRadius: "14px",
+    position: "relative",
+    borderRadius: "18px",
     overflow: "hidden",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+    boxShadow: "0 10px 25px rgba(15, 23, 42, 0.10)",
     background: "#fff",
+    cursor: "pointer",
   },
   photo: {
     width: "100%",
-    height: "220px",
+    height: "260px",
     objectFit: "cover",
     display: "block",
   },
+  photoOverlay: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(15, 23, 42, 0.22)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    opacity: 0,
+    transition: "0.2s ease",
+    pointerEvents: "none",
+  },
+  photoOverlayText: {
+    color: "#fff",
+    fontWeight: "700",
+    fontSize: "15px",
+  },
   photoCaption: {
-    padding: "10px 12px",
+    padding: "12px 14px",
     fontSize: "14px",
-    color: "#374151",
+    color: "#334155",
+    background: "#fff",
+  },
+  emptyBox: {
+    backgroundColor: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "18px",
+    padding: "22px",
+    color: "#64748b",
+  },
+  lightboxBackdrop: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(2, 6, 23, 0.92)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+    padding: "20px",
+  },
+  lightboxContent: {
+    position: "relative",
+    width: "100%",
+    maxWidth: "1100px",
+    maxHeight: "90vh",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lightboxImage: {
+    maxWidth: "100%",
+    maxHeight: "75vh",
+    objectFit: "contain",
+    borderRadius: "18px",
+  },
+  closeButton: {
+    position: "absolute",
+    top: "-8px",
+    right: "0",
+    backgroundColor: "rgba(255,255,255,0.12)",
+    color: "#fff",
+    border: "none",
+    width: "44px",
+    height: "44px",
+    borderRadius: "999px",
+    fontSize: "22px",
+    cursor: "pointer",
+  },
+  navButton: {
+    position: "absolute",
+    top: "50%",
+    transform: "translateY(-50%)",
+    backgroundColor: "rgba(255,255,255,0.14)",
+    color: "#fff",
+    border: "none",
+    width: "52px",
+    height: "52px",
+    borderRadius: "999px",
+    fontSize: "34px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  lightboxFooter: {
+    marginTop: "14px",
+    textAlign: "center",
+    color: "#fff",
+  },
+  lightboxCounter: {
+    fontSize: "13px",
+    opacity: 0.8,
+    marginBottom: "6px",
+  },
+  lightboxCaption: {
+    fontSize: "15px",
+    lineHeight: "1.5",
   },
 };
