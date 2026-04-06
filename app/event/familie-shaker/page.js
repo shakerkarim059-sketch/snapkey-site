@@ -10,17 +10,41 @@ export default function EventPage() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
   const [touchStartX, setTouchStartX] = useState(null);
   const [touchEndX, setTouchEndX] = useState(null);
+  const [imageError, setImageError] = useState("");
 
   const loadImages = async () => {
     setLoadingImages(true);
+    setImageError("");
 
-    const { data, error } = await supabase.storage.from("photos").list("", {
-      limit: 100,
-      sortBy: { column: "created_at", order: "desc" },
-    });
+    try {
+      const { data, error } = await supabase.storage.from("photos").list("", {
+        limit: 100,
+        sortBy: { column: "created_at", order: "desc" },
+      });
 
-    if (!error && data) {
-      const imageUrls = data.map((file) => {
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        setImages([]);
+        return;
+      }
+
+      const validFiles = data.filter((file) => {
+        if (!file?.name) return false;
+
+        const lower = file.name.toLowerCase();
+        return (
+          lower.endsWith(".jpg") ||
+          lower.endsWith(".jpeg") ||
+          lower.endsWith(".png") ||
+          lower.endsWith(".webp") ||
+          lower.endsWith(".gif")
+        );
+      });
+
+      const imageUrls = validFiles.map((file) => {
         const { data: publicUrlData } = supabase.storage
           .from("photos")
           .getPublicUrl(file.name);
@@ -32,9 +56,13 @@ export default function EventPage() {
       });
 
       setImages(imageUrls);
+    } catch (error) {
+      console.error("Fehler beim Laden der Bilder:", error);
+      setImageError("Bilder konnten nicht geladen werden.");
+      setImages([]);
+    } finally {
+      setLoadingImages(false);
     }
-
-    setLoadingImages(false);
   };
 
   const handleUpload = async (event) => {
@@ -43,20 +71,24 @@ export default function EventPage() {
 
     setUploading(true);
 
-    const fileName = `${Date.now()}-${file.name}`;
+    try {
+      const fileName = `${Date.now()}-${file.name}`;
 
-    const { error } = await supabase.storage
-      .from("photos")
-      .upload(fileName, file);
+      const { error } = await supabase.storage
+        .from("photos")
+        .upload(fileName, file);
 
-    setUploading(false);
+      if (error) {
+        throw error;
+      }
 
-    if (error) {
-      console.error(error);
-      alert("Fehler beim Upload");
-    } else {
       alert("Upload erfolgreich!");
       loadImages();
+    } catch (error) {
+      console.error("Fehler beim Upload:", error);
+      alert("Fehler beim Upload");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -137,6 +169,8 @@ export default function EventPage() {
 
           {loadingImages ? (
             <p className="mt-4 text-zinc-600">Lade Bilder...</p>
+          ) : imageError ? (
+            <p className="mt-4 text-red-600">{imageError}</p>
           ) : images.length === 0 ? (
             <p className="mt-4 text-zinc-600">Noch keine Bilder vorhanden.</p>
           ) : (
@@ -146,6 +180,7 @@ export default function EventPage() {
                   key={img.name}
                   src={img.url}
                   alt=""
+                  loading="lazy"
                   onClick={() => setSelectedImageIndex(index)}
                   className="aspect-square cursor-pointer rounded-2xl object-cover transition hover:scale-105"
                 />
@@ -154,7 +189,7 @@ export default function EventPage() {
           )}
         </div>
 
-        {selectedImageIndex !== null && (
+        {selectedImageIndex !== null && images[selectedImageIndex] && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
             onClick={closeLightbox}
