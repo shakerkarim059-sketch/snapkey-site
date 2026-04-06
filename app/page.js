@@ -16,10 +16,12 @@ export default function Page() {
   const [slug, setSlug] = useState("");
   const [accessPassword, setAccessPassword] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
+  const [createdEventLink, setCreatedEventLink] = useState("");
 
   async function handleCreateEvent(e) {
     e.preventDefault();
     setCreatingEvent(true);
+    setCreatedEventLink("");
 
     const finalSlug =
       slug.trim() ||
@@ -47,6 +49,7 @@ export default function Page() {
       console.error("Fehler beim Erstellen:", error);
       alert("Ereignis konnte nicht erstellt werden: " + error.message);
     } else {
+      setCreatedEventLink(`/event/${finalSlug}`);
       alert("Ereignis erstellt.");
       setTitle("");
       setLocation("");
@@ -187,6 +190,20 @@ export default function Page() {
                     {creatingEvent ? "Event wird erstellt..." : "Event speichern"}
                   </button>
                 </form>
+              )}
+
+              {createdEventLink && (
+                <div className="mt-4 rounded-3xl border border-green-200 bg-green-50 p-4">
+                  <p className="text-sm font-medium text-green-800">
+                    Event erfolgreich erstellt
+                  </p>
+                  <a
+                    href={createdEventLink}
+                    className="mt-2 block break-all text-sm text-green-700 underline"
+                  >
+                    {createdEventLink}
+                  </a>
+                </div>
               )}
 
               <div className="mt-6 flex flex-wrap gap-4 text-sm text-zinc-500">
