@@ -1,33 +1,32 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
 
-const FAMILY_PASSWORD = "familie123";
-const ADMIN_PASSWORD = "admin123";
 const LOCAL_LIKE_STORAGE_KEY = "family-photo-liked-map";
 
 export default function EventPage() {
+  const params = useParams();
+  const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
+
+  const [eventData, setEventData] = useState(null);
+  const [eventNotFound, setEventNotFound] = useState(false);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
 
-  const [events, setEvents] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [photoLikes, setPhotoLikes] = useState([]);
   const [photoComments, setPhotoComments] = useState([]);
 
-  const [openEventId, setOpenEventId] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-
-  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [loadingEvent, setLoadingEvent] = useState(true);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [loadingLikes, setLoadingLikes] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
 
-  const [creatingEvent, setCreatingEvent] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [editingEventId, setEditingEventId] = useState(null);
   const [updatingEvent, setUpdatingEvent] = useState(false);
@@ -48,32 +47,20 @@ export default function EventPage() {
   const [commentDrafts, setCommentDrafts] = useState({});
   const [commentNames, setCommentNames] = useState({});
 
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedYearFilter, setSelectedYearFilter] = useState("all");
   const [selectedMonthFilter, setSelectedMonthFilter] = useState("all");
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
-  const [lightboxPhotos, setLightboxPhotos] = useState([]);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
   useEffect(() => {
-    if (!isAuthenticated) return;
-
-    fetchEvents();
-    fetchAllPhotos();
-    fetchAllLikes();
-    fetchAllComments();
-
-    if (typeof document !== "undefined") {
-      document.documentElement.style.overflowX = "hidden";
-      document.body.style.overflowX = "hidden";
-      document.body.style.margin = "0";
-    }
-  }, [isAuthenticated]);
+    if (!slug) return;
+    fetchEventBySlug();
+  }, [slug]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -90,59 +77,53 @@ export default function EventPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, selectedPhotoIndex, lightboxPhotos]);
+  }, [lightboxOpen, selectedPhotoIndex, photos]);
 
-  function handleLogin() {
-    if (passwordInput === FAMILY_PASSWORD) {
-      setIsAuthenticated(true);
-      setIsAdmin(false);
-      return;
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      document.documentElement.style.overflowX = "hidden";
+      document.body.style.overflowX = "hidden";
+      document.body.style.margin = "0";
     }
+  }, []);
 
-    if (passwordInput === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      return;
-    }
-
-    alert("Falsches Passwort.");
-  }
-
-  function handleLogout() {
-    setIsAuthenticated(false);
-    setIsAdmin(false);
-    setPasswordInput("");
-    setOpenEventId(null);
-    setSelectedEvent(null);
-    setEditingEventId(null);
-    setShowCreateForm(false);
-    setLightboxOpen(false);
-  }
-
-  async function fetchEvents() {
-    setLoadingEvents(true);
+  async function fetchEventBySlug() {
+    setLoadingEvent(true);
+    setEventNotFound(false);
 
     const { data, error } = await supabase
       .from("events")
       .select("*")
-      .order("start_date", { ascending: false });
+      .eq("slug", slug)
+      .single();
 
-    if (error) {
-      console.error("Fehler beim Laden der Events:", error);
-      alert("Fehler beim Laden der Events: " + error.message);
-    } else {
-      setEvents(data || []);
+    if (error || !data) {
+      console.error("Fehler beim Laden des Events:", error);
+      setEventData(null);
+      setEventNotFound(true);
+      setLoadingEvent(false);
+      return;
     }
 
-    setLoadingEvents(false);
+    setEventData(data);
+    fillEditForm(data);
+
+    await Promise.all([
+      fetchPhotosForEvent(data.id),
+      fetchAllLikes(),
+      fetchAllComments(),
+    ]);
+
+    setLoadingEvent(false);
   }
 
-  async function fetchAllPhotos() {
+  async function fetchPhotosForEvent(eventId) {
     setLoadingPhotos(true);
 
     const { data, error } = await supabase
       .from("photos")
       .select("*")
+      .eq("event_id", eventId)
       .order("created_at", { ascending: true });
 
     if (error) {
@@ -191,62 +172,50 @@ export default function EventPage() {
     setLoadingComments(false);
   }
 
-  function resetEventForm() {
-    setTitle("");
-    setLocation("");
-    setCategory("");
-    setStartDate("");
-    setEndDate("");
-    setDescription("");
-  }
+  function handleLogin() {
+    if (!eventData) return;
 
-  async function handleCreateEvent(e) {
-    e.preventDefault();
-    setCreatingEvent(true);
-
-    const { error } = await supabase.from("events").insert([
-      {
-        title,
-        location,
-        category,
-        start_date: startDate || null,
-        end_date: endDate || null,
-        description,
-      },
-    ]);
-
-    if (error) {
-      console.error("Fehler beim Erstellen:", error);
-      alert("Ereignis konnte nicht erstellt werden: " + error.message);
-    } else {
-      alert("Ereignis erstellt.");
-      resetEventForm();
-      setShowCreateForm(false);
-      fetchEvents();
+    if (passwordInput === eventData.access_password) {
+      setIsAuthenticated(true);
+      setIsAdmin(false);
+      return;
     }
 
-    setCreatingEvent(false);
+    if (passwordInput === eventData.admin_password) {
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      return;
+    }
+
+    alert("Falsches Passwort.");
   }
 
-  function startEditingEvent(event) {
-    setEditingEventId(event.id);
+  function handleLogout() {
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    setPasswordInput("");
+    setEditingEventId(null);
+    setLightboxOpen(false);
+  }
+
+  function fillEditForm(event) {
     setTitle(event.title || "");
     setLocation(event.location || "");
     setCategory(event.category || "");
     setStartDate(event.start_date ? event.start_date.slice(0, 10) : "");
     setEndDate(event.end_date ? event.end_date.slice(0, 10) : "");
     setDescription(event.description || "");
-    setShowCreateForm(false);
+  }
 
-    if (openEventId !== event.id) {
-      setOpenEventId(event.id);
-      setSelectedEvent(event.id);
-    }
+  function startEditingEvent() {
+    if (!eventData) return;
+    setEditingEventId(eventData.id);
+    fillEditForm(eventData);
   }
 
   function cancelEditingEvent() {
     setEditingEventId(null);
-    resetEventForm();
+    if (eventData) fillEditForm(eventData);
   }
 
   async function handleUpdateEvent(e) {
@@ -274,8 +243,7 @@ export default function EventPage() {
     } else {
       alert("Ereignis aktualisiert.");
       setEditingEventId(null);
-      resetEventForm();
-      fetchEvents();
+      await fetchEventBySlug();
     }
 
     setUpdatingEvent(false);
@@ -284,8 +252,8 @@ export default function EventPage() {
   async function handlePhotoUpload(e) {
     e.preventDefault();
 
-    if (!selectedEvent) {
-      alert("Bitte zuerst ein Ereignis auswählen.");
+    if (!eventData?.id) {
+      alert("Kein Event gefunden.");
       return;
     }
 
@@ -295,7 +263,6 @@ export default function EventPage() {
     }
 
     setUploadingPhoto(true);
-
     let uploadErrorFound = false;
 
     for (const file of selectedFiles) {
@@ -324,7 +291,7 @@ export default function EventPage() {
 
       const { error: insertError } = await supabase.from("photos").insert([
         {
-          event_id: selectedEvent,
+          event_id: eventData.id,
           file_name: generatedFileName,
           file_path: filePath,
           public_url: publicUrl,
@@ -357,7 +324,7 @@ export default function EventPage() {
       fileInputRef.current.value = "";
     }
 
-    await fetchAllPhotos();
+    await fetchPhotosForEvent(eventData.id);
     setUploadingPhoto(false);
   }
 
@@ -383,7 +350,7 @@ export default function EventPage() {
       console.error("Fehler beim Löschen aus DB:", error);
       alert("Fehler beim Löschen: " + error.message);
     } else {
-      await fetchAllPhotos();
+      await fetchPhotosForEvent(eventData.id);
       await fetchAllLikes();
       await fetchAllComments();
       alert("Foto gelöscht.");
@@ -411,6 +378,8 @@ export default function EventPage() {
   }
 
   async function handleToggleLike(photoId) {
+    if (eventData?.likes_enabled === false) return;
+
     setLikingPhotoId(photoId);
 
     try {
@@ -457,6 +426,8 @@ export default function EventPage() {
   }
 
   async function handleSubmitComment(photoId) {
+    if (eventData?.comments_enabled === false) return;
+
     const commentText = (commentDrafts[photoId] || "").trim();
     const authorName = (commentNames[photoId] || "").trim();
 
@@ -499,19 +470,6 @@ export default function EventPage() {
     return new Date(dateString).toLocaleString("de-DE");
   }
 
-  function getSelectedEventData() {
-    return events.find((event) => event.id === selectedEvent) || null;
-  }
-
-  function getPhotosForEvent(eventId) {
-    return photos.filter((photo) => photo.event_id === eventId);
-  }
-
-  function getCoverPhotoForEvent(eventId) {
-    const eventPhotos = getPhotosForEvent(eventId);
-    return eventPhotos.length > 0 ? eventPhotos[0] : null;
-  }
-
   function getLikesForPhoto(photoId) {
     return photoLikes.filter((like) => like.photo_id === photoId);
   }
@@ -520,19 +478,7 @@ export default function EventPage() {
     return photoComments.filter((comment) => comment.photo_id === photoId);
   }
 
-  function handleToggleEvent(eventId) {
-    setOpenEventId((prev) => (prev === eventId ? null : eventId));
-    setSelectedEvent(eventId);
-    setSelectedFiles([]);
-    setCaption("");
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-  }
-
-  function openLightbox(index, eventPhotos) {
-    setLightboxPhotos(eventPhotos);
+  function openLightbox(index) {
     setSelectedPhotoIndex(index);
     setLightboxOpen(true);
 
@@ -543,7 +489,6 @@ export default function EventPage() {
 
   function closeLightbox() {
     setLightboxOpen(false);
-    setLightboxPhotos([]);
 
     if (typeof document !== "undefined") {
       document.body.style.overflow = "";
@@ -551,15 +496,13 @@ export default function EventPage() {
   }
 
   function showNextPhoto() {
-    if (!lightboxPhotos.length) return;
-    setSelectedPhotoIndex((prev) => (prev + 1) % lightboxPhotos.length);
+    if (!photos.length) return;
+    setSelectedPhotoIndex((prev) => (prev + 1) % photos.length);
   }
 
   function showPrevPhoto() {
-    if (!lightboxPhotos.length) return;
-    setSelectedPhotoIndex(
-      (prev) => (prev - 1 + lightboxPhotos.length) % lightboxPhotos.length
-    );
+    if (!photos.length) return;
+    setSelectedPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
   }
 
   function handleTouchStart(e) {
@@ -578,55 +521,58 @@ export default function EventPage() {
   }
 
   const availableYears = useMemo(() => {
-    const years = events
-      .map((event) => {
-        if (!event.start_date) return null;
-        return new Date(event.start_date).getFullYear();
+    const years = photos
+      .map((photo) => {
+        if (!photo.created_at) return null;
+        return new Date(photo.created_at).getFullYear();
       })
       .filter(Boolean);
 
     return [...new Set(years)].sort((a, b) => b - a);
-  }, [events]);
+  }, [photos]);
 
-  const filteredEvents = useMemo(() => {
-    return events.filter((event) => {
-      const searchValue = searchTerm.trim().toLowerCase();
-      const searchableText = [
-        event.title,
-        event.location,
-        event.category,
-        event.description,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-      const matchesSearch = !searchValue || searchableText.includes(searchValue);
-
-      const eventDate = event.start_date ? new Date(event.start_date) : null;
-      const eventYear = eventDate ? String(eventDate.getFullYear()) : "";
-      const eventMonth = eventDate ? String(eventDate.getMonth() + 1) : "";
+  const filteredPhotos = useMemo(() => {
+    return photos.filter((photo) => {
+      const photoDate = photo.created_at ? new Date(photo.created_at) : null;
+      const photoYear = photoDate ? String(photoDate.getFullYear()) : "";
+      const photoMonth = photoDate ? String(photoDate.getMonth() + 1) : "";
 
       const matchesYear =
-        selectedYearFilter === "all" || eventYear === selectedYearFilter;
+        selectedYearFilter === "all" || photoYear === selectedYearFilter;
 
       const matchesMonth =
-        selectedMonthFilter === "all" || eventMonth === selectedMonthFilter;
+        selectedMonthFilter === "all" || photoMonth === selectedMonthFilter;
 
-      return matchesSearch && matchesYear && matchesMonth;
+      return matchesYear && matchesMonth;
     });
-  }, [events, searchTerm, selectedYearFilter, selectedMonthFilter]);
+  }, [photos, selectedYearFilter, selectedMonthFilter]);
 
-  const currentPhoto = lightboxPhotos[selectedPhotoIndex];
-  const selectedEventData = getSelectedEventData();
+  const coverPhoto = photos.length > 0 ? photos[0] : null;
+  const currentPhoto = filteredPhotos[selectedPhotoIndex] || photos[selectedPhotoIndex];
+
+  if (loadingEvent) {
+    return (
+      <div style={styles.page}>
+        <div style={styles.emptyBox}>Event wird geladen...</div>
+      </div>
+    );
+  }
+
+  if (eventNotFound || !eventData) {
+    return (
+      <div style={styles.page}>
+        <div style={styles.emptyBox}>Dieses Event wurde nicht gefunden.</div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
       <div style={styles.page}>
         <div style={styles.loginBox}>
-          <h1 style={styles.title}>Familien-Ereignisse</h1>
+          <h1 style={styles.title}>{eventData.title || "Event"}</h1>
           <p style={styles.subtitle}>
-            Bitte Passwort eingeben, um die Familienfotos zu sehen.
+            Bitte Passwort eingeben, um dieses Event zu öffnen.
           </p>
 
           <input
@@ -652,22 +598,19 @@ export default function EventPage() {
     <div style={styles.page}>
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>Familien-Ereignisse</h1>
+          <h1 style={styles.title}>{eventData.title}</h1>
           <p style={styles.subtitle}>
-            Fotos nach Urlauben, Feiern und besonderen Momenten geordnet.
+            {eventData.description || "Fotos dieses Ereignisses ansehen, liken und kommentieren."}
           </p>
           <p style={styles.accessInfo}>
-            Zugang: {isAdmin ? "Admin" : "Familie"}
+            Zugang: {isAdmin ? "Admin" : "Gast"}
           </p>
         </div>
 
         <div style={styles.headerButtons}>
-          {!editingEventId && (
-            <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              style={styles.primaryButton}
-            >
-              {showCreateForm ? "Formular schließen" : "Ereignis erstellen"}
+          {isAdmin && !editingEventId && (
+            <button onClick={startEditingEvent} style={styles.primaryButton}>
+              Ereignis bearbeiten
             </button>
           )}
 
@@ -677,69 +620,31 @@ export default function EventPage() {
         </div>
       </div>
 
-      {showCreateForm && !editingEventId && (
-        <form onSubmit={handleCreateEvent} style={styles.formCard}>
-          <h2 style={styles.formTitle}>Neues Ereignis</h2>
+      <div
+        style={{
+          ...styles.heroCard,
+          ...(coverPhoto
+            ? {
+                backgroundImage: `url(${coverPhoto.public_url || coverPhoto.image_url})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }
+            : {}),
+        }}
+      >
+        <div style={styles.heroShade} />
+        <div style={styles.heroContent}>
+          <span style={styles.eventChip}>{eventData.category || "Ereignis"}</span>
+          <h2 style={styles.heroTitle}>{eventData.title}</h2>
+          <p style={styles.heroMeta}>
+            {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
+            {eventData.end_date ? ` - ${formatDate(eventData.end_date)}` : ""}
+          </p>
+        </div>
+      </div>
 
-          <input
-            type="text"
-            placeholder="Titel"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={styles.input}
-          />
-
-          <input
-            type="text"
-            placeholder="Ort"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            style={styles.input}
-          />
-
-          <input
-            type="text"
-            placeholder="Kategorie"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            style={styles.input}
-          />
-
-          <div style={styles.twoCol}>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-
-          <textarea
-            placeholder="Beschreibung"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            style={{ ...styles.input, resize: "vertical" }}
-          />
-
-          <button
-            type="submit"
-            disabled={creatingEvent}
-            style={styles.primaryButton}
-          >
-            {creatingEvent ? "Ereignis wird erstellt..." : "Ereignis speichern"}
-          </button>
-        </form>
-      )}
-
-      {editingEventId && (
+      {editingEventId && isAdmin && (
         <form onSubmit={handleUpdateEvent} style={styles.formCard}>
           <div style={styles.editHeader}>
             <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
@@ -814,14 +719,6 @@ export default function EventPage() {
         <h2 style={styles.formTitle}>Filter</h2>
 
         <div style={styles.filterGrid}>
-          <input
-            type="text"
-            placeholder="Nach Titel, Ort, Kategorie suchen"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={styles.input}
-          />
-
           <select
             value={selectedYearFilter}
             onChange={(e) => setSelectedYearFilter(e.target.value)}
@@ -857,297 +754,190 @@ export default function EventPage() {
         </div>
 
         <div style={styles.filterInfo}>
-          Gefundene Ereignisse: {filteredEvents.length}
+          Gefundene Fotos: {filteredPhotos.length}
         </div>
       </div>
 
-      <div style={styles.sectionHeader}>
-        <h2 style={styles.sectionTitle}>Alle Ereignisse</h2>
-      </div>
+      <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
+        <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
 
-      {loadingEvents ? (
-        <p>Events werden geladen...</p>
-      ) : filteredEvents.length === 0 ? (
-        <div style={styles.emptyBox}>Keine Ereignisse für diesen Filter gefunden.</div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
+          style={{ display: "none" }}
+        />
+
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          style={styles.secondaryButton}
+        >
+          Bilder auswählen
+        </button>
+
+        {selectedFiles.length > 0 && (
+          <div style={styles.selectedFilesInfo}>
+            {selectedFiles.length} Bild
+            {selectedFiles.length > 1 ? "er" : ""} ausgewählt
+          </div>
+        )}
+
+        <input
+          type="text"
+          placeholder="Gemeinsame Bildbeschreibung (optional)"
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          style={styles.input}
+        />
+
+        <button
+          type="submit"
+          disabled={uploadingPhoto}
+          style={styles.primaryButton}
+        >
+          {uploadingPhoto ? "Fotos werden hochgeladen..." : "Fotos hochladen"}
+        </button>
+      </form>
+
+      {loadingPhotos || loadingLikes || loadingComments ? (
+        <div style={styles.emptyBox}>Inhalte werden geladen...</div>
+      ) : filteredPhotos.length === 0 ? (
+        <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
       ) : (
-        <div style={styles.eventGrid}>
-          {filteredEvents.map((event) => {
-            const eventPhotos = getPhotosForEvent(event.id);
-            const coverPhoto = getCoverPhotoForEvent(event.id);
-            const isOpen = openEventId === event.id;
+        <div style={styles.photoGrid}>
+          {filteredPhotos.map((photo, index) => {
+            const likesForPhoto = getLikesForPhoto(photo.id);
+            const commentsForPhoto = getCommentsForPhoto(photo.id);
+            const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
 
             return (
-              <div key={event.id} style={styles.eventColumn}>
-                <div
-                  onClick={() => handleToggleEvent(event.id)}
-                  style={{
-                    ...styles.eventCard,
-                    ...(isOpen ? styles.eventCardActive : {}),
-                  }}
-                >
-                  <div
-                    style={{
-                      ...styles.eventCover,
-                      ...(coverPhoto
-                        ? {
-                            backgroundImage: `url(${coverPhoto.public_url || coverPhoto.image_url})`,
-                            backgroundSize: "cover",
-                            backgroundPosition: "center",
-                            backgroundRepeat: "no-repeat",
-                          }
-                        : {}),
-                    }}
-                  >
-                    <div style={styles.eventCoverShade} />
-                    <div style={styles.eventCoverOverlay}>
-                      <span style={styles.eventChip}>
-                        {event.category || "Ereignis"}
-                      </span>
-                    </div>
-                  </div>
+              <div
+                key={photo.id}
+                style={styles.photoCard}
+                onClick={() => openLightbox(index)}
+              >
+                <img
+                  src={photo.public_url || photo.image_url}
+                  alt={photo.caption || photo.file_name || "Foto"}
+                  style={styles.photo}
+                />
 
-                  <div style={styles.eventContent}>
-                    <div style={styles.eventTopRow}>
-                      <h3 style={styles.eventTitle}>{event.title}</h3>
-                      <span style={styles.eventArrow}>{isOpen ? "−" : "+"}</span>
-                    </div>
-
-                    <div style={styles.metaList}>
-                      <p style={styles.metaText}>
-                        <strong>Ort:</strong> {event.location || "Kein Ort"}
-                      </p>
-                      <p style={styles.metaText}>
-                        <strong>Datum:</strong> {formatDate(event.start_date)}
-                        {event.end_date ? ` - ${formatDate(event.end_date)}` : ""}
-                      </p>
-                      <p style={styles.metaText}>
-                        <strong>Bilder:</strong> {eventPhotos.length}
-                      </p>
-                    </div>
-
-                    {event.description && (
-                      <p style={styles.eventDescription}>{event.description}</p>
-                    )}
-
-                    <div
-                      style={styles.eventActionRow}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <button
-                        type="button"
-                        onClick={() => startEditingEvent(event)}
-                        style={styles.editButton}
-                      >
-                        Bearbeiten
-                      </button>
-                    </div>
-                  </div>
+                <div style={styles.photoOverlay}>
+                  <span style={styles.photoOverlayText}>Vergrößern</span>
                 </div>
 
-                {isOpen && (
-                  <div style={styles.inlineGallerySection}>
-                    <div style={styles.galleryHeader}>
-                      <div>
-                        <h2 style={styles.sectionTitle}>
-                          {selectedEventData?.title || event.title}
-                        </h2>
-                        <p style={styles.selectedEventSub}>
-                          {event.location || "Kein Ort"} • {formatDate(event.start_date)}
-                        </p>
-                      </div>
-                    </div>
+                {isAdmin && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePhoto(photo);
+                    }}
+                    style={styles.deleteButton}
+                  >
+                    Löschen
+                  </button>
+                )}
 
-                    <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
-                      <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
+                <div
+                  style={styles.photoInfoArea}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {photo.caption && (
+                    <div style={styles.photoCaption}>{photo.caption}</div>
+                  )}
 
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={(e) =>
-                          setSelectedFiles(Array.from(e.target.files || []))
-                        }
-                        style={{ display: "none" }}
-                      />
-
+                  {eventData.likes_enabled !== false && (
+                    <div style={styles.likeRow}>
                       <button
                         type="button"
-                        onClick={() => fileInputRef.current?.click()}
-                        style={styles.secondaryButton}
+                        onClick={() => handleToggleLike(photo.id)}
+                        disabled={likingPhotoId === photo.id}
+                        style={{
+                          ...styles.likeButton,
+                          ...(likedByThisBrowser ? styles.likeButtonActive : {}),
+                        }}
                       >
-                        Bilder auswählen
+                        {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
                       </button>
 
-                      {selectedFiles.length > 0 && (
-                        <div style={styles.selectedFilesInfo}>
-                          {selectedFiles.length} Bild
-                          {selectedFiles.length > 1 ? "er" : ""} ausgewählt
-                        </div>
-                      )}
+                      <span style={styles.likeCount}>
+                        {likesForPhoto.length} Like
+                        {likesForPhoto.length === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                  )}
 
-                      <input
-                        type="text"
-                        placeholder="Gemeinsame Bildbeschreibung (optional)"
-                        value={caption}
-                        onChange={(e) => setCaption(e.target.value)}
-                        style={styles.input}
-                      />
+                  {eventData.comments_enabled !== false && (
+                    <>
+                      <div style={styles.commentForm}>
+                        <input
+                          type="text"
+                          placeholder="Dein Name"
+                          value={commentNames[photo.id] || ""}
+                          onChange={(e) =>
+                            setCommentNames((prev) => ({
+                              ...prev,
+                              [photo.id]: e.target.value,
+                            }))
+                          }
+                          style={styles.commentInput}
+                        />
 
-                      <button
-                        type="submit"
-                        disabled={uploadingPhoto}
-                        style={styles.primaryButton}
-                      >
-                        {uploadingPhoto
-                          ? "Fotos werden hochgeladen..."
-                          : "Fotos hochladen"}
-                      </button>
-                    </form>
+                        <textarea
+                          placeholder="Kommentar schreiben"
+                          value={commentDrafts[photo.id] || ""}
+                          onChange={(e) =>
+                            setCommentDrafts((prev) => ({
+                              ...prev,
+                              [photo.id]: e.target.value,
+                            }))
+                          }
+                          rows={3}
+                          style={styles.commentTextarea}
+                        />
 
-                    {loadingPhotos || loadingLikes || loadingComments ? (
-                      <p>Inhalte werden geladen...</p>
-                    ) : eventPhotos.length === 0 ? (
-                      <div style={styles.emptyBox}>
-                        Noch keine Fotos in diesem Ereignis.
+                        <button
+                          type="button"
+                          onClick={() => handleSubmitComment(photo.id)}
+                          disabled={submittingCommentPhotoId === photo.id}
+                          style={styles.commentButton}
+                        >
+                          {submittingCommentPhotoId === photo.id
+                            ? "Speichert..."
+                            : "Kommentieren"}
+                        </button>
                       </div>
-                    ) : (
-                      <div style={styles.photoGrid}>
-                        {eventPhotos.map((photo, index) => {
-                          const likesForPhoto = getLikesForPhoto(photo.id);
-                          const commentsForPhoto = getCommentsForPhoto(photo.id);
-                          const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
 
-                          return (
-                            <div
-                              key={photo.id}
-                              style={styles.photoCard}
-                              onClick={() => openLightbox(index, eventPhotos)}
-                            >
-                              <img
-                                src={photo.public_url || photo.image_url}
-                                alt={photo.caption || photo.file_name || "Foto"}
-                                style={styles.photo}
-                              />
-
-                              <div style={styles.photoOverlay}>
-                                <span style={styles.photoOverlayText}>
-                                  Vergrößern
+                      <div style={styles.commentList}>
+                        {commentsForPhoto.length === 0 ? (
+                          <div style={styles.noCommentsText}>
+                            Noch keine Kommentare.
+                          </div>
+                        ) : (
+                          commentsForPhoto.map((comment) => (
+                            <div key={comment.id} style={styles.commentItem}>
+                              <div style={styles.commentAuthorRow}>
+                                <span style={styles.commentAuthor}>
+                                  {comment.author_name || "Unbekannt"}
+                                </span>
+                                <span style={styles.commentDate}>
+                                  {formatDateTime(comment.created_at)}
                                 </span>
                               </div>
-
-                              {isAdmin && (
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleDeletePhoto(photo);
-                                  }}
-                                  style={styles.deleteButton}
-                                >
-                                  Löschen
-                                </button>
-                              )}
-
-                              <div
-                                style={styles.photoInfoArea}
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                {photo.caption && (
-                                  <div style={styles.photoCaption}>{photo.caption}</div>
-                                )}
-
-                                <div style={styles.likeRow}>
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggleLike(photo.id)}
-                                    disabled={likingPhotoId === photo.id}
-                                    style={{
-                                      ...styles.likeButton,
-                                      ...(likedByThisBrowser
-                                        ? styles.likeButtonActive
-                                        : {}),
-                                    }}
-                                  >
-                                    {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
-                                  </button>
-
-                                  <span style={styles.likeCount}>
-                                    {likesForPhoto.length} Like
-                                    {likesForPhoto.length === 1 ? "" : "s"}
-                                  </span>
-                                </div>
-
-                                <div style={styles.commentForm}>
-                                  <input
-                                    type="text"
-                                    placeholder="Dein Name"
-                                    value={commentNames[photo.id] || ""}
-                                    onChange={(e) =>
-                                      setCommentNames((prev) => ({
-                                        ...prev,
-                                        [photo.id]: e.target.value,
-                                      }))
-                                    }
-                                    style={styles.commentInput}
-                                  />
-
-                                  <textarea
-                                    placeholder="Kommentar schreiben"
-                                    value={commentDrafts[photo.id] || ""}
-                                    onChange={(e) =>
-                                      setCommentDrafts((prev) => ({
-                                        ...prev,
-                                        [photo.id]: e.target.value,
-                                      }))
-                                    }
-                                    rows={3}
-                                    style={styles.commentTextarea}
-                                  />
-
-                                  <button
-                                    type="button"
-                                    onClick={() => handleSubmitComment(photo.id)}
-                                    disabled={submittingCommentPhotoId === photo.id}
-                                    style={styles.commentButton}
-                                  >
-                                    {submittingCommentPhotoId === photo.id
-                                      ? "Speichert..."
-                                      : "Kommentieren"}
-                                  </button>
-                                </div>
-
-                                <div style={styles.commentList}>
-                                  {commentsForPhoto.length === 0 ? (
-                                    <div style={styles.noCommentsText}>
-                                      Noch keine Kommentare.
-                                    </div>
-                                  ) : (
-                                    commentsForPhoto.map((comment) => (
-                                      <div key={comment.id} style={styles.commentItem}>
-                                        <div style={styles.commentAuthorRow}>
-                                          <span style={styles.commentAuthor}>
-                                            {comment.author_name || "Unbekannt"}
-                                          </span>
-                                          <span style={styles.commentDate}>
-                                            {formatDateTime(comment.created_at)}
-                                          </span>
-                                        </div>
-                                        <div style={styles.commentText}>
-                                          {comment.comment_text}
-                                        </div>
-                                      </div>
-                                    ))
-                                  )}
-                                </div>
+                              <div style={styles.commentText}>
+                                {comment.comment_text}
                               </div>
                             </div>
-                          );
-                        })}
+                          ))
+                        )}
                       </div>
-                    )}
-                  </div>
-                )}
+                    </>
+                  )}
+                </div>
               </div>
             );
           })}
@@ -1166,7 +956,7 @@ export default function EventPage() {
               ✕
             </button>
 
-            {lightboxPhotos.length > 1 && (
+            {filteredPhotos.length > 1 && (
               <>
                 <button
                   type="button"
@@ -1194,7 +984,7 @@ export default function EventPage() {
 
             <div style={styles.lightboxFooter}>
               <div style={styles.lightboxCounter}>
-                {selectedPhotoIndex + 1} / {lightboxPhotos.length}
+                {selectedPhotoIndex + 1} / {filteredPhotos.length}
               </div>
               {currentPhoto.caption && (
                 <div style={styles.lightboxCaption}>{currentPhoto.caption}</div>
@@ -1262,19 +1052,49 @@ const styles = {
     fontSize: "14px",
     fontWeight: "700",
   },
-  sectionHeader: {
-    marginBottom: "16px",
+  heroCard: {
+    minHeight: "240px",
+    borderRadius: "24px",
+    overflow: "hidden",
+    position: "relative",
+    marginBottom: "28px",
+    background:
+      "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #334155 100%)",
   },
-  sectionTitle: {
-    fontSize: "24px",
-    fontWeight: "700",
+  heroShade: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(15, 23, 42, 0.35)",
+  },
+  heroContent: {
+    position: "relative",
+    zIndex: 1,
+    padding: "24px",
+    color: "#fff",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "flex-end",
+    minHeight: "240px",
+  },
+  heroTitle: {
+    fontSize: "32px",
+    fontWeight: "800",
+    margin: "14px 0 8px 0",
+  },
+  heroMeta: {
     margin: 0,
-    color: "#0f172a",
+    fontSize: "15px",
+    color: "rgba(255,255,255,0.92)",
   },
-  selectedEventSub: {
-    marginTop: "6px",
-    color: "#64748b",
-    fontSize: "14px",
+  eventChip: {
+    backgroundColor: "rgba(255,255,255,0.15)",
+    color: "#fff",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    fontSize: "13px",
+    fontWeight: "700",
+    backdropFilter: "blur(4px)",
+    width: "fit-content",
   },
   formTitle: {
     margin: 0,
@@ -1378,16 +1198,6 @@ const styles = {
     fontSize: "14px",
     fontWeight: "700",
   },
-  editButton: {
-    backgroundColor: "#e2e8f0",
-    color: "#0f172a",
-    border: "none",
-    padding: "10px 14px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
   deleteButton: {
     position: "absolute",
     top: "10px",
@@ -1406,113 +1216,6 @@ const styles = {
     color: "#475569",
     fontSize: "14px",
     fontWeight: "600",
-  },
-  eventGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "22px",
-    marginBottom: "36px",
-    overflowX: "hidden",
-  },
-  eventColumn: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "14px",
-    minWidth: 0,
-  },
-  eventCard: {
-    background: "#fff",
-    borderRadius: "22px",
-    overflow: "hidden",
-    cursor: "pointer",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.06)",
-    transition: "all 0.2s ease",
-  },
-  eventCardActive: {
-    border: "2px solid #0f172a",
-    transform: "translateY(-2px)",
-  },
-  eventCover: {
-    height: "170px",
-    background:
-      "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #334155 100%)",
-    position: "relative",
-  },
-  eventCoverShade: {
-    position: "absolute",
-    inset: 0,
-    background: "rgba(15, 23, 42, 0.28)",
-  },
-  eventCoverOverlay: {
-    position: "absolute",
-    inset: 0,
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    padding: "14px",
-  },
-  eventChip: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    color: "#fff",
-    padding: "8px 12px",
-    borderRadius: "999px",
-    fontSize: "13px",
-    fontWeight: "700",
-    backdropFilter: "blur(4px)",
-  },
-  eventContent: {
-    padding: "18px",
-  },
-  eventTopRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "12px",
-  },
-  eventTitle: {
-    fontSize: "21px",
-    fontWeight: "800",
-    margin: 0,
-    marginBottom: "10px",
-    color: "#0f172a",
-    flex: 1,
-  },
-  eventArrow: {
-    fontSize: "28px",
-    fontWeight: "400",
-    color: "#0f172a",
-    lineHeight: 1,
-    marginTop: "-2px",
-  },
-  metaList: {
-    display: "grid",
-    gap: "6px",
-  },
-  metaText: {
-    margin: 0,
-    color: "#334155",
-    fontSize: "14px",
-    lineHeight: "1.5",
-  },
-  eventDescription: {
-    marginTop: "12px",
-    color: "#64748b",
-    fontSize: "14px",
-    lineHeight: "1.6",
-  },
-  eventActionRow: {
-    marginTop: "14px",
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-  },
-  inlineGallerySection: {
-    marginTop: "-2px",
-    marginBottom: "12px",
-  },
-  galleryHeader: {
-    marginBottom: "16px",
   },
   photoGrid: {
     display: "grid",
