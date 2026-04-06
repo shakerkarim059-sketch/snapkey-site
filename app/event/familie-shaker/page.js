@@ -38,6 +38,7 @@ export default function EventPage() {
 
     if (error) {
       console.error("Fehler beim Laden der Events:", error);
+      alert("Fehler beim Laden der Events: " + error.message);
     } else {
       setEvents(data || []);
     }
@@ -57,6 +58,7 @@ export default function EventPage() {
 
     if (error) {
       console.error("Fehler beim Laden der Fotos:", error);
+      alert("Fehler beim Laden der Fotos: " + error.message);
     } else {
       setPhotos(data || []);
     }
@@ -81,7 +83,7 @@ export default function EventPage() {
 
     if (error) {
       console.error("Fehler beim Erstellen:", error);
-      alert("Ereignis konnte nicht erstellt werden.");
+      alert("Ereignis konnte nicht erstellt werden: " + error.message);
     } else {
       alert("Ereignis erstellt.");
       setTitle("");
@@ -124,7 +126,7 @@ export default function EventPage() {
 
     if (uploadError) {
       console.error("Fehler beim Hochladen:", uploadError);
-      alert("Foto konnte nicht hochgeladen werden.");
+      alert("Foto konnte nicht hochgeladen werden: " + uploadError.message);
       setUploadingPhoto(false);
       return;
     }
@@ -135,18 +137,33 @@ export default function EventPage() {
 
     const imageUrl = publicUrlData.publicUrl;
 
-    const { error: insertError } = await supabase.from("photos").insert([
-      {
-        event_id: selectedEvent,
-        image_url: imageUrl,
-        caption: caption,
-      },
-    ]);
+    const { data: insertData, error: insertError } = await supabase
+      .from("photos")
+      .insert([
+        {
+          event_id: selectedEvent,
+          image_url: imageUrl,
+          caption: caption || null,
+        },
+      ])
+      .select();
 
     if (insertError) {
       console.error("Fehler beim Speichern in DB:", insertError);
-      alert("Foto wurde hochgeladen, aber nicht in der Datenbank gespeichert.");
+      console.error("Gesendete Daten:", {
+        event_id: selectedEvent,
+        image_url: imageUrl,
+        caption: caption || null,
+      });
+
+      alert(
+        "DB-Fehler: " +
+          (insertError.message || "Unbekannter Fehler") +
+          (insertError.details ? " | Details: " + insertError.details : "") +
+          (insertError.hint ? " | Hinweis: " + insertError.hint : "")
+      );
     } else {
+      console.log("Erfolgreich gespeichert:", insertData);
       alert("Foto erfolgreich hochgeladen.");
       setSelectedFile(null);
       setCaption("");
