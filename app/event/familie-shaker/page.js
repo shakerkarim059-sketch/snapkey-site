@@ -12,6 +12,7 @@ export default function EventPage() {
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [creatingEvent, setCreatingEvent] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -57,6 +58,15 @@ export default function EventPage() {
     setLoadingPhotos(false);
   };
 
+  const resetCreateForm = () => {
+    setTitle("");
+    setLocation("");
+    setCategory("");
+    setStartDate("");
+    setEndDate("");
+    setDescription("");
+  };
+
   const handleCreateEvent = async () => {
     if (!title.trim()) {
       alert("Bitte gib einen Titel ein.");
@@ -84,13 +94,8 @@ export default function EventPage() {
       return;
     }
 
-    setTitle("");
-    setLocation("");
-    setCategory("");
-    setStartDate("");
-    setEndDate("");
-    setDescription("");
-
+    resetCreateForm();
+    setShowCreateForm(false);
     await loadEvents();
     alert("Ereignis erstellt!");
   };
@@ -109,9 +114,7 @@ export default function EventPage() {
         .from("photos")
         .upload(filePath, file);
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
 
       const { data: publicUrlData } = supabase.storage
         .from("photos")
@@ -128,9 +131,7 @@ export default function EventPage() {
         },
       ]);
 
-      if (insertError) {
-        throw insertError;
-      }
+      if (insertError) throw insertError;
 
       await loadPhotos(selectedEvent.id);
       alert("Bild hochgeladen!");
@@ -212,78 +213,99 @@ export default function EventPage() {
 
         {!selectedEvent ? (
           <>
-            <div className="mt-10 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold">Neues Ereignis erstellen</h2>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Titel des Ereignisses"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Ort"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                />
-
-                <input
-                  type="text"
-                  placeholder="Kategorie (z. B. Urlaub, Geburtstag)"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                />
-
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                />
-
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-                />
-
-                <div></div>
-              </div>
-
-              <textarea
-                placeholder="Beschreibung (optional)"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="mt-4 min-h-[120px] w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
-              />
+            <div className="mt-10 flex items-center justify-between gap-3">
+              <h2 className="text-2xl font-semibold">Ereignisse</h2>
 
               <button
-                onClick={handleCreateEvent}
-                disabled={creatingEvent}
-                className="mt-4 rounded-2xl bg-zinc-900 px-6 py-3 font-medium text-white"
+                onClick={() => setShowCreateForm((prev) => !prev)}
+                className="rounded-2xl bg-zinc-900 px-5 py-3 font-medium text-white"
               >
-                {creatingEvent ? "Wird erstellt..." : "Ereignis erstellen"}
+                {showCreateForm ? "Schließen" : "Ereignis erstellen"}
               </button>
             </div>
 
-            <div className="mt-10 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
-              <h2 className="text-xl font-semibold">Ereignisse</h2>
+            {showCreateForm && (
+              <div className="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+                <h3 className="text-xl font-semibold">Neues Ereignis erstellen</h3>
 
-              {loadingEvents ? (
-                <p className="mt-4 text-zinc-600">Lade Ereignisse...</p>
-              ) : events.length === 0 ? (
-                <p className="mt-4 text-zinc-600">
-                  Noch keine Ereignisse vorhanden.
-                </p>
-              ) : (
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="Titel des Ereignisses"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Ort"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Kategorie (z. B. Urlaub, Geburtstag)"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                  />
+
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                  />
+
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                  />
+
+                  <div></div>
+                </div>
+
+                <textarea
+                  placeholder="Beschreibung (optional)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="mt-4 min-h-[120px] w-full rounded-2xl border border-zinc-300 px-4 py-3 outline-none focus:border-zinc-500"
+                />
+
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    onClick={handleCreateEvent}
+                    disabled={creatingEvent}
+                    className="rounded-2xl bg-zinc-900 px-6 py-3 font-medium text-white"
+                  >
+                    {creatingEvent ? "Wird erstellt..." : "Speichern"}
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      resetCreateForm();
+                      setShowCreateForm(false);
+                    }}
+                    className="rounded-2xl border border-zinc-300 px-6 py-3 font-medium text-zinc-700"
+                  >
+                    Abbrechen
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 rounded-3xl border border-zinc-200 bg-white p-6 shadow-sm">
+              {loadingEvents ? (
+                <p className="text-zinc-600">Lade Ereignisse...</p>
+              ) : events.length === 0 ? (
+                <p className="text-zinc-600">Noch keine Ereignisse vorhanden.</p>
+              ) : (
+                <div className="grid gap-4 sm:grid-cols-2">
                   {events.map((event) => (
                     <button
                       key={event.id}
