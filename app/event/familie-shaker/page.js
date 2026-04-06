@@ -53,8 +53,7 @@ export default function EventPage() {
     const { data, error } = await supabase
       .from("photos")
       .select("*")
-      .eq("event_id", eventId)
-      .order("created_at", { ascending: false });
+      .eq("event_id", eventId);
 
     if (error) {
       console.error("Fehler beim Laden der Fotos:", error);
