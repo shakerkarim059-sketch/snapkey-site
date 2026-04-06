@@ -6,6 +6,7 @@ import { supabase } from "../../../lib/supabase";
 export default function EventPage() {
   const [events, setEvents] = useState([]);
   const [photos, setPhotos] = useState([]);
+  const [openEventId, setOpenEventId] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   const [loadingEvents, setLoadingEvents] = useState(true);
@@ -26,6 +27,7 @@ export default function EventPage() {
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
+  const [lightboxPhotos, setLightboxPhotos] = useState([]);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -33,6 +35,13 @@ export default function EventPage() {
 
   useEffect(() => {
     fetchEvents();
+    fetchAllPhotos();
+
+    if (typeof document !== "undefined") {
+      document.documentElement.style.overflowX = "hidden";
+      document.body.style.overflowX = "hidden";
+      document.body.style.margin = "0";
+    }
   }, []);
 
   useEffect(() => {
@@ -50,7 +59,7 @@ export default function EventPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, photos, selectedPhotoIndex]);
+  }, [lightboxOpen, selectedPhotoIndex, lightboxPhotos]);
 
   async function fetchEvents() {
     setLoadingEvents(true);
@@ -70,15 +79,13 @@ export default function EventPage() {
     setLoadingEvents(false);
   }
 
-  async function fetchPhotos(eventId) {
+  async function fetchAllPhotos() {
     setLoadingPhotos(true);
-    setSelectedEvent(eventId);
 
     const { data, error } = await supabase
       .from("photos")
       .select("*")
-      .eq("event_id", eventId)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: true });
 
     if (error) {
       console.error("Fehler beim Laden der Fotos:", error);
@@ -195,10 +202,12 @@ export default function EventPage() {
       alert("Foto erfolgreich hochgeladen.");
       setSelectedFile(null);
       setCaption("");
+
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
-      fetchPhotos(selectedEvent);
+
+      await fetchAllPhotos();
     }
 
     setUploadingPhoto(false);
@@ -213,23 +222,55 @@ export default function EventPage() {
     return events.find((event) => event.id === selectedEvent) || null;
   }
 
-  function openLightbox(index) {
+  function getPhotosForEvent(eventId) {
+    return photos.filter((photo) => photo.event_id === eventId);
+  }
+
+  function getCoverPhotoForEvent(eventId) {
+    const eventPhotos = getPhotosForEvent(eventId);
+    return eventPhotos.length > 0 ? eventPhotos[0] : null;
+  }
+
+  function handleToggleEvent(eventId) {
+    setOpenEventId((prev) => (prev === eventId ? null : eventId));
+    setSelectedEvent(eventId);
+    setSelectedFile(null);
+    setCaption("");
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }
+
+  function openLightbox(index, eventPhotos) {
+    setLightboxPhotos(eventPhotos);
     setSelectedPhotoIndex(index);
     setLightboxOpen(true);
+
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "hidden";
+    }
   }
 
   function closeLightbox() {
     setLightboxOpen(false);
+    setLightboxPhotos([]);
+
+    if (typeof document !== "undefined") {
+      document.body.style.overflow = "";
+    }
   }
 
   function showNextPhoto() {
-    if (!photos.length) return;
-    setSelectedPhotoIndex((prev) => (prev + 1) % photos.length);
+    if (!lightboxPhotos.length) return;
+    setSelectedPhotoIndex((prev) => (prev + 1) % lightboxPhotos.length);
   }
 
   function showPrevPhoto() {
-    if (!photos.length) return;
-    setSelectedPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    if (!lightboxPhotos.length) return;
+    setSelectedPhotoIndex(
+      (prev) => (prev - 1 + lightboxPhotos.length) % lightboxPhotos.length
+    );
   }
 
   function handleTouchStart(e) {
@@ -247,7 +288,7 @@ export default function EventPage() {
     }
   }
 
-  const currentPhoto = photos[selectedPhotoIndex];
+  const currentPhoto = lightboxPhotos[selectedPhotoIndex];
   const selectedEventData = getSelectedEventData();
 
   return (
@@ -320,7 +361,11 @@ export default function EventPage() {
             style={{ ...styles.input, resize: "vertical" }}
           />
 
-          <button type="submit" disabled={creatingEvent} style={styles.primaryButton}>
+          <button
+            type="submit"
+            disabled={creatingEvent}
+            style={styles.primaryButton}
+          >
             {creatingEvent ? "Ereignis wird erstellt..." : "Ereignis speichern"}
           </button>
         </form>
@@ -336,128 +381,161 @@ export default function EventPage() {
         <div style={styles.emptyBox}>Noch keine Ereignisse vorhanden.</div>
       ) : (
         <div style={styles.eventGrid}>
-          {events.map((event) => (
-            <div
-              key={event.id}
-              onClick={() => fetchPhotos(event.id)}
-              style={{
-                ...styles.eventCard,
-                ...(selectedEvent === event.id ? styles.eventCardActive : {}),
-              }}
-            >
-              <div style={styles.eventCover}>
-                <div style={styles.eventCoverOverlay}>
-                  <span style={styles.eventChip}>
-                    {event.category || "Ereignis"}
-                  </span>
+          {events.map((event) => {
+            const eventPhotos = getPhotosForEvent(event.id);
+            const coverPhoto = getCoverPhotoForEvent(event.id);
+            const isOpen = openEventId === event.id;
+
+            return (
+              <div key={event.id} style={styles.eventColumn}>
+                <div
+                  onClick={() => handleToggleEvent(event.id)}
+                  style={{
+                    ...styles.eventCard,
+                    ...(isOpen ? styles.eventCardActive : {}),
+                  }}
+                >
+                  <div
+                    style={{
+                      ...styles.eventCover,
+                      ...(coverPhoto
+                        ? {
+                            backgroundImage: `url(${coverPhoto.public_url || coverPhoto.image_url})`,
+                            backgroundSize: "cover",
+                            backgroundPosition: "center",
+                            backgroundRepeat: "no-repeat",
+                          }
+                        : {}),
+                    }}
+                  >
+                    <div style={styles.eventCoverShade} />
+                    <div style={styles.eventCoverOverlay}>
+                      <span style={styles.eventChip}>
+                        {event.category || "Ereignis"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={styles.eventContent}>
+                    <div style={styles.eventTopRow}>
+                      <h3 style={styles.eventTitle}>{event.title}</h3>
+                      <span style={styles.eventArrow}>{isOpen ? "−" : "+"}</span>
+                    </div>
+
+                    <div style={styles.metaList}>
+                      <p style={styles.metaText}>
+                        <strong>Ort:</strong> {event.location || "Kein Ort"}
+                      </p>
+                      <p style={styles.metaText}>
+                        <strong>Datum:</strong> {formatDate(event.start_date)}
+                        {event.end_date ? ` - ${formatDate(event.end_date)}` : ""}
+                      </p>
+                      <p style={styles.metaText}>
+                        <strong>Bilder:</strong> {eventPhotos.length}
+                      </p>
+                    </div>
+
+                    {event.description && (
+                      <p style={styles.eventDescription}>{event.description}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <div style={styles.eventContent}>
-                <h3 style={styles.eventTitle}>{event.title}</h3>
+                {isOpen && (
+                  <div style={styles.inlineGallerySection}>
+                    <div style={styles.galleryHeader}>
+                      <div>
+                        <h2 style={styles.sectionTitle}>
+                          {selectedEventData?.title || event.title}
+                        </h2>
+                        <p style={styles.selectedEventSub}>
+                          {event.location || "Kein Ort"} • {formatDate(event.start_date)}
+                        </p>
+                      </div>
+                    </div>
 
-                <div style={styles.metaList}>
-                  <p style={styles.metaText}>
-                    <strong>Ort:</strong> {event.location || "Kein Ort"}
-                  </p>
-                  <p style={styles.metaText}>
-                    <strong>Datum:</strong> {formatDate(event.start_date)}
-                    {event.end_date ? ` - ${formatDate(event.end_date)}` : ""}
-                  </p>
-                </div>
+                    <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
+                      <h3 style={styles.formTitle}>Foto hinzufügen</h3>
 
-                {event.description && (
-                  <p style={styles.eventDescription}>{event.description}</p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => setSelectedFile(e.target.files[0])}
+                        style={{ display: "none" }}
+                      />
+
+                      <div style={styles.uploadRow}>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          style={styles.secondaryButton}
+                        >
+                          Datei auswählen
+                        </button>
+
+                        <div style={styles.fileNameBox}>
+                          {selectedFile
+                            ? selectedFile.name
+                            : "Noch keine Datei ausgewählt"}
+                        </div>
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Bildbeschreibung (optional)"
+                        value={caption}
+                        onChange={(e) => setCaption(e.target.value)}
+                        style={styles.input}
+                      />
+
+                      <button
+                        type="submit"
+                        disabled={uploadingPhoto}
+                        style={styles.primaryButton}
+                      >
+                        {uploadingPhoto
+                          ? "Foto wird hochgeladen..."
+                          : "Foto hochladen"}
+                      </button>
+                    </form>
+
+                    {loadingPhotos ? (
+                      <p>Fotos werden geladen...</p>
+                    ) : eventPhotos.length === 0 ? (
+                      <div style={styles.emptyBox}>
+                        Noch keine Fotos in diesem Ereignis.
+                      </div>
+                    ) : (
+                      <div style={styles.photoGrid}>
+                        {eventPhotos.map((photo, index) => (
+                          <div
+                            key={photo.id}
+                            style={styles.photoCard}
+                            onClick={() => openLightbox(index, eventPhotos)}
+                          >
+                            <img
+                              src={photo.public_url || photo.image_url}
+                              alt={photo.caption || photo.file_name || "Foto"}
+                              style={styles.photo}
+                            />
+                            <div style={styles.photoOverlay}>
+                              <span style={styles.photoOverlayText}>
+                                Vergrößern
+                              </span>
+                            </div>
+                            {photo.caption && (
+                              <div style={styles.photoCaption}>{photo.caption}</div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {selectedEvent && (
-        <div style={styles.gallerySection}>
-          <div style={styles.galleryHeader}>
-            <div>
-              <h2 style={styles.sectionTitle}>
-                {selectedEventData?.title || "Ausgewähltes Ereignis"}
-              </h2>
-              <p style={styles.selectedEventSub}>
-                {selectedEventData?.location || "Kein Ort"} •{" "}
-                {formatDate(selectedEventData?.start_date)}
-              </p>
-            </div>
-          </div>
-
-          <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
-            <h3 style={styles.formTitle}>Foto hinzufügen</h3>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={(e) => setSelectedFile(e.target.files[0])}
-              style={{ display: "none" }}
-            />
-
-            <div style={styles.uploadRow}>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                style={styles.secondaryButton}
-              >
-                Datei auswählen
-              </button>
-
-              <div style={styles.fileNameBox}>
-                {selectedFile ? selectedFile.name : "Noch keine Datei ausgewählt"}
-              </div>
-            </div>
-
-            <input
-              type="text"
-              placeholder="Bildbeschreibung (optional)"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              style={styles.input}
-            />
-
-            <button
-              type="submit"
-              disabled={uploadingPhoto}
-              style={styles.primaryButton}
-            >
-              {uploadingPhoto ? "Foto wird hochgeladen..." : "Foto hochladen"}
-            </button>
-          </form>
-
-          {loadingPhotos ? (
-            <p>Fotos werden geladen...</p>
-          ) : photos.length === 0 ? (
-            <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
-          ) : (
-            <div style={styles.photoGrid}>
-              {photos.map((photo, index) => (
-                <div
-                  key={photo.id}
-                  style={styles.photoCard}
-                  onClick={() => openLightbox(index)}
-                >
-                  <img
-                    src={photo.public_url || photo.image_url}
-                    alt={photo.caption || photo.file_name || "Foto"}
-                    style={styles.photo}
-                  />
-                  <div style={styles.photoOverlay}>
-                    <span style={styles.photoOverlayText}>Vergrößern</span>
-                  </div>
-                  {photo.caption && (
-                    <div style={styles.photoCaption}>{photo.caption}</div>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
+            );
+          })}
         </div>
       )}
 
@@ -473,7 +551,7 @@ export default function EventPage() {
               ✕
             </button>
 
-            {photos.length > 1 && (
+            {lightboxPhotos.length > 1 && (
               <>
                 <button
                   style={{ ...styles.navButton, left: "16px" }}
@@ -499,7 +577,7 @@ export default function EventPage() {
 
             <div style={styles.lightboxFooter}>
               <div style={styles.lightboxCounter}>
-                {selectedPhotoIndex + 1} / {photos.length}
+                {selectedPhotoIndex + 1} / {lightboxPhotos.length}
               </div>
               {currentPhoto.caption && (
                 <div style={styles.lightboxCaption}>{currentPhoto.caption}</div>
@@ -519,6 +597,10 @@ const styles = {
     margin: "0 auto",
     backgroundColor: "#f8fafc",
     minHeight: "100vh",
+    overflowX: "hidden",
+    width: "100%",
+    boxSizing: "border-box",
+    touchAction: "pan-y",
   },
   header: {
     display: "flex",
@@ -644,6 +726,13 @@ const styles = {
     gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
     gap: "22px",
     marginBottom: "36px",
+    overflowX: "hidden",
+  },
+  eventColumn: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "14px",
+    minWidth: 0,
   },
   eventCard: {
     background: "#fff",
@@ -663,6 +752,11 @@ const styles = {
     background:
       "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #334155 100%)",
     position: "relative",
+  },
+  eventCoverShade: {
+    position: "absolute",
+    inset: 0,
+    background: "rgba(15, 23, 42, 0.28)",
   },
   eventCoverOverlay: {
     position: "absolute",
@@ -684,12 +778,26 @@ const styles = {
   eventContent: {
     padding: "18px",
   },
+  eventTopRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: "12px",
+  },
   eventTitle: {
     fontSize: "21px",
     fontWeight: "800",
     margin: 0,
     marginBottom: "10px",
     color: "#0f172a",
+    flex: 1,
+  },
+  eventArrow: {
+    fontSize: "28px",
+    fontWeight: "400",
+    color: "#0f172a",
+    lineHeight: 1,
+    marginTop: "-2px",
   },
   metaList: {
     display: "grid",
@@ -707,8 +815,9 @@ const styles = {
     fontSize: "14px",
     lineHeight: "1.6",
   },
-  gallerySection: {
-    marginTop: "12px",
+  inlineGallerySection: {
+    marginTop: "-2px",
+    marginBottom: "12px",
   },
   galleryHeader: {
     marginBottom: "16px",
@@ -770,6 +879,7 @@ const styles = {
     justifyContent: "center",
     zIndex: 9999,
     padding: "20px",
+    touchAction: "none",
   },
   lightboxContent: {
     position: "relative",
@@ -780,6 +890,7 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    overflow: "hidden",
   },
   lightboxImage: {
     maxWidth: "100%",
