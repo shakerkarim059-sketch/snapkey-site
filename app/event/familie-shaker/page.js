@@ -22,7 +22,6 @@ export default function EventPage() {
   const [description, setDescription] = useState("");
 
   const [selectedFile, setSelectedFile] = useState(null);
-  const [caption, setCaption] = useState("");
 
   useEffect(() => {
     fetchEvents();
@@ -142,7 +141,6 @@ export default function EventPage() {
         {
           event_id: selectedEvent,
           image_url: imageUrl,
-          caption: caption || null,
         },
       ])
       .select();
@@ -152,7 +150,6 @@ export default function EventPage() {
       console.error("Gesendete Daten:", {
         event_id: selectedEvent,
         image_url: imageUrl,
-        caption: caption || null,
       });
 
       alert(
@@ -165,7 +162,6 @@ export default function EventPage() {
       console.log("Erfolgreich gespeichert:", insertData);
       alert("Foto erfolgreich hochgeladen.");
       setSelectedFile(null);
-      setCaption("");
       fetchPhotos(selectedEvent);
     }
 
@@ -300,14 +296,6 @@ export default function EventPage() {
               style={styles.input}
             />
 
-            <input
-              type="text"
-              placeholder="Bildbeschreibung (optional)"
-              value={caption}
-              onChange={(e) => setCaption(e.target.value)}
-              style={styles.input}
-            />
-
             <button
               type="submit"
               disabled={uploadingPhoto}
@@ -327,12 +315,9 @@ export default function EventPage() {
                 <div key={photo.id} style={styles.photoCard}>
                   <img
                     src={photo.image_url}
-                    alt={photo.caption || "Foto"}
+                    alt="Foto"
                     style={styles.photo}
                   />
-                  {photo.caption && (
-                    <div style={styles.photoCaption}>{photo.caption}</div>
-                  )}
                 </div>
               ))}
             </div>
@@ -461,10 +446,5 @@ const styles = {
     height: "220px",
     objectFit: "cover",
     display: "block",
-  },
-  photoCaption: {
-    padding: "10px 12px",
-    fontSize: "14px",
-    color: "#374151",
   },
 };
