@@ -7,6 +7,7 @@ export default function EventPage() {
   const [uploading, setUploading] = useState(false);
   const [images, setImages] = useState([]);
   const [loadingImages, setLoadingImages] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null); // 👈 NEU
 
   const loadImages = async () => {
     setLoadingImages(true);
@@ -103,12 +104,27 @@ export default function EventPage() {
                   key={img.name}
                   src={img.url}
                   alt=""
-                  className="aspect-square rounded-2xl object-cover"
+                  onClick={() => setSelectedImage(img.url)} // 👈 Klick öffnet Bild
+                  className="aspect-square rounded-2xl object-cover cursor-pointer hover:scale-105 transition"
                 />
               ))}
             </div>
           )}
         </div>
+
+        {/* 👇 LIGHTBOX */}
+        {selectedImage && (
+          <div
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50"
+            onClick={() => setSelectedImage(null)}
+          >
+            <img
+              src={selectedImage}
+              alt=""
+              className="max-w-[90%] max-h-[90%] rounded-xl"
+            />
+          </div>
+        )}
 
         <div className="mt-16 text-center text-sm text-zinc-500">
           <a href="/impressum" className="mr-4 underline">
