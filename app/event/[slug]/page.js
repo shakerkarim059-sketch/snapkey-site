@@ -1065,18 +1065,18 @@ export default function EventPage() {
 }
 
 const styles = {
-  page: {
-   padding: "24px",
-paddingBottom: "120px",
-    maxWidth: "1280px",
-    margin: "0 auto",
-    backgroundColor: "#f8fafc",
-    minHeight: "100vh",
-    overflowX: "hidden",
-    width: "100%",
-    boxSizing: "border-box",
-    touchAction: "pan-y",
-  },
+page: {
+  padding: "24px",
+  paddingBottom: "140px",
+  maxWidth: "1280px",
+  margin: "0 auto",
+  backgroundColor: "#f8fafc",
+  minHeight: "100vh",
+  overflowX: "hidden",
+  width: "100%",
+  boxSizing: "border-box",
+  touchAction: "pan-y",
+},
   loginBox: {
     maxWidth: "420px",
     margin: "120px auto",
