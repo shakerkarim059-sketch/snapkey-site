@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export default function Page() {
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [creatingEvent, setCreatingEvent] = useState(false);
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -14,6 +16,52 @@ export default function Page() {
   const [slug, setSlug] = useState("");
   const [accessPassword, setAccessPassword] = useState("");
   const [adminPassword, setAdminPassword] = useState("");
+
+  async function handleCreateEvent(e) {
+    e.preventDefault();
+    setCreatingEvent(true);
+
+    const finalSlug =
+      slug.trim() ||
+      title
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+
+    const { error } = await supabase.from("events").insert([
+      {
+        title,
+        location,
+        category,
+        start_date: startDate || null,
+        end_date: endDate || null,
+        description,
+        slug: finalSlug,
+        access_password: accessPassword || "familie123",
+        admin_password: adminPassword || "admin123",
+      },
+    ]);
+
+    if (error) {
+      console.error("Fehler beim Erstellen:", error);
+      alert("Ereignis konnte nicht erstellt werden: " + error.message);
+    } else {
+      alert("Ereignis erstellt.");
+      setTitle("");
+      setLocation("");
+      setCategory("");
+      setStartDate("");
+      setEndDate("");
+      setDescription("");
+      setSlug("");
+      setAccessPassword("");
+      setAdminPassword("");
+      setShowCreateForm(false);
+    }
+
+    setCreatingEvent(false);
+  }
 
   return (
     <div className="min-h-screen bg-stone-50 text-zinc-900">
@@ -55,7 +103,10 @@ export default function Page() {
               </div>
 
               {showCreateForm && (
-                <form className="mt-6 grid gap-3 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                <form
+                  onSubmit={handleCreateEvent}
+                  className="mt-6 grid gap-3 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm"
+                >
                   <input
                     type="text"
                     placeholder="Eventname"
@@ -129,10 +180,11 @@ export default function Page() {
                   />
 
                   <button
-                    type="button"
+                    type="submit"
+                    disabled={creatingEvent}
                     className="rounded-2xl bg-blue-600 px-6 py-4 text-base font-medium text-white shadow-lg shadow-blue-600/20"
                   >
-                    Event speichern
+                    {creatingEvent ? "Event wird erstellt..." : "Event speichern"}
                   </button>
                 </form>
               )}
