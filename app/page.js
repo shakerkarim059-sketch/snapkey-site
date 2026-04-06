@@ -5,6 +5,16 @@ import { useState } from "react";
 export default function Page() {
   const [showCreateForm, setShowCreateForm] = useState(false);
 
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("");
+  const [category, setCategory] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [slug, setSlug] = useState("");
+  const [accessPassword, setAccessPassword] = useState("");
+  const [adminPassword, setAdminPassword] = useState("");
+
   return (
     <div className="min-h-screen bg-stone-50 text-zinc-900">
       <section className="relative overflow-hidden">
@@ -45,11 +55,86 @@ export default function Page() {
               </div>
 
               {showCreateForm && (
-                <div className="mt-6 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
-                  <p className="text-sm text-zinc-600">
-                    Formular erscheint hier im nächsten Schritt.
-                  </p>
-                </div>
+                <form className="mt-6 grid gap-3 rounded-3xl border border-zinc-200 bg-white p-5 shadow-sm">
+                  <input
+                    type="text"
+                    placeholder="Eventname"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Ort"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Kategorie"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="rounded-2xl border border-zinc-300 px-4 py-3"
+                    />
+
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="rounded-2xl border border-zinc-300 px-4 py-3"
+                    />
+                  </div>
+
+                  <textarea
+                    placeholder="Beschreibung"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={4}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Slug (z. B. hochzeit-lisa-tom)"
+                    value={slug}
+                    onChange={(e) => setSlug(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Zugangspasswort"
+                    value={accessPassword}
+                    onChange={(e) => setAccessPassword(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Admin-Passwort"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    className="rounded-2xl border border-zinc-300 px-4 py-3"
+                  />
+
+                  <button
+                    type="button"
+                    className="rounded-2xl bg-blue-600 px-6 py-4 text-base font-medium text-white shadow-lg shadow-blue-600/20"
+                  >
+                    Event speichern
+                  </button>
+                </form>
               )}
 
               <div className="mt-6 flex flex-wrap gap-4 text-sm text-zinc-500">
