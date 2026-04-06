@@ -53,6 +53,7 @@ export default function EventPage() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -65,6 +66,11 @@ export default function EventPage() {
 
   useEffect(() => {
     function handleKeyDown(e) {
+      if (cartOpen && e.key === "Escape") {
+        setCartOpen(false);
+        return;
+      }
+
       if (!lightboxOpen) return;
 
       if (e.key === "Escape") {
@@ -78,7 +84,7 @@ export default function EventPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, selectedPhotoIndex, photos]);
+  }, [lightboxOpen, selectedPhotoIndex, photos, cartOpen]);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -197,6 +203,7 @@ export default function EventPage() {
     setPasswordInput("");
     setEditingEventId(null);
     setLightboxOpen(false);
+    setCartOpen(false);
   }
 
   function fillEditForm(event) {
@@ -559,6 +566,10 @@ export default function EventPage() {
     });
   }, [photos, selectedYearFilter, selectedMonthFilter]);
 
+  const selectedPhotos = filteredPhotos.filter((photo) =>
+    selectedPhotoIds.includes(photo.id)
+  );
+
   const coverPhoto = photos.length > 0 ? photos[0] : null;
   const currentPhoto =
     filteredPhotos[selectedPhotoIndex] || photos[selectedPhotoIndex];
@@ -837,12 +848,7 @@ export default function EventPage() {
               alert("Bitte zuerst Bilder auswählen.");
               return;
             }
-
-            alert(
-              `${selectedPhotoIds.length} Bild` +
-                (selectedPhotoIds.length === 1 ? "" : "er") +
-                " wurden zur Bestellung vorgemerkt."
-            );
+            setCartOpen(true);
           }}
         >
           Ausgewählte Bilder bestellen
@@ -1005,6 +1011,67 @@ export default function EventPage() {
         </div>
       )}
 
+      {cartOpen && (
+        <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
+          <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.cartHeader}>
+              <h3 style={styles.cartTitle}>Ausgewählte Bilder</h3>
+              <button
+                type="button"
+                onClick={() => setCartOpen(false)}
+                style={styles.cartCloseButton}
+              >
+                ✕
+              </button>
+            </div>
+
+            {selectedPhotos.length === 0 ? (
+              <div style={styles.emptyBox}>Keine Bilder ausgewählt.</div>
+            ) : (
+              <>
+                <div style={styles.cartInfo}>
+                  {selectedPhotos.length} Bild
+                  {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
+                </div>
+
+                <div style={styles.cartGrid}>
+                  {selectedPhotos.map((photo) => (
+                    <div key={photo.id} style={styles.cartPhotoCard}>
+                      <img
+                        src={photo.public_url || photo.image_url}
+                        alt={photo.caption || photo.file_name || "Foto"}
+                        style={styles.cartPhoto}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => togglePhotoSelection(photo.id)}
+                        style={styles.removeFromCartButton}
+                      >
+                        Entfernen
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={styles.cartFooter}>
+                  <button
+                    type="button"
+                    style={styles.checkoutButton}
+                    onClick={() =>
+                      alert(
+                        "Nächster Schritt: Größen, Rahmen und echter Checkout."
+                      )
+                    }
+                  >
+                    Zur Bestellung weiter
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {lightboxOpen && currentPhoto && (
         <div style={styles.lightboxBackdrop} onClick={closeLightbox}>
           <div
@@ -1065,18 +1132,18 @@ export default function EventPage() {
 }
 
 const styles = {
-page: {
-  padding: "24px",
-  paddingBottom: "140px",
-  maxWidth: "1280px",
-  margin: "0 auto",
-  backgroundColor: "#f8fafc",
-  minHeight: "100vh",
-  overflowX: "hidden",
-  width: "100%",
-  boxSizing: "border-box",
-  touchAction: "pan-y",
-},
+  page: {
+    padding: "24px",
+    paddingBottom: "140px",
+    maxWidth: "1280px",
+    margin: "0 auto",
+    backgroundColor: "#f8fafc",
+    minHeight: "100vh",
+    overflowX: "hidden",
+    width: "100%",
+    boxSizing: "border-box",
+    touchAction: "pan-y",
+  },
   loginBox: {
     maxWidth: "420px",
     margin: "120px auto",
@@ -1285,42 +1352,42 @@ page: {
     fontSize: "14px",
     fontWeight: "600",
   },
-selectionBar: {
-  position: "fixed",
-  left: "50%",
-  bottom: "16px",
-  transform: "translateX(-50%)",
-  zIndex: 999,
-  width: "calc(100% - 32px)",
-  maxWidth: "1232px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  flexWrap: "wrap",
-  background: "rgba(255,255,255,0.96)",
-  border: "1px solid #e2e8f0",
-  borderRadius: "20px",
-  padding: "18px 20px",
-  boxShadow: "0 12px 32px rgba(15, 23, 42, 0.12)",
-  backdropFilter: "blur(10px)",
-},
+  selectionBar: {
+    position: "fixed",
+    left: "50%",
+    bottom: "16px",
+    transform: "translateX(-50%)",
+    zIndex: 999,
+    width: "calc(100% - 32px)",
+    maxWidth: "1232px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    flexWrap: "wrap",
+    background: "rgba(255,255,255,0.96)",
+    border: "1px solid #e2e8f0",
+    borderRadius: "20px",
+    padding: "18px 20px",
+    boxShadow: "0 12px 32px rgba(15, 23, 42, 0.12)",
+    backdropFilter: "blur(10px)",
+  },
   selectionInfo: {
     fontSize: "15px",
     fontWeight: "700",
     color: "#0f172a",
   },
   orderButton: {
-  backgroundColor: "#0f172a",
-  color: "#fff",
-  border: "none",
-  padding: "12px 16px",
-  borderRadius: "12px",
-  cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: "700",
-  minWidth: "220px",
-},
+    backgroundColor: "#0f172a",
+    color: "#fff",
+    border: "none",
+    padding: "12px 16px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "700",
+    minWidth: "220px",
+  },
   orderButtonDisabled: {
     backgroundColor: "#94a3b8",
   },
@@ -1482,6 +1549,97 @@ selectionBar: {
     fontSize: "14px",
     lineHeight: "1.5",
     whiteSpace: "pre-wrap",
+  },
+  cartBackdrop: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(15, 23, 42, 0.55)",
+    zIndex: 1200,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    padding: "16px",
+  },
+  cartPanel: {
+    width: "100%",
+    maxWidth: "900px",
+    maxHeight: "85vh",
+    overflowY: "auto",
+    background: "#ffffff",
+    borderRadius: "24px",
+    padding: "20px",
+    boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
+  },
+  cartHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "12px",
+    marginBottom: "16px",
+  },
+  cartTitle: {
+    margin: 0,
+    fontSize: "24px",
+    fontWeight: "800",
+    color: "#0f172a",
+  },
+  cartCloseButton: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "999px",
+    border: "none",
+    background: "#e2e8f0",
+    color: "#0f172a",
+    fontSize: "18px",
+    cursor: "pointer",
+    fontWeight: "700",
+  },
+  cartInfo: {
+    marginBottom: "16px",
+    fontSize: "15px",
+    fontWeight: "700",
+    color: "#334155",
+  },
+  cartGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gap: "16px",
+  },
+  cartPhotoCard: {
+    background: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "18px",
+    overflow: "hidden",
+  },
+  cartPhoto: {
+    width: "100%",
+    height: "180px",
+    objectFit: "cover",
+    display: "block",
+  },
+  removeFromCartButton: {
+    width: "100%",
+    border: "none",
+    background: "#fee2e2",
+    color: "#b91c1c",
+    padding: "12px",
+    fontWeight: "700",
+    cursor: "pointer",
+  },
+  cartFooter: {
+    marginTop: "20px",
+    display: "flex",
+    justifyContent: "flex-end",
+  },
+  checkoutButton: {
+    backgroundColor: "#0f172a",
+    color: "#fff",
+    border: "none",
+    padding: "14px 18px",
+    borderRadius: "14px",
+    cursor: "pointer",
+    fontSize: "15px",
+    fontWeight: "700",
   },
   emptyBox: {
     backgroundColor: "#fff",
