@@ -135,7 +135,7 @@ export default function EventPage() {
       .from("photos")
       .getPublicUrl(filePath);
 
-    const imageUrl = publicUrlData.publicUrl;
+    const publicUrl = publicUrlData.publicUrl;
 
     const { data: insertData, error: insertError } = await supabase
       .from("photos")
@@ -144,7 +144,7 @@ export default function EventPage() {
           event_id: selectedEvent,
           file_name: generatedFileName,
           file_path: filePath,
-          image_url: imageUrl,
+          public_url: publicUrl,
           caption: caption || null,
         },
       ])
@@ -156,7 +156,7 @@ export default function EventPage() {
         event_id: selectedEvent,
         file_name: generatedFileName,
         file_path: filePath,
-        image_url: imageUrl,
+        public_url: publicUrl,
         caption: caption || null,
       });
 
@@ -331,7 +331,7 @@ export default function EventPage() {
               {photos.map((photo) => (
                 <div key={photo.id} style={styles.photoCard}>
                   <img
-                    src={photo.image_url}
+                    src={photo.public_url || photo.image_url}
                     alt={photo.caption || photo.file_name || "Foto"}
                     style={styles.photo}
                   />
