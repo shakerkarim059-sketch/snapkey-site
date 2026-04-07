@@ -1,10 +1,22 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import crypto from "crypto";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
+
+function signSession(data) {
+  const secret = process.env.SESSION_SECRET;
+  const payload = Buffer.from(JSON.stringify(data)).toString("base64url");
+  const signature = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("base64url");
+
+  return `${payload}.${signature}`;
+}
 
 export async function POST(request) {
   try {
@@ -21,57 +33,55 @@ export async function POST(request) {
 
     const { data: event, error } = await supabase
       .from("events")
-      .select("*")
+      .select("id, slug, access_password, admin_password")
       .eq("slug", slug)
       .single();
 
     if (error || !event) {
       return NextResponse.json(
-        {
-          error: "Event nicht gefunden.",
-          debug: {
-            slug,
-            supabaseError: error?.message || null,
-          },
-        },
+        { error: "Event nicht gefunden." },
         { status: 404 }
       );
     }
 
+    let role = null;
+
     if (password === String(event.admin_password).trim()) {
-      return NextResponse.json({
-        success: true,
-        role: "admin",
-      });
+      role = "admin";
+    } else if (password === String(event.access_password).trim()) {
+      role = "guest";
+    } else {
+      return NextResponse.json(
+        { error: "Falsches Passwort." },
+        { status: 401 }
+      );
     }
 
-    if (password === String(event.access_password).trim()) {
-      return NextResponse.json({
-        success: true,
-        role: "guest",
-      });
-    }
+    const token = signSession({
+      eventId: event.id,
+      slug: event.slug,
+      role,
+      exp: Date.now() + 1000 * 60 * 60 * 24 * 7,
+    });
 
-    return NextResponse.json(
-      {
-        error: "Falsches Passwort.",
-        debug: {
-          slug,
-          access_password_exists: event.access_password !== null,
-          admin_password_exists: event.admin_password !== null,
-          access_password_type: typeof event.access_password,
-          admin_password_type: typeof event.admin_password,
-          received_password: password,
-          db_access_password: event.access_password,
-          db_admin_password: event.admin_password,
-        },
-      },
-      { status: 401 }
-    );
+    const response = NextResponse.json({
+      success: true,
+      role,
+    });
+
+    response.cookies.set("event_session", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return response;
   } catch (error) {
     console.error("Fehler bei event-login API:", error);
     return NextResponse.json(
-      { error: "Interner Serverfehler.", debug: String(error) },
+      { error: "Interner Serverfehler." },
       { status: 500 }
     );
   }
