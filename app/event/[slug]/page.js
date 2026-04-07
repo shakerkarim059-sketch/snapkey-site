@@ -113,17 +113,6 @@ export default function EventPage() {
     }
   }, []);
 
-  useEffect(() => {
-    if (!filteredPhotos.length && lightboxOpen) {
-      closeLightbox();
-      return;
-    }
-
-    if (selectedPhotoIndex > filteredPhotos.length - 1 && filteredPhotos.length > 0) {
-      setSelectedPhotoIndex(0);
-    }
-  }, [filteredPhotos.length, lightboxOpen, selectedPhotoIndex]);
-
   async function fetchEventBySlug() {
     setLoadingEvent(true);
     setEventNotFound(false);
