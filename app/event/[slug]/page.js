@@ -660,7 +660,17 @@ async function handleSubmitOrder() {
   setSubmittingOrder(true);
 
   try {
-    const response = await fetch("/api/create-order", {
+    const orderItems = selectedPhotos.map((photo) => ({
+      photoId: photo.id,
+      photoUrl: photo.signed_url || null,
+      title: photo.caption || photo.file_name || "Foto",
+      quantity: 1,
+      printSize: selectedPrintOption,
+      frame: selectedFrameOption,
+      unitPrice: Math.round(pricePerPhoto * 100),
+    }));
+
+    const orderResponse = await fetch("/api/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -675,41 +685,57 @@ async function handleSubmitOrder() {
         city,
         country,
         orderNote,
-        printOption: selectedPrintOption,
-        frameOption: selectedFrameOption,
-        selectedPhotos,
-        totalPrice,
-        pricePerPhoto,
+        items: orderItems,
+        totalPrice: Math.round(totalPrice * 100),
       }),
     });
 
-    const result = await response.json();
+    const orderResult = await orderResponse.json();
 
-    if (!response.ok) {
-      alert(result.error || "Bestellung konnte nicht gespeichert werden.");
+    if (!orderResponse.ok) {
+      alert(orderResult.error || "Bestellung konnte nicht gespeichert werden.");
       setSubmittingOrder(false);
       return;
     }
 
-    alert("Deine Bestellung wurde erfolgreich gespeichert.");
+    const orderId = orderResult?.order?.id;
 
-    setCustomerName("");
-    setCustomerEmail("");
-    setCustomerPhone("");
-    setStreet("");
-    setPostalCode("");
-    setCity("");
-    setCountry("Deutschland");
-    setOrderNote("");
+    if (!orderId) {
+      alert("Bestellung wurde gespeichert, aber keine Bestell-ID gefunden.");
+      setSubmittingOrder(false);
+      return;
+    }
 
-    setSelectedPhotoIds([]);
-    setCartOpen(false);
+    const checkoutResponse = await fetch("/api/create-checkout-session", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId,
+      }),
+    });
+
+    const checkoutResult = await checkoutResponse.json();
+
+    if (!checkoutResponse.ok) {
+      alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
+      setSubmittingOrder(false);
+      return;
+    }
+
+    if (!checkoutResult.url) {
+      alert("Keine Stripe-URL erhalten.");
+      setSubmittingOrder(false);
+      return;
+    }
+
+    window.location.href = checkoutResult.url;
   } catch (error) {
     console.error("Unbekannter Fehler bei der Bestellung:", error);
-    alert("Es gab ein Problem beim Absenden der Bestellung.");
+    alert("Es gab ein Problem beim Starten der Zahlung.");
+    setSubmittingOrder(false);
   }
-
-  setSubmittingOrder(false);
 }
 
   function formatDate(dateString) {
