@@ -1180,38 +1180,56 @@ const mediaHeight = "280px";
                   </div>
                 </div>
 
-                <div style={styles.cartGrid}>
-                  {selectedPhotos.map((photo) => (
-                    <div key={photo.id} style={styles.cartPhotoCard}>
-                      <img
-                        src={photo.public_url || photo.image_url}
-                        alt={photo.caption || photo.file_name || "Foto"}
-                        style={styles.cartPhoto}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => togglePhotoSelection(photo.id)}
-                        style={styles.removeFromCartButton}
-                      >
-                        Entfernen
-                      </button>
-                    </div>
-                  ))}
-                </div>
+<div style={styles.cartGrid}>
+  {selectedPhotos.map((photo) => (
+    <div key={photo.id} style={styles.cartPhotoCard}>
+      <img
+        src={photo.public_url || photo.image_url}
+        alt={photo.caption || photo.file_name || "Foto"}
+        style={styles.cartPhoto}
+      />
 
-                <div style={styles.cartFooter}>
-                  <button
-                    type="button"
-                    style={styles.checkoutButton}
-                    onClick={() =>
-                      alert(
-                        `Weiter mit echter Bestellung: ${selectedPhotos.length} Bild(er), ${selectedPrint?.label}, ${selectedFrame?.label}, Gesamt ${totalPrice.toFixed(2)} €.`
-                      )
-                    }
-                  >
-                    Zur Bestellung weiter
-                  </button>
-                </div>
+      <div style={styles.cartPhotoInfo}>
+        <div style={styles.cartPhotoName}>
+          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => togglePhotoSelection(photo.id)}
+          style={styles.removeFromCartButton}
+        >
+          Entfernen
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+<div style={styles.cartFooter}>
+  <div style={styles.cartFooterSummary}>
+    <div style={styles.cartFooterSmall}>
+      {selectedPhotos.length} Bild
+      {selectedPhotos.length === 1 ? "" : "er"} • {selectedPrint?.label}
+      {selectedFrame?.value !== "none" ? ` • ${selectedFrame?.label}` : ""}
+    </div>
+    <div style={styles.cartFooterTotal}>
+      {totalPrice.toFixed(2)} €
+    </div>
+  </div>
+
+  <button
+    type="button"
+    style={styles.checkoutButton}
+    onClick={() =>
+      alert(
+        `Weiter mit echter Bestellung: ${selectedPhotos.length} Bild(er), ${selectedPrint?.label}, ${selectedFrame?.label}, Gesamt ${totalPrice.toFixed(2)} €.`
+      )
+    }
+  >
+    Zur Bestellung weiter
+  </button>
+</div>
               </>
             )}
           </div>
@@ -1937,47 +1955,66 @@ orderOptionsGrid: {
   },
 cartGrid: {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
   gap: "16px",
   width: "100%",
   overflowX: "hidden",
+  marginBottom: "18px",
 },
-  cartPhotoCard: {
-    background: "#fff",
-    border: "1px solid #e2e8f0",
-    borderRadius: "18px",
-    overflow: "hidden",
-  },
-  cartPhoto: {
-    width: "100%",
-    height: "180px",
-    objectFit: "cover",
-    display: "block",
-  },
-  removeFromCartButton: {
-    width: "100%",
-    border: "none",
-    background: "#fee2e2",
-    color: "#b91c1c",
-    padding: "12px",
-    fontWeight: "700",
-    cursor: "pointer",
-  },
-  cartFooter: {
-    marginTop: "20px",
-    display: "flex",
-    justifyContent: "flex-end",
-  },
-  checkoutButton: {
-    backgroundColor: "#0f172a",
-    color: "#fff",
-    border: "none",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "700",
-  },
+cartPhotoCard: {
+  background: "#fff",
+  border: "1px solid #e2e8f0",
+  borderRadius: "18px",
+  overflow: "hidden",
+  display: "flex",
+  flexDirection: "column",
+  boxShadow: "0 6px 18px rgba(15, 23, 42, 0.05)",
+},
+cartPhoto: {
+  width: "100%",
+  height: "180px",
+  objectFit: "cover",
+  display: "block",
+  backgroundColor: "#e2e8f0",
+},
+removeFromCartButton: {
+  width: "100%",
+  border: "none",
+  background: "#fee2e2",
+  color: "#b91c1c",
+  padding: "10px 12px",
+  fontWeight: "700",
+  cursor: "pointer",
+  borderRadius: "12px",
+  fontSize: "13px",
+},
+cartFooter: {
+  position: "sticky",
+  bottom: 0,
+  marginTop: "8px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "14px",
+  flexWrap: "wrap",
+  background: "rgba(255,255,255,0.96)",
+  borderTop: "1px solid #e2e8f0",
+  paddingTop: "16px",
+  paddingBottom: "4px",
+  backdropFilter: "blur(10px)",
+},
+checkoutButton: {
+  backgroundColor: "#0f172a",
+  color: "#fff",
+  border: "none",
+  padding: "14px 20px",
+  borderRadius: "14px",
+  cursor: "pointer",
+  fontSize: "15px",
+  fontWeight: "700",
+  minWidth: "220px",
+  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
+},
   emptyBox: {
     backgroundColor: "#fff",
     border: "1px solid #e2e8f0",
