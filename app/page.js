@@ -1,11 +1,43 @@
 "use client";
 
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 export default function HomePage() {
   const demoEventLink = "/event/demo";
   const createEventLink = "/event";
   const youtubeVideoUrl = "https://www.youtube.com/";
+
+  const imageUrls = {
+    heroTall: "/images/family-trip-1.jpg",
+    heroWide: "/images/family-trip-2.jpg",
+    heroSmall1: "/images/family-party-1.jpg",
+    heroSmall2: "/images/wedding-1.jpg",
+
+    personalization: "/images/nfc-key-closeup.jpg",
+
+    useCaseVacation: "/images/usecase-vacation.jpg",
+    useCaseBirthday: "/images/usecase-birthday.jpg",
+    useCaseWedding: "/images/usecase-wedding.jpg",
+    useCaseFamily: "/images/usecase-family-dinner.jpg",
+
+    demo1: "/images/demo-gallery-1.jpg",
+    demo2: "/images/demo-gallery-2.jpg",
+    demo3: "/images/demo-gallery-3.jpg",
+    demo4: "/images/demo-gallery-4.jpg",
+
+    videoThumb: "/images/video-thumb.jpg",
+  };
+
+  const coverImage = (
+    url: string,
+    position: string = "center"
+  ): CSSProperties => ({
+    backgroundImage: `linear-gradient(rgba(15,23,42,0.14), rgba(15,23,42,0.14)), url("${url}")`,
+    backgroundSize: "cover",
+    backgroundPosition: position,
+    backgroundRepeat: "no-repeat",
+  });
 
   return (
     <main style={styles.page}>
@@ -37,15 +69,9 @@ export default function HomePage() {
           </div>
 
           <div style={styles.heroMiniInfoRow}>
-            <div style={styles.heroMiniInfo}>
-              Persönlich statt beliebig
-            </div>
-            <div style={styles.heroMiniInfo}>
-              Direkt per NFC erreichbar
-            </div>
-            <div style={styles.heroMiniInfo}>
-              Perfekt für Familien & Feiern
-            </div>
+            <div style={styles.heroMiniInfo}>Persönlich statt beliebig</div>
+            <div style={styles.heroMiniInfo}>Direkt per NFC erreichbar</div>
+            <div style={styles.heroMiniInfo}>Perfekt für Familien & Feiern</div>
           </div>
         </div>
 
@@ -65,10 +91,32 @@ export default function HomePage() {
                 </div>
 
                 <div style={styles.phoneImageGrid}>
-                  <div style={{ ...styles.phoneImage, ...styles.phoneImageTall }} />
-                  <div style={{ ...styles.phoneImage, ...styles.phoneImageWide }} />
-                  <div style={styles.phoneImage} />
-                  <div style={styles.phoneImage} />
+                  <div
+                    style={{
+                      ...styles.phoneImage,
+                      ...styles.phoneImageTall,
+                      ...coverImage(imageUrls.heroTall, "center"),
+                    }}
+                  />
+                  <div
+                    style={{
+                      ...styles.phoneImage,
+                      ...styles.phoneImageWide,
+                      ...coverImage(imageUrls.heroWide, "center"),
+                    }}
+                  />
+                  <div
+                    style={{
+                      ...styles.phoneImage,
+                      ...coverImage(imageUrls.heroSmall1, "center"),
+                    }}
+                  />
+                  <div
+                    style={{
+                      ...styles.phoneImage,
+                      ...coverImage(imageUrls.heroSmall2, "center"),
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -146,7 +194,12 @@ export default function HomePage() {
           <div style={styles.imageStoryCard}>
             <div style={styles.imageStoryTop}>Personalisierung</div>
             <div style={styles.imageStoryMain}>
-              <div style={styles.imageStoryLargeImage} />
+              <div
+                style={{
+                  ...styles.imageStoryLargeImage,
+                  ...coverImage(imageUrls.personalization, "center"),
+                }}
+              />
               <div style={styles.imageStoryTextBlock}>
                 <div style={styles.imageStoryTitle}>Individuell statt Standard</div>
                 <div style={styles.imageStoryText}>
@@ -260,7 +313,12 @@ export default function HomePage() {
 
         <div style={styles.useCaseGrid}>
           <div style={styles.useCaseCard}>
-            <div style={styles.useCaseImage} />
+            <div
+              style={{
+                ...styles.useCaseImage,
+                ...coverImage(imageUrls.useCaseVacation, "center"),
+              }}
+            />
             <div style={styles.useCaseBody}>
               <h3 style={styles.useCaseTitle}>Familienurlaub</h3>
               <p style={styles.useCaseText}>
@@ -270,7 +328,12 @@ export default function HomePage() {
           </div>
 
           <div style={styles.useCaseCard}>
-            <div style={styles.useCaseImage} />
+            <div
+              style={{
+                ...styles.useCaseImage,
+                ...coverImage(imageUrls.useCaseBirthday, "center"),
+              }}
+            />
             <div style={styles.useCaseBody}>
               <h3 style={styles.useCaseTitle}>Geburtstag</h3>
               <p style={styles.useCaseText}>
@@ -280,7 +343,12 @@ export default function HomePage() {
           </div>
 
           <div style={styles.useCaseCard}>
-            <div style={styles.useCaseImage} />
+            <div
+              style={{
+                ...styles.useCaseImage,
+                ...coverImage(imageUrls.useCaseWedding, "center"),
+              }}
+            />
             <div style={styles.useCaseBody}>
               <h3 style={styles.useCaseTitle}>Hochzeit</h3>
               <p style={styles.useCaseText}>
@@ -290,7 +358,12 @@ export default function HomePage() {
           </div>
 
           <div style={styles.useCaseCard}>
-            <div style={styles.useCaseImage} />
+            <div
+              style={{
+                ...styles.useCaseImage,
+                ...coverImage(imageUrls.useCaseFamily, "center"),
+              }}
+            />
             <div style={styles.useCaseBody}>
               <h3 style={styles.useCaseTitle}>Familienfeier</h3>
               <p style={styles.useCaseText}>
@@ -349,10 +422,34 @@ export default function HomePage() {
               </div>
 
               <div style={styles.demoPreviewGrid}>
-                <div style={{ ...styles.demoPreviewImage, height: "160px" }} />
-                <div style={{ ...styles.demoPreviewImage, height: "160px" }} />
-                <div style={{ ...styles.demoPreviewImage, height: "220px" }} />
-                <div style={{ ...styles.demoPreviewImage, height: "220px" }} />
+                <div
+                  style={{
+                    ...styles.demoPreviewImage,
+                    height: "160px",
+                    ...coverImage(imageUrls.demo1, "center"),
+                  }}
+                />
+                <div
+                  style={{
+                    ...styles.demoPreviewImage,
+                    height: "160px",
+                    ...coverImage(imageUrls.demo2, "center"),
+                  }}
+                />
+                <div
+                  style={{
+                    ...styles.demoPreviewImage,
+                    height: "220px",
+                    ...coverImage(imageUrls.demo3, "center"),
+                  }}
+                />
+                <div
+                  style={{
+                    ...styles.demoPreviewImage,
+                    height: "220px",
+                    ...coverImage(imageUrls.demo4, "center"),
+                  }}
+                />
               </div>
             </div>
           </div>
@@ -382,7 +479,12 @@ export default function HomePage() {
           </div>
 
           <div style={styles.videoCard}>
-            <div style={styles.videoPlaceholder}>
+            <div
+              style={{
+                ...styles.videoPlaceholder,
+                backgroundImage: `linear-gradient(rgba(15,23,42,0.5), rgba(15,23,42,0.5)), url("${imageUrls.videoThumb}")`,
+              }}
+            >
               <div style={styles.playButton}>▶</div>
               <div style={styles.videoPlaceholderTitle}>NFC-Demo</div>
               <div style={styles.videoPlaceholderText}>
@@ -483,7 +585,7 @@ export default function HomePage() {
   );
 }
 
-const styles = {
+const styles: Record<string, CSSProperties> = {
   page: {
     background:
       "linear-gradient(180deg, #f8fafc 0%, #ffffff 35%, #f8fafc 100%)",
@@ -662,8 +764,8 @@ const styles = {
   phoneImage: {
     borderRadius: "16px",
     minHeight: "120px",
-    background:
-      "linear-gradient(135deg, rgba(148,163,184,0.38), rgba(241,245,249,1))",
+    backgroundColor: "#e2e8f0",
+    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.18)",
   },
   phoneImageTall: {
     minHeight: "180px",
@@ -798,8 +900,7 @@ const styles = {
   imageStoryLargeImage: {
     borderRadius: "22px",
     minHeight: "280px",
-    background:
-      "linear-gradient(135deg, rgba(15,23,42,0.95), rgba(71,85,105,0.82))",
+    backgroundColor: "#cbd5e1",
   },
   imageStoryTextBlock: {
     display: "grid",
@@ -934,8 +1035,7 @@ const styles = {
   },
   useCaseImage: {
     minHeight: "220px",
-    background:
-      "linear-gradient(135deg, rgba(148,163,184,0.38), rgba(241,245,249,1))",
+    backgroundColor: "#cbd5e1",
   },
   useCaseBody: {
     padding: "18px",
@@ -1032,8 +1132,7 @@ const styles = {
   },
   demoPreviewImage: {
     borderRadius: "16px",
-    background:
-      "linear-gradient(135deg, rgba(148,163,184,0.38), rgba(241,245,249,1))",
+    backgroundColor: "#cbd5e1",
   },
 
   videoSection: {
@@ -1060,8 +1159,9 @@ const styles = {
     placeItems: "center",
     textAlign: "center",
     padding: "24px",
-    background:
-      "linear-gradient(135deg, rgba(15,23,42,0.95), rgba(51,65,85,1))",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
     color: "#fff",
   },
   playButton: {
