@@ -1574,22 +1574,22 @@ async function handleSubmitOrder() {
             Bezahlte Bestellungen
           </h2>
 
-          {loadingOrders ? (
-            <div style={styles.emptyBox}>Lade Bestellungen...</div>
-          )!orders || orders.length === 0 (
-            <div style={styles.emptyBox}>Noch keine bezahlten Bestellungen.</div>
-          ) : (
-            <div style={{ display: "grid", gap: "12px", marginTop: "16px" }}>
-             {(orders || []).map((order) => (
-                <div
-                  key={order.id}
-                  style={{
-                    padding: "16px",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "12px",
-                    background: "#fff",
-                  }}
-                >
+         {loadingOrders ? (
+  <div style={styles.emptyBox}>Lade Bestellungen...</div>
+) : !orders || orders.length === 0 ? (
+  <div style={styles.emptyBox}>Noch keine bezahlten Bestellungen.</div>
+) : (
+  <div style={{ display: "grid", gap: "12px", marginTop: "16px" }}>
+    {(orders || []).map((order) => (
+      <div
+        key={order.id}
+        style={{
+          padding: "16px",
+          border: "1px solid #e2e8f0",
+          borderRadius: "12px",
+          background: "#fff",
+        }}
+      >
                   <div><strong>Name:</strong> {order.customer_name}</div>
                   <div><strong>E-Mail:</strong> {order.customer_email}</div>
                   <div>
