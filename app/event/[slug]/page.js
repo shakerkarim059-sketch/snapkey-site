@@ -36,6 +36,7 @@ export default function EventPage() {
   const [photos, setPhotos] = useState([]);
   const [photoLikes, setPhotoLikes] = useState([]);
   const [photoComments, setPhotoComments] = useState([]);
+  const [photoOrientations, setPhotoOrientations] = useState({});
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
@@ -103,7 +104,7 @@ export default function EventPage() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [lightboxOpen, selectedPhotoIndex, photos, cartOpen]);
+  }, [lightboxOpen, selectedPhotoIndex, cartOpen, photos]);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
@@ -112,6 +113,17 @@ export default function EventPage() {
       document.body.style.margin = "0";
     }
   }, []);
+
+  useEffect(() => {
+    if (!filteredPhotos.length && lightboxOpen) {
+      closeLightbox();
+      return;
+    }
+
+    if (selectedPhotoIndex > filteredPhotos.length - 1 && filteredPhotos.length > 0) {
+      setSelectedPhotoIndex(0);
+    }
+  }, [filteredPhotos.length, lightboxOpen, selectedPhotoIndex]);
 
   async function fetchEventBySlug() {
     setLoadingEvent(true);
@@ -274,6 +286,10 @@ export default function EventPage() {
     }
 
     setUpdatingEvent(false);
+  }
+
+  function handleFileSelection(files) {
+    setSelectedFiles(Array.from(files || []));
   }
 
   async function handlePhotoUpload(e) {
@@ -534,13 +550,15 @@ export default function EventPage() {
   }
 
   function showNextPhoto() {
-    if (!photos.length) return;
-    setSelectedPhotoIndex((prev) => (prev + 1) % photos.length);
+    if (!filteredPhotos.length) return;
+    setSelectedPhotoIndex((prev) => (prev + 1) % filteredPhotos.length);
   }
 
   function showPrevPhoto() {
-    if (!photos.length) return;
-    setSelectedPhotoIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    if (!filteredPhotos.length) return;
+    setSelectedPhotoIndex(
+      (prev) => (prev - 1 + filteredPhotos.length) % filteredPhotos.length
+    );
   }
 
   function handleTouchStart(e) {
@@ -556,6 +574,25 @@ export default function EventPage() {
     } else if (diff < -50) {
       showPrevPhoto();
     }
+  }
+
+  function handlePhotoImageLoad(photoId, e) {
+    const img = e.currentTarget;
+    const orientation =
+      img.naturalWidth > img.naturalHeight
+        ? "landscape"
+        : img.naturalHeight > img.naturalWidth
+        ? "portrait"
+        : "square";
+
+    setPhotoOrientations((prev) => {
+      if (prev[photoId] === orientation) return prev;
+      return { ...prev, [photoId]: orientation };
+    });
+  }
+
+  function getPhotoOrientation(photoId) {
+    return photoOrientations[photoId] || "square";
   }
 
   const availableYears = useMemo(() => {
@@ -601,8 +638,7 @@ export default function EventPage() {
   const totalPrice = pricePerPhoto * selectedPhotos.length;
 
   const coverPhoto = photos.length > 0 ? photos[0] : null;
-  const currentPhoto =
-    filteredPhotos[selectedPhotoIndex] || photos[selectedPhotoIndex];
+  const currentPhoto = filteredPhotos[selectedPhotoIndex];
 
   if (loadingEvent) {
     return (
@@ -818,29 +854,60 @@ export default function EventPage() {
       </div>
 
       <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
-        <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
+        <div style={styles.uploadTopRow}>
+          <div>
+            <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
+            <p style={styles.uploadSubtitle}>
+              Mehrere Bilder auswählen und gesammelt hochladen.
+            </p>
+          </div>
+
+          <div style={styles.uploadBadge}>
+            {selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"}
+          </div>
+        </div>
 
         <input
           ref={fileInputRef}
           type="file"
           accept="image/*"
           multiple
-          onChange={(e) => setSelectedFiles(Array.from(e.target.files || []))}
+          onChange={(e) => handleFileSelection(e.target.files)}
           style={{ display: "none" }}
         />
 
-        <button
-          type="button"
+        <div
+          style={styles.uploadPickerBox}
           onClick={() => fileInputRef.current?.click()}
-          style={styles.secondaryButton}
         >
-          Bilder auswählen
-        </button>
+          <div style={styles.uploadIcon}>↑</div>
+          <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
+          <div style={styles.uploadPickerText}>
+            Tippe hier, um Fotos vom Handy oder Computer auszuwählen.
+          </div>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              fileInputRef.current?.click();
+            }}
+            style={styles.uploadPickerButton}
+          >
+            Dateien öffnen
+          </button>
+        </div>
 
         {selectedFiles.length > 0 && (
-          <div style={styles.selectedFilesInfo}>
-            {selectedFiles.length} Bild
-            {selectedFiles.length > 1 ? "er" : ""} ausgewählt
+          <div style={styles.selectedFilesWrap}>
+            {selectedFiles.map((file, index) => (
+              <div key={`${file.name}-${index}`} style={styles.fileChip}>
+                <span style={styles.fileChipName}>{file.name}</span>
+                <span style={styles.fileChipSize}>
+                  {(file.size / 1024 / 1024).toFixed(1)} MB
+                </span>
+              </div>
+            ))}
           </div>
         )}
 
@@ -855,7 +922,10 @@ export default function EventPage() {
         <button
           type="submit"
           disabled={uploadingPhoto}
-          style={styles.primaryButton}
+          style={{
+            ...styles.primaryButton,
+            ...(uploadingPhoto ? styles.buttonDisabled : {}),
+          }}
         >
           {uploadingPhoto ? "Fotos werden hochgeladen..." : "Fotos hochladen"}
         </button>
@@ -896,6 +966,14 @@ export default function EventPage() {
             const commentsForPhoto = getCommentsForPhoto(photo.id);
             const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
             const isSelected = selectedPhotoIds.includes(photo.id);
+            const orientation = getPhotoOrientation(photo.id);
+
+            const mediaHeight =
+              orientation === "portrait"
+                ? "360px"
+                : orientation === "landscape"
+                ? "240px"
+                : "280px";
 
             return (
               <div
@@ -903,28 +981,39 @@ export default function EventPage() {
                 style={styles.photoCard}
                 onClick={() => openLightbox(index)}
               >
-                <img
-                  src={photo.public_url || photo.image_url}
-                  alt={photo.caption || photo.file_name || "Foto"}
-                  style={styles.photo}
-                />
+                <div style={{ ...styles.photoMediaWrap, height: mediaHeight }}>
+                  <img
+                    src={photo.public_url || photo.image_url}
+                    alt={photo.caption || photo.file_name || "Foto"}
+                    style={styles.photo}
+                    onLoad={(e) => handlePhotoImageLoad(photo.id, e)}
+                  />
 
-                <div style={styles.photoOverlay}>
-                  <span style={styles.photoOverlayText}>Vergrößern</span>
+                  <div style={styles.photoOverlay}>
+                    <span style={styles.photoOverlayText}>Vergrößern</span>
+                  </div>
+
+                  <div style={styles.orientationBadge}>
+                    {orientation === "portrait"
+                      ? "Hochformat"
+                      : orientation === "landscape"
+                      ? "Querformat"
+                      : "Quadratisch"}
+                  </div>
+
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePhoto(photo);
+                      }}
+                      style={styles.deleteButton}
+                    >
+                      Löschen
+                    </button>
+                  )}
                 </div>
-
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeletePhoto(photo);
-                    }}
-                    style={styles.deleteButton}
-                  >
-                    Löschen
-                  </button>
-                )}
 
                 <div
                   style={styles.photoInfoArea}
@@ -934,16 +1023,26 @@ export default function EventPage() {
                     <div style={styles.photoCaption}>{photo.caption}</div>
                   )}
 
-                  <button
-                    type="button"
-                    onClick={() => togglePhotoSelection(photo.id)}
-                    style={{
-                      ...styles.selectPhotoButton,
-                      ...(isSelected ? styles.selectPhotoButtonActive : {}),
-                    }}
-                  >
-                    {isSelected ? "Ausgewählt ✓" : "Auswählen"}
-                  </button>
+                  <div style={styles.photoActionRow}>
+                    <button
+                      type="button"
+                      onClick={() => togglePhotoSelection(photo.id)}
+                      style={{
+                        ...styles.selectPhotoButton,
+                        ...(isSelected ? styles.selectPhotoButtonActive : {}),
+                      }}
+                    >
+                      {isSelected ? "Ausgewählt ✓" : "Auswählen"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openLightbox(index)}
+                      style={styles.previewButton}
+                    >
+                      Ansehen
+                    </button>
+                  </div>
 
                   {eventData.likes_enabled !== false && (
                     <div style={styles.likeRow}>
@@ -1362,13 +1461,114 @@ const styles = {
   },
   uploadCard: {
     display: "grid",
-    gap: "14px",
+    gap: "16px",
     background: "#ffffff",
     padding: "22px",
-    borderRadius: "20px",
+    borderRadius: "24px",
     marginBottom: "28px",
     border: "1px solid #e2e8f0",
     boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+  },
+  uploadTopRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "12px",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+  },
+  uploadSubtitle: {
+    margin: 0,
+    color: "#64748b",
+    fontSize: "14px",
+    lineHeight: "1.5",
+  },
+  uploadBadge: {
+    background: "#e2e8f0",
+    color: "#0f172a",
+    borderRadius: "999px",
+    padding: "10px 14px",
+    fontSize: "13px",
+    fontWeight: "700",
+    whiteSpace: "nowrap",
+  },
+  uploadPickerBox: {
+    border: "1.5px dashed #94a3b8",
+    borderRadius: "22px",
+    padding: "28px 20px",
+    background:
+      "linear-gradient(180deg, rgba(15,23,42,0.03) 0%, rgba(15,23,42,0.01) 100%)",
+    display: "grid",
+    justifyItems: "center",
+    textAlign: "center",
+    gap: "10px",
+    cursor: "pointer",
+  },
+  uploadIcon: {
+    width: "56px",
+    height: "56px",
+    borderRadius: "18px",
+    background: "#0f172a",
+    color: "#fff",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontSize: "26px",
+    fontWeight: "800",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
+  },
+  uploadPickerTitle: {
+    fontSize: "20px",
+    fontWeight: "800",
+    color: "#0f172a",
+  },
+  uploadPickerText: {
+    color: "#64748b",
+    fontSize: "14px",
+    lineHeight: "1.5",
+    maxWidth: "460px",
+  },
+  uploadPickerButton: {
+    backgroundColor: "#1e293b",
+    color: "#fff",
+    border: "none",
+    padding: "14px 18px",
+    borderRadius: "14px",
+    cursor: "pointer",
+    fontSize: "15px",
+    fontWeight: "700",
+    minWidth: "180px",
+    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.14)",
+    marginTop: "6px",
+  },
+  selectedFilesWrap: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "10px",
+  },
+  fileChip: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "10px 12px",
+    borderRadius: "14px",
+    background: "#f1f5f9",
+    border: "1px solid #e2e8f0",
+    maxWidth: "100%",
+  },
+  fileChipName: {
+    color: "#0f172a",
+    fontSize: "13px",
+    fontWeight: "700",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+    maxWidth: "220px",
+  },
+  fileChipSize: {
+    color: "#64748b",
+    fontSize: "12px",
+    fontWeight: "600",
+    whiteSpace: "nowrap",
   },
   twoCol: {
     display: "grid",
@@ -1408,6 +1608,10 @@ const styles = {
     minWidth: "170px",
     boxShadow: "0 8px 20px rgba(15, 23, 42, 0.12)",
   },
+  buttonDisabled: {
+    opacity: 0.72,
+    cursor: "not-allowed",
+  },
   cancelButton: {
     backgroundColor: "#e2e8f0",
     color: "#0f172a",
@@ -1430,12 +1634,7 @@ const styles = {
     fontSize: "12px",
     cursor: "pointer",
     fontWeight: "700",
-    zIndex: 2,
-  },
-  selectedFilesInfo: {
-    color: "#475569",
-    fontSize: "14px",
-    fontWeight: "600",
+    zIndex: 3,
   },
   selectionBar: {
     position: "fixed",
@@ -1478,38 +1677,60 @@ const styles = {
   },
   photoGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
     gap: "18px",
+    alignItems: "start",
   },
   photoCard: {
     position: "relative",
-    borderRadius: "18px",
+    borderRadius: "22px",
     overflow: "hidden",
     boxShadow: "0 10px 25px rgba(15, 23, 42, 0.10)",
     background: "#fff",
     cursor: "pointer",
+    border: "1px solid #e2e8f0",
+  },
+  photoMediaWrap: {
+    position: "relative",
+    width: "100%",
+    background: "#e2e8f0",
+    overflow: "hidden",
   },
   photo: {
     width: "100%",
-    height: "260px",
+    height: "100%",
     objectFit: "cover",
     display: "block",
   },
   photoOverlay: {
     position: "absolute",
     inset: 0,
-    background: "rgba(15, 23, 42, 0.22)",
+    background: "linear-gradient(to top, rgba(15,23,42,0.26), rgba(15,23,42,0.05))",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    opacity: 0,
-    transition: "0.2s ease",
     pointerEvents: "none",
   },
   photoOverlayText: {
     color: "#fff",
     fontWeight: "700",
     fontSize: "15px",
+    padding: "8px 12px",
+    borderRadius: "999px",
+    background: "rgba(15,23,42,0.45)",
+    backdropFilter: "blur(4px)",
+  },
+  orientationBadge: {
+    position: "absolute",
+    left: "12px",
+    bottom: "12px",
+    background: "rgba(255,255,255,0.92)",
+    color: "#0f172a",
+    borderRadius: "999px",
+    padding: "7px 10px",
+    fontSize: "12px",
+    fontWeight: "700",
+    zIndex: 2,
   },
   photoInfoArea: {
     padding: "14px",
@@ -1522,6 +1743,11 @@ const styles = {
     color: "#334155",
     lineHeight: "1.5",
   },
+  photoActionRow: {
+    display: "grid",
+    gridTemplateColumns: "1fr 1fr",
+    gap: "10px",
+  },
   selectPhotoButton: {
     backgroundColor: "#e2e8f0",
     color: "#0f172a",
@@ -1533,8 +1759,18 @@ const styles = {
     fontWeight: "700",
   },
   selectPhotoButtonActive: {
-    backgroundColor: "#dcfce7",
-    color: "#166534",
+    backgroundColor: "#0f172a",
+    color: "#ffffff",
+  },
+  previewButton: {
+    backgroundColor: "#f8fafc",
+    color: "#0f172a",
+    border: "1px solid #cbd5e1",
+    padding: "10px 14px",
+    borderRadius: "12px",
+    cursor: "pointer",
+    fontSize: "14px",
+    fontWeight: "700",
   },
   likeRow: {
     display: "flex",
