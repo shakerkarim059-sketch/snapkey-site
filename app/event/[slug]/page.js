@@ -481,35 +481,40 @@ export default function EventPage() {
     setUploadingPhoto(false);
   }
 
-  async function handleDeletePhoto(photo) {
-    if (!isAdmin) return;
+async function handleDeletePhoto(photo) {
+  if (!isAdmin) return;
 
-    const confirmDelete = window.confirm("Foto wirklich löschen?");
-    if (!confirmDelete) return;
+  const confirmDelete = window.confirm("Foto wirklich löschen?");
+  if (!confirmDelete) return;
 
-    if (photo.file_path) {
-      const { error: storageError } = await supabase.storage
-        .from("photos")
-        .remove([photo.file_path]);
+  try {
+    const response = await fetch("/api/delete-photo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        photoId: photo.id,
+      }),
+    });
 
-      if (storageError) {
-        console.error("Fehler beim Löschen aus Storage:", storageError);
-      }
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Foto konnte nicht gelöscht werden.");
+      return;
     }
 
-    const { error } = await supabase.from("photos").delete().eq("id", photo.id);
-
-    if (error) {
-      console.error("Fehler beim Löschen aus DB:", error);
-      alert("Fehler beim Löschen: " + error.message);
-    } else {
-      await fetchPhotosForEvent(eventData.id);
-      await fetchAllLikes();
-      await fetchAllComments();
-      setSelectedPhotoIds((prev) => prev.filter((id) => id !== photo.id));
-      alert("Foto gelöscht.");
-    }
+    await fetchPhotosForEvent(eventData.id);
+    await fetchAllLikes();
+    await fetchAllComments();
+    setSelectedPhotoIds((prev) => prev.filter((id) => id !== photo.id));
+    alert("Foto gelöscht.");
+  } catch (error) {
+    console.error("Fehler beim Löschen:", error);
+    alert("Foto konnte nicht gelöscht werden.");
   }
+}
 
   function getStoredLikeMap() {
     if (typeof window === "undefined") return {};
