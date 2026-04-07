@@ -372,36 +372,48 @@ export default function EventPage() {
     if (eventData) fillEditForm(eventData);
   }
 
-  async function handleUpdateEvent(e) {
-    e.preventDefault();
+async function handleUpdateEvent(e) {
+  e.preventDefault();
 
-    if (!editingEventId) return;
+  if (!editingEventId) return;
 
-    setUpdatingEvent(true);
+  setUpdatingEvent(true);
 
-    const { error } = await supabase
-      .from("events")
-      .update({
+  try {
+    const response = await fetch("/api/update-event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        eventId: editingEventId,
         title,
         location,
         category,
-        start_date: startDate || null,
-        end_date: endDate || null,
+        startDate,
+        endDate,
         description,
-      })
-      .eq("id", editingEventId);
+      }),
+    });
 
-    if (error) {
-      console.error("Fehler beim Aktualisieren:", error);
-      alert("Ereignis konnte nicht aktualisiert werden: " + error.message);
-    } else {
-      alert("Ereignis aktualisiert.");
-      setEditingEventId(null);
-      await fetchEventBySlug();
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Ereignis konnte nicht aktualisiert werden.");
+      setUpdatingEvent(false);
+      return;
     }
 
-    setUpdatingEvent(false);
+    alert("Ereignis aktualisiert.");
+    setEditingEventId(null);
+    await fetchEventBySlug();
+  } catch (error) {
+    console.error("Fehler beim Aktualisieren:", error);
+    alert("Ereignis konnte nicht aktualisiert werden.");
   }
+
+  setUpdatingEvent(false);
+}
 
   function handleFileSelection(files) {
     setSelectedFiles(Array.from(files || []));
