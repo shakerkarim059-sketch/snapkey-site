@@ -56,11 +56,8 @@ export async function POST(request) {
       city,
       country,
       orderNote,
-      printOption,
-      frameOption,
-      selectedPhotos,
+      items,
       totalPrice,
-      pricePerPhoto,
     } = body || {};
 
     if (!eventId) {
@@ -91,7 +88,7 @@ export async function POST(request) {
       );
     }
 
-    if (!Array.isArray(selectedPhotos) || selectedPhotos.length === 0) {
+    if (!Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { error: "Bitte zuerst Bilder auswählen." },
         { status: 400 }
@@ -104,6 +101,11 @@ export async function POST(request) {
         { status: 403 }
       );
     }
+
+    const firstItem = items[0] || {};
+    const printOption = firstItem.printSize || null;
+    const frameOption = firstItem.frame || null;
+    const unitPriceInCent = Number(firstItem.unitPrice || 0);
 
     const { data: createdOrder, error: orderError } = await supabase
       .from("orders")
@@ -120,8 +122,9 @@ export async function POST(request) {
           note: orderNote?.trim() || null,
           print_option: printOption,
           frame_option: frameOption,
-          item_count: selectedPhotos.length,
-          total_price: totalPrice,
+          item_count: items.length,
+          total_price: Number(totalPrice || 0),
+          payment_status: "pending",
           status: "neu",
         },
       ])
@@ -136,14 +139,14 @@ export async function POST(request) {
       );
     }
 
-    const orderItemsPayload = selectedPhotos.map((photo) => ({
+    const orderItemsPayload = items.map((item) => ({
       order_id: createdOrder.id,
-      photo_id: photo.id,
-      photo_url: photo.file_path || null,
-      photo_caption: photo.caption || null,
-      print_option: printOption,
-      frame_option: frameOption,
-      unit_price: pricePerPhoto,
+      photo_id: item.photoId,
+      photo_url: item.photoUrl || null,
+      photo_caption: item.title || null,
+      print_option: item.printSize || null,
+      frame_option: item.frame || null,
+      unit_price: Number(item.unitPrice || 0),
     }));
 
     const { error: itemsError } = await supabase
@@ -160,7 +163,7 @@ export async function POST(request) {
 
     return NextResponse.json({
       success: true,
-      orderId: createdOrder.id,
+      order: createdOrder,
     });
   } catch (error) {
     console.error("Fehler bei create-order API:", error);
