@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 
 const imageUrls = {
   heroMain: "/images/family-trip-1.jpg",
@@ -26,7 +25,7 @@ const imageUrls = {
   videoThumb: "/images/video-thumb.jpg",
 };
 
-function SectionBadge({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+function SectionBadge({ children, light = false }) {
   return (
     <div
       style={{
@@ -45,12 +44,6 @@ function ImageCard({
   height = 220,
   priority = false,
   overlay = true,
-}: {
-  src: string;
-  alt: string;
-  height?: number;
-  priority?: boolean;
-  overlay?: boolean;
 }) {
   return (
     <div style={{ ...styles.imageWrap, height }}>
@@ -60,7 +53,7 @@ function ImageCard({
         fill
         priority={priority}
         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        style={styles.image as any}
+        style={styles.image}
       />
       {overlay && <div style={styles.imageOverlay} />}
     </div>
@@ -79,7 +72,9 @@ export default function HomePage() {
         <div style={styles.heroGlowB} />
 
         <div style={styles.heroContent}>
-          <div style={styles.heroBadge}>Personalisierter NFC-Key für Familien & Events</div>
+          <div style={styles.heroBadge}>
+            Personalisierter NFC-Key für Familien & Events
+          </div>
 
           <h1 style={styles.heroTitle}>
             Ein Tap genügt.
@@ -88,10 +83,11 @@ export default function HomePage() {
           </h1>
 
           <p style={styles.heroText}>
-            Der personalisierte NFC-Key verbindet etwas Echtes mit etwas Digitalem:
-            Ein kurzer Tap mit dem Smartphone und Familie oder Gäste landen direkt
-            im passenden Event, können Bilder hochladen, Erinnerungen teilen und
-            Lieblingsfotos gesammelt an einem Ort festhalten.
+            Der personalisierte NFC-Key verbindet etwas Echtes mit etwas
+            Digitalem: Ein kurzer Tap mit dem Smartphone und Familie oder Gäste
+            landen direkt im passenden Event, können Bilder hochladen,
+            Erinnerungen teilen und Lieblingsfotos gesammelt an einem Ort
+            festhalten.
           </p>
 
           <div style={styles.heroButtonRow}>
@@ -129,12 +125,16 @@ export default function HomePage() {
                 fill
                 priority
                 sizes="(max-width: 768px) 100vw, 50vw"
-                style={styles.image as any}
+                style={styles.image}
               />
               <div style={styles.heroVisualMainOverlay} />
               <div style={styles.heroVisualCaption}>
-                <div style={styles.heroVisualCaptionBadge}>Gemeinsame Erinnerungen</div>
-                <div style={styles.heroVisualCaptionTitle}>Sommerurlaub 2026</div>
+                <div style={styles.heroVisualCaptionBadge}>
+                  Gemeinsame Erinnerungen
+                </div>
+                <div style={styles.heroVisualCaptionTitle}>
+                  Sommerurlaub 2026
+                </div>
                 <div style={styles.heroVisualCaptionText}>
                   Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln.
                 </div>
@@ -142,10 +142,26 @@ export default function HomePage() {
             </div>
 
             <div style={styles.heroThumbGrid}>
-              <ImageCard src={imageUrls.heroGallery1} alt="Familienurlaub Galerie 1" height={130} />
-              <ImageCard src={imageUrls.heroGallery2} alt="Familienfeier Galerie 2" height={130} />
-              <ImageCard src={imageUrls.heroGallery3} alt="Hochzeit Galerie 3" height={130} />
-              <ImageCard src={imageUrls.heroGallery4} alt="Eventgalerie Vorschau" height={130} />
+              <ImageCard
+                src={imageUrls.heroGallery1}
+                alt="Familienurlaub Galerie 1"
+                height={130}
+              />
+              <ImageCard
+                src={imageUrls.heroGallery2}
+                alt="Familienfeier Galerie 2"
+                height={130}
+              />
+              <ImageCard
+                src={imageUrls.heroGallery3}
+                alt="Hochzeit Galerie 3"
+                height={130}
+              />
+              <ImageCard
+                src={imageUrls.heroGallery4}
+                alt="Eventgalerie Vorschau"
+                height={130}
+              />
             </div>
           </div>
         </div>
@@ -155,7 +171,8 @@ export default function HomePage() {
         <div style={styles.sectionHeader}>
           <SectionBadge>Die eigentliche Idee</SectionBadge>
           <h2 style={styles.sectionTitle}>
-            Nicht nur ein Fotoalbum. Sondern ein persönlicher NFC-Zugang zu gemeinsamen Erinnerungen.
+            Nicht nur ein Fotoalbum. Sondern ein persönlicher NFC-Zugang zu
+            gemeinsamen Erinnerungen.
           </h2>
           <p style={styles.sectionText}>
             Der Unterschied ist nicht nur die Plattform, sondern der Einstieg:
@@ -211,10 +228,18 @@ export default function HomePage() {
             </p>
 
             <div style={styles.featureList}>
-              <div style={styles.featureItem}>Mit Familie, Namen oder Anlass personalisierbar</div>
-              <div style={styles.featureItem}>Ideal für Geburtstage, Urlaube, Hochzeiten oder Feiern</div>
-              <div style={styles.featureItem}>Öffnet direkt das richtige Event per Smartphone</div>
-              <div style={styles.featureItem}>Verbindet Erinnerungsstück und digitale Galerie</div>
+              <div style={styles.featureItem}>
+                Mit Familie, Namen oder Anlass personalisierbar
+              </div>
+              <div style={styles.featureItem}>
+                Ideal für Geburtstage, Urlaube, Hochzeiten oder Feiern
+              </div>
+              <div style={styles.featureItem}>
+                Öffnet direkt das richtige Event per Smartphone
+              </div>
+              <div style={styles.featureItem}>
+                Verbindet Erinnerungsstück und digitale Galerie
+              </div>
             </div>
           </div>
 
@@ -227,12 +252,14 @@ export default function HomePage() {
                   alt="Personalisierter NFC-Key als Produktaufnahme"
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
-                  style={styles.image as any}
+                  style={styles.image}
                 />
                 <div style={styles.imageOverlayDark} />
               </div>
               <div style={styles.imageStoryTextBlock}>
-                <div style={styles.imageStoryTitle}>Individuell statt Standard</div>
+                <div style={styles.imageStoryTitle}>
+                  Individuell statt Standard
+                </div>
                 <div style={styles.imageStoryText}>
                   Name, Anlass, Stil und Einsatzbereich machen aus dem NFC-Key
                   ein persönliches Produkt statt nur ein technisches Werkzeug.
@@ -246,7 +273,9 @@ export default function HomePage() {
       <section style={styles.section}>
         <div style={styles.sectionHeader}>
           <SectionBadge>So läuft es ab</SectionBadge>
-          <h2 style={styles.sectionTitle}>Vom NFC-Tap bis zur gemeinsamen Fotosammlung</h2>
+          <h2 style={styles.sectionTitle}>
+            Vom NFC-Tap bis zur gemeinsamen Fotosammlung
+          </h2>
           <p style={styles.sectionText}>
             Der Ablauf muss leicht verständlich sein. Genau das sollte die Seite
             zeigen.
@@ -255,17 +284,35 @@ export default function HomePage() {
 
         <div style={styles.stepsGrid}>
           {[
-            ["1", "NFC-Key bereitlegen", "Der personalisierte Key gehört zur Familie oder zum Anlass und ist sofort als Zugangspunkt erkennbar."],
-            ["2", "Mit dem Handy antippen", "Gäste oder Familie öffnen direkt das passende Event, ohne lange nach einem Link zu suchen."],
-            ["3", "Fotos hochladen & teilen", "Bilder werden gesammelt, kommentiert, gelikt und bleiben sauber an einem Ort statt in mehreren Chats."],
-            ["4", "Lieblingsbilder auswählen", "Die besten Fotos können markiert und später direkt als Drucke bestellt werden."],
-          ].map(([num, title, text]) => (
-            <div key={num} style={styles.stepCard}>
-              <div style={styles.stepNumber}>{num}</div>
-              <h3 style={styles.stepTitle}>{title}</h3>
-              <p style={styles.stepText}>{text}</p>
-            </div>
-          ))}
+            [
+              "1",
+              "NFC-Key bereitlegen",
+              "Der personalisierte Key gehört zur Familie oder zum Anlass und ist sofort als Zugangspunkt erkennbar.",
+            ],
+            [
+              "2",
+              "Mit dem Handy antippen",
+              "Gäste oder Familie öffnen direkt das passende Event, ohne lange nach einem Link zu suchen.",
+            ],
+            [
+              "3",
+              "Fotos hochladen & teilen",
+              "Bilder werden gesammelt, kommentiert, gelikt und bleiben sauber an einem Ort statt in mehreren Chats.",
+            ],
+            [
+              "4",
+              "Lieblingsbilder auswählen",
+              "Die besten Fotos können markiert und später direkt als Drucke bestellt werden.",
+            ],
+          ].map(function (item) {
+            return (
+              <div key={item[0]} style={styles.stepCard}>
+                <div style={styles.stepNumber}>{item[0]}</div>
+                <h3 style={styles.stepTitle}>{item[1]}</h3>
+                <p style={styles.stepText}>{item[2]}</p>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -273,7 +320,8 @@ export default function HomePage() {
         <div style={styles.sectionHeader}>
           <SectionBadge>Warum nicht einfach WhatsApp?</SectionBadge>
           <h2 style={styles.sectionTitle}>
-            Weil Fotos dort untergehen, komprimiert werden und niemand am Ende alles gesammelt hat
+            Weil Fotos dort untergehen, komprimiert werden und niemand am Ende
+            alles gesammelt hat
           </h2>
           <p style={styles.sectionText}>
             Genau hier zeigt der NFC-Key mit Eventseite seinen echten Nutzen.
@@ -283,23 +331,41 @@ export default function HomePage() {
         <div style={styles.compareGrid}>
           <div style={styles.compareBadCard}>
             <div style={styles.compareLabelBad}>Typisches Chaos</div>
-            <h3 style={styles.compareTitle}>WhatsApp, AirDrop, einzelne Handygalerien</h3>
+            <h3 style={styles.compareTitle}>
+              WhatsApp, AirDrop, einzelne Handygalerien
+            </h3>
             <div style={styles.compareList}>
               <div style={styles.compareBadItem}>Links werden vergessen</div>
-              <div style={styles.compareBadItem}>Bilder landen in verschiedenen Gruppen</div>
-              <div style={styles.compareBadItem}>Dateien werden komprimiert</div>
-              <div style={styles.compareBadItem}>Niemand hat später alles vollständig</div>
+              <div style={styles.compareBadItem}>
+                Bilder landen in verschiedenen Gruppen
+              </div>
+              <div style={styles.compareBadItem}>
+                Dateien werden komprimiert
+              </div>
+              <div style={styles.compareBadItem}>
+                Niemand hat später alles vollständig
+              </div>
             </div>
           </div>
 
           <div style={styles.compareGoodCard}>
             <div style={styles.compareLabelGood}>Deine Lösung</div>
-            <h3 style={styles.compareTitle}>NFC-Key + gemeinsame Eventseite</h3>
+            <h3 style={styles.compareTitle}>
+              NFC-Key + gemeinsame Eventseite
+            </h3>
             <div style={styles.compareList}>
-              <div style={styles.compareGoodItem}>Sofortiger Zugriff per Tap</div>
-              <div style={styles.compareGoodItem}>Alle Bilder an einem Ort</div>
-              <div style={styles.compareGoodItem}>Persönlicher und hochwertiger Eindruck</div>
-              <div style={styles.compareGoodItem}>Auswahl, Kommentare und Bestellung möglich</div>
+              <div style={styles.compareGoodItem}>
+                Sofortiger Zugriff per Tap
+              </div>
+              <div style={styles.compareGoodItem}>
+                Alle Bilder an einem Ort
+              </div>
+              <div style={styles.compareGoodItem}>
+                Persönlicher und hochwertiger Eindruck
+              </div>
+              <div style={styles.compareGoodItem}>
+                Auswahl, Kommentare und Bestellung möglich
+              </div>
             </div>
           </div>
         </div>
@@ -319,19 +385,37 @@ export default function HomePage() {
 
         <div style={styles.useCaseGrid}>
           {[
-            [imageUrls.useCaseVacation, "Familienurlaub", "Alle laden ihre schönsten Urlaubsbilder in ein gemeinsames Album."],
-            [imageUrls.useCaseBirthday, "Geburtstag", "Gäste öffnen per Tap direkt die Eventseite und teilen ihre Bilder."],
-            [imageUrls.useCaseWedding, "Hochzeit", "Stilvoller Zugang zu Erinnerungen statt chaotischer Fotolinks."],
-            [imageUrls.useCaseFamily, "Familienfeier", "Ein gemeinsamer Ort für Bilder, Reaktionen und spätere Drucke."],
-          ].map(([src, title, text]) => (
-            <div key={title} style={styles.useCaseCard}>
-              <ImageCard src={src} alt={title} height={240} />
-              <div style={styles.useCaseBody}>
-                <h3 style={styles.useCaseTitle}>{title}</h3>
-                <p style={styles.useCaseText}>{text}</p>
+            [
+              imageUrls.useCaseVacation,
+              "Familienurlaub",
+              "Alle laden ihre schönsten Urlaubsbilder in ein gemeinsames Album.",
+            ],
+            [
+              imageUrls.useCaseBirthday,
+              "Geburtstag",
+              "Gäste öffnen per Tap direkt die Eventseite und teilen ihre Bilder.",
+            ],
+            [
+              imageUrls.useCaseWedding,
+              "Hochzeit",
+              "Stilvoller Zugang zu Erinnerungen statt chaotischer Fotolinks.",
+            ],
+            [
+              imageUrls.useCaseFamily,
+              "Familienfeier",
+              "Ein gemeinsamer Ort für Bilder, Reaktionen und spätere Drucke.",
+            ],
+          ].map(function (item) {
+            return (
+              <div key={item[1]} style={styles.useCaseCard}>
+                <ImageCard src={item[0]} alt={item[1]} height={240} />
+                <div style={styles.useCaseBody}>
+                  <h3 style={styles.useCaseTitle}>{item[1]}</h3>
+                  <p style={styles.useCaseText}>{item[2]}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -339,17 +423,27 @@ export default function HomePage() {
         <div style={styles.demoLayout}>
           <div style={styles.demoTextWrap}>
             <SectionBadge>Demo & Einblick</SectionBadge>
-            <h2 style={styles.sectionTitle}>So fühlt sich die Eventseite hinter dem NFC-Key an</h2>
+            <h2 style={styles.sectionTitle}>
+              So fühlt sich die Eventseite hinter dem NFC-Key an
+            </h2>
             <p style={styles.sectionText}>
-              Die Eventseite ist der digitale Teil deiner Idee: Uploads, Galerie,
-              Likes, Kommentare und Bildauswahl für Drucke.
+              Die Eventseite ist der digitale Teil deiner Idee: Uploads,
+              Galerie, Likes, Kommentare und Bildauswahl für Drucke.
             </p>
 
             <div style={styles.featureList}>
-              <div style={styles.featureItem}>Passwortgeschützter Zugang möglich</div>
-              <div style={styles.featureItem}>Mehrere Fotos gleichzeitig hochladen</div>
-              <div style={styles.featureItem}>Ausgewählte Bilder direkt markieren</div>
-              <div style={styles.featureItem}>Kommentare und Likes für Familienmomente</div>
+              <div style={styles.featureItem}>
+                Passwortgeschützter Zugang möglich
+              </div>
+              <div style={styles.featureItem}>
+                Mehrere Fotos gleichzeitig hochladen
+              </div>
+              <div style={styles.featureItem}>
+                Ausgewählte Bilder direkt markieren
+              </div>
+              <div style={styles.featureItem}>
+                Kommentare und Likes für Familienmomente
+              </div>
             </div>
 
             <div style={styles.heroButtonRow}>
@@ -372,17 +466,37 @@ export default function HomePage() {
             <div style={styles.demoPreviewCard}>
               <div style={styles.demoPreviewHeader}>
                 <div>
-                  <div style={styles.demoPreviewTitle}>Sommerfest Familie Weber</div>
-                  <div style={styles.demoPreviewMeta}>Galerie • Upload • Kommentare • Bestellung</div>
+                  <div style={styles.demoPreviewTitle}>
+                    Sommerfest Familie Weber
+                  </div>
+                  <div style={styles.demoPreviewMeta}>
+                    Galerie • Upload • Kommentare • Bestellung
+                  </div>
                 </div>
                 <div style={styles.demoPreviewChip}>NFC geöffnet</div>
               </div>
 
               <div style={styles.demoPreviewGrid}>
-                <ImageCard src={imageUrls.demo1} alt="Demo Galerie 1" height={160} />
-                <ImageCard src={imageUrls.demo2} alt="Demo Galerie 2" height={160} />
-                <ImageCard src={imageUrls.demo3} alt="Demo Galerie 3" height={220} />
-                <ImageCard src={imageUrls.demo4} alt="Demo Galerie 4" height={220} />
+                <ImageCard
+                  src={imageUrls.demo1}
+                  alt="Demo Galerie 1"
+                  height={160}
+                />
+                <ImageCard
+                  src={imageUrls.demo2}
+                  alt="Demo Galerie 2"
+                  height={160}
+                />
+                <ImageCard
+                  src={imageUrls.demo3}
+                  alt="Demo Galerie 3"
+                  height={220}
+                />
+                <ImageCard
+                  src={imageUrls.demo4}
+                  alt="Demo Galerie 4"
+                  height={220}
+                />
               </div>
             </div>
           </div>
@@ -393,13 +507,20 @@ export default function HomePage() {
         <div style={styles.videoSection}>
           <div style={styles.videoText}>
             <SectionBadge>Video</SectionBadge>
-            <h2 style={styles.sectionTitle}>Zeig den NFC-Moment am besten in einem kurzen Video</h2>
+            <h2 style={styles.sectionTitle}>
+              Zeig den NFC-Moment am besten in einem kurzen Video
+            </h2>
             <p style={styles.sectionText}>
               Ein kurzes Demo-Video kann in wenigen Sekunden zeigen, was die
               Idee besonders macht: NFC antippen, Event öffnen, Bilder teilen.
             </p>
 
-            <a href={youtubeVideoUrl} target="_blank" rel="noreferrer" style={styles.primaryButton}>
+            <a
+              href={youtubeVideoUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={styles.primaryButton}
+            >
               Video öffnen
             </a>
           </div>
@@ -411,15 +532,15 @@ export default function HomePage() {
                 alt="Video-Vorschaubild für NFC-Demo"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                style={styles.image as any}
+                style={styles.image}
               />
               <div style={styles.videoOverlay} />
               <div style={styles.videoCenterContent}>
                 <div style={styles.playButton}>▶</div>
                 <div style={styles.videoPlaceholderTitle}>NFC-Demo</div>
                 <div style={styles.videoPlaceholderText}>
-                  Hier kannst du später ein echtes Video oder Thumbnail einsetzen,
-                  das den Tap und die Eventseite zeigt.
+                  Hier kannst du später ein echtes Video oder Thumbnail
+                  einsetzen, das den Tap und die Eventseite zeigt.
                 </div>
               </div>
             </div>
@@ -430,7 +551,9 @@ export default function HomePage() {
       <section style={styles.sectionAlt}>
         <div style={styles.sectionHeader}>
           <SectionBadge>Preise</SectionBadge>
-          <h2 style={styles.sectionTitle}>Nicht nur Software, sondern ein personalisiertes Erlebnis</h2>
+          <h2 style={styles.sectionTitle}>
+            Nicht nur Software, sondern ein personalisiertes Erlebnis
+          </h2>
           <p style={styles.sectionText}>
             Preislich sollte sichtbar werden, dass dein Angebot Produkt,
             Personalisierung und digitale Nutzung verbindet.
@@ -449,7 +572,9 @@ export default function HomePage() {
             <div style={styles.priceList}>
               <div style={styles.priceListItem}>Personalisierter NFC-Key</div>
               <div style={styles.priceListItem}>Direkter Event-Zugang</div>
-              <div style={styles.priceListItem}>Ideal für kleine Familienmomente</div>
+              <div style={styles.priceListItem}>
+                Ideal für kleine Familienmomente
+              </div>
             </div>
           </div>
 
@@ -458,14 +583,18 @@ export default function HomePage() {
             <h3 style={styles.priceTitle}>NFC-Key + Eventseite</h3>
             <div style={styles.priceValue}>ab 29,99 €</div>
             <p style={styles.priceText}>
-              Die starke Hauptlösung mit persönlichem Zugang, Galerie, Upload und
-              gemeinsamer Nutzung.
+              Die starke Hauptlösung mit persönlichem Zugang, Galerie, Upload
+              und gemeinsamer Nutzung.
             </p>
             <div style={styles.priceList}>
               <div style={styles.priceListItem}>Individueller NFC-Key</div>
               <div style={styles.priceListItem}>Digitale Eventseite</div>
-              <div style={styles.priceListItem}>Fotos hochladen und sammeln</div>
-              <div style={styles.priceListItem}>Likes, Kommentare, Auswahl</div>
+              <div style={styles.priceListItem}>
+                Fotos hochladen und sammeln
+              </div>
+              <div style={styles.priceListItem}>
+                Likes, Kommentare, Auswahl
+              </div>
             </div>
           </div>
 
@@ -480,7 +609,9 @@ export default function HomePage() {
             <div style={styles.priceList}>
               <div style={styles.priceListItem}>Erweiterte Gestaltung</div>
               <div style={styles.priceListItem}>Mehr Premium-Auftritt</div>
-              <div style={styles.priceListItem}>Individuelle Anfrage möglich</div>
+              <div style={styles.priceListItem}>
+                Individuelle Anfrage möglich
+              </div>
             </div>
           </div>
         </div>
@@ -489,8 +620,12 @@ export default function HomePage() {
       <section style={styles.ctaSection}>
         <div style={styles.ctaCard}>
           <div>
-            <SectionBadge light>Bereit für den ersten echten Test?</SectionBadge>
-            <h2 style={styles.ctaTitle}>Starte mit einem Event und bring die NFC-Idee direkt in die Praxis</h2>
+            <SectionBadge light>
+              Bereit für den ersten echten Test?
+            </SectionBadge>
+            <h2 style={styles.ctaTitle}>
+              Starte mit einem Event und bring die NFC-Idee direkt in die Praxis
+            </h2>
             <p style={styles.ctaText}>
               Der beste Schritt ist jetzt, ein echtes Event anzulegen und zu
               testen, wie sich dein Konzept mit Familie oder Gästen anfühlt.
@@ -512,9 +647,10 @@ export default function HomePage() {
   );
 }
 
-const styles: Record<string, CSSProperties> = {
+const styles = {
   page: {
-    background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 35%, #f8fafc 100%)",
+    background:
+      "linear-gradient(180deg, #f8fafc 0%, #ffffff 35%, #f8fafc 100%)",
     minHeight: "100vh",
     color: "#0f172a",
     overflowX: "hidden",
@@ -601,7 +737,6 @@ const styles: Record<string, CSSProperties> = {
     fontWeight: 700,
     boxShadow: "0 14px 30px rgba(15, 23, 42, 0.16)",
     minWidth: "180px",
-    transition: "transform 180ms ease, box-shadow 180ms ease",
   },
   secondaryButton: {
     display: "inline-flex",
@@ -646,7 +781,8 @@ const styles: Record<string, CSSProperties> = {
     maxWidth: "600px",
     borderRadius: "32px",
     padding: "20px",
-    background: "linear-gradient(145deg, #0f172a 0%, #1e293b 52%, #334155 100%)",
+    background:
+      "linear-gradient(145deg, #0f172a 0%, #1e293b 52%, #334155 100%)",
     boxShadow: "0 28px 70px rgba(15, 23, 42, 0.22)",
     color: "#fff",
     border: "1px solid rgba(255,255,255,0.08)",
@@ -696,7 +832,8 @@ const styles: Record<string, CSSProperties> = {
   heroVisualMainOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(180deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.62) 100%)",
+    background:
+      "linear-gradient(180deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.62) 100%)",
   },
   heroVisualCaption: {
     position: "absolute",
@@ -740,7 +877,8 @@ const styles: Record<string, CSSProperties> = {
   },
   sectionAlt: {
     padding: "62px 24px",
-    background: "linear-gradient(180deg, rgba(241,245,249,0.72) 0%, rgba(255,255,255,1) 100%)",
+    background:
+      "linear-gradient(180deg, rgba(241,245,249,0.72) 0%, rgba(255,255,255,1) 100%)",
   },
   sectionHeader: {
     maxWidth: "860px",
@@ -1118,7 +1256,8 @@ const styles: Record<string, CSSProperties> = {
   videoOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(135deg, rgba(15,23,42,0.55), rgba(51,65,85,0.6))",
+    background:
+      "linear-gradient(135deg, rgba(15,23,42,0.55), rgba(51,65,85,0.6))",
   },
   videoCenterContent: {
     position: "absolute",
@@ -1225,7 +1364,8 @@ const styles: Record<string, CSSProperties> = {
     padding: "24px 24px 72px",
   },
   ctaCard: {
-    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
+    background:
+      "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
     color: "#fff",
     borderRadius: "30px",
     padding: "34px",
@@ -1288,11 +1428,13 @@ const styles: Record<string, CSSProperties> = {
   imageOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(180deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.16) 100%)",
+    background:
+      "linear-gradient(180deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.16) 100%)",
   },
   imageOverlayDark: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(180deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.28) 100%)",
+    background:
+      "linear-gradient(180deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.28) 100%)",
   },
 };
