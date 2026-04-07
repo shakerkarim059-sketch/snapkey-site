@@ -96,9 +96,9 @@ export default function EventPage() {
   }, [slug]);
 
   useEffect(() => {
-  if (!slug) return;
-  checkExistingSession();
-}, [slug]);
+    if (!slug) return;
+    checkExistingSession();
+  }, [slug]);
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -151,23 +151,23 @@ export default function EventPage() {
     setLoadingEvent(true);
     setEventNotFound(false);
 
-const { data, error } = await supabase
-  .from("events")
-  .select(`
-    id,
-    title,
-    location,
-    category,
-    start_date,
-    end_date,
-    description,
-    slug,
-    likes_enabled,
-    comments_enabled,
-    created_at
-  `)
-  .eq("slug", slug)
-  .single();
+    const { data, error } = await supabase
+      .from("events")
+      .select(`
+        id,
+        title,
+        location,
+        category,
+        start_date,
+        end_date,
+        description,
+        slug,
+        likes_enabled,
+        comments_enabled,
+        created_at
+      `)
+      .eq("slug", slug)
+      .single();
 
     if (error || !data) {
       console.error("Fehler beim Laden des Events:", error);
@@ -185,21 +185,23 @@ const { data, error } = await supabase
       fetchAllLikes(),
       fetchAllComments(),
     ]);
-async function checkExistingSession() {
-  try {
-    const response = await fetch("/api/event-session");
-    const result = await response.json();
 
-    if (!response.ok || !result?.authenticated) return;
-    if (result.slug !== slug) return;
-
-    setIsAuthenticated(true);
-    setIsAdmin(result.role === "admin");
-  } catch (error) {
-    console.error("Fehler beim Prüfen der Session:", error);
-  }
-}
     setLoadingEvent(false);
+  }
+
+  async function checkExistingSession() {
+    try {
+      const response = await fetch("/api/event-session");
+      const result = await response.json();
+
+      if (!response.ok || !result?.authenticated) return;
+      if (result.slug !== slug) return;
+
+      setIsAuthenticated(true);
+      setIsAdmin(result.role === "admin");
+    } catch (error) {
+      console.error("Fehler beim Prüfen der Session:", error);
+    }
   }
 
   async function fetchPhotosForEvent(eventId) {
@@ -257,82 +259,63 @@ async function checkExistingSession() {
     setLoadingComments(false);
   }
 
-async function handleLogin() {
-  if (!eventData || !slug) return;
+  async function handleLogin() {
+    if (!eventData || !slug) return;
 
-  try {
-    const response = await fetch("/api/event-login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        slug,
-        password: passwordInput,
-      }),
-    });
+    try {
+      const response = await fetch("/api/event-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          slug,
+          password: passwordInput,
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      alert(result.error || "Login fehlgeschlagen.");
-      return;
+      if (!response.ok) {
+        alert(result.error || "Login fehlgeschlagen.");
+        return;
+      }
+
+      if (result.role === "admin") {
+        setIsAuthenticated(true);
+        setIsAdmin(true);
+        return;
+      }
+
+      if (result.role === "guest") {
+        setIsAuthenticated(true);
+        setIsAdmin(false);
+        return;
+      }
+
+      alert("Unbekannte Login-Antwort.");
+    } catch (error) {
+      console.error("Fehler beim Login:", error);
+      alert("Login fehlgeschlagen.");
     }
-
-    if (result.role === "admin") {
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      return;
-    }
-
-    if (result.role === "guest") {
-      setIsAuthenticated(true);
-      setIsAdmin(false);
-      return;
-    }
-
-    alert("Unbekannte Login-Antwort.");
-  } catch (error) {
-    console.error("Fehler beim Login:", error);
-    alert("Login fehlgeschlagen.");
-  }
-}
-
-    if (result.role === "admin") {
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      return;
-    }
-
-    if (result.role === "guest") {
-      setIsAuthenticated(true);
-      setIsAdmin(false);
-      return;
-    }
-
-    alert("Unbekannte Login-Antwort.");
-  } catch (error) {
-    console.error("Fehler beim Login:", error);
-    alert("Login fehlgeschlagen.");
-  }
-}
-
-async function handleLogout() {
-  try {
-    await fetch("/api/event-logout", {
-      method: "POST",
-    });
-  } catch (error) {
-    console.error("Fehler beim Logout:", error);
   }
 
-  setIsAuthenticated(false);
-  setIsAdmin(false);
-  setPasswordInput("");
-  setEditingEventId(null);
-  setLightboxOpen(false);
-  setCartOpen(false);
-}
+  async function handleLogout() {
+    try {
+      await fetch("/api/event-logout", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Fehler beim Logout:", error);
+    }
+
+    setIsAuthenticated(false);
+    setIsAdmin(false);
+    setPasswordInput("");
+    setEditingEventId(null);
+    setLightboxOpen(false);
+    setCartOpen(false);
+  }
 
   function fillEditForm(event) {
     setTitle(event.title || "");
@@ -912,7 +895,8 @@ async function handleLogout() {
           </span>
           <h2 style={styles.heroTitle}>{eventData.title}</h2>
           <p style={styles.heroMeta}>
-            {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
+            {eventData.location || "Kein Ort"} •{" "}
+            {formatDate(eventData.start_date)}
             {eventData.end_date ? ` - ${formatDate(eventData.end_date)}` : ""}
           </p>
         </div>
