@@ -614,114 +614,86 @@ export default function EventPage() {
     setSubmittingCommentPhotoId(null);
   }
 
-  async function handleSubmitOrder() {
-    if (!eventData?.id) {
-      alert("Event nicht gefunden.");
-      return;
-    }
-
-    if (selectedPhotos.length === 0) {
-      alert("Bitte zuerst Bilder auswählen.");
-      return;
-    }
-
-    if (!customerName.trim()) {
-      alert("Bitte deinen Namen eingeben.");
-      return;
-    }
-
-    if (!customerEmail.trim()) {
-      alert("Bitte deine E-Mail eingeben.");
-      return;
-    }
-
-    if (!street.trim() || !postalCode.trim() || !city.trim()) {
-      alert("Bitte die vollständige Adresse eingeben.");
-      return;
-    }
-
-    setSubmittingOrder(true);
-
-    try {
-      const { data: createdOrder, error: orderError } = await supabase
-        .from("orders")
-        .insert([
-          {
-            event_id: eventData.id,
-            customer_name: customerName.trim(),
-            customer_email: customerEmail.trim(),
-            customer_phone: customerPhone.trim() || null,
-            street: street.trim(),
-            postal_code: postalCode.trim(),
-            city: city.trim(),
-            country: country.trim() || "Deutschland",
-            note: orderNote.trim() || null,
-            print_option: selectedPrintOption,
-            frame_option: selectedFrameOption,
-            item_count: selectedPhotos.length,
-            total_price: totalPrice,
-            status: "neu",
-          },
-        ])
-        .select()
-        .single();
-
-      if (orderError) {
-        console.error("Fehler beim Speichern der Bestellung:", orderError);
-        alert(
-          "Bestellung konnte nicht gespeichert werden: " + orderError.message
-        );
-        setSubmittingOrder(false);
-        return;
-      }
-
-      const orderItemsPayload = selectedPhotos.map((photo) => ({
-        order_id: createdOrder.id,
-        photo_id: photo.id,
-        photo_url: photo.file_path || null,
-        photo_caption: photo.caption || null,
-        print_option: selectedPrintOption,
-        frame_option: selectedFrameOption,
-        unit_price: pricePerPhoto,
-      }));
-
-      const { error: itemsError } = await supabase
-        .from("order_items")
-        .insert(orderItemsPayload);
-
-      if (itemsError) {
-        console.error(
-          "Fehler beim Speichern der Bestellpositionen:",
-          itemsError
-        );
-        alert(
-          "Bestellpositionen konnten nicht gespeichert werden: " +
-            itemsError.message
-        );
-        setSubmittingOrder(false);
-        return;
-      }
-
-      alert("Deine Bestellung wurde erfolgreich gespeichert.");
-
-      setCustomerName("");
-      setCustomerEmail("");
-      setCustomerPhone("");
-      setStreet("");
-      setPostalCode("");
-      setCity("");
-      setCountry("Deutschland");
-      setOrderNote("");
-
-      setSelectedPhotoIds([]);
-      setCartOpen(false);
-    } catch (error) {
-      console.error("Unbekannter Fehler bei der Bestellung:", error);
-      alert("Es gab ein Problem beim Absenden der Bestellung.");
-    }
-
-    setSubmittingOrder(false);
+async function handleSubmitOrder() {
+  if (!eventData?.id) {
+    alert("Event nicht gefunden.");
+    return;
   }
+
+  if (selectedPhotos.length === 0) {
+    alert("Bitte zuerst Bilder auswählen.");
+    return;
+  }
+
+  if (!customerName.trim()) {
+    alert("Bitte deinen Namen eingeben.");
+    return;
+  }
+
+  if (!customerEmail.trim()) {
+    alert("Bitte deine E-Mail eingeben.");
+    return;
+  }
+
+  if (!street.trim() || !postalCode.trim() || !city.trim()) {
+    alert("Bitte die vollständige Adresse eingeben.");
+    return;
+  }
+
+  setSubmittingOrder(true);
+
+  try {
+    const response = await fetch("/api/create-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        eventId: eventData.id,
+        customerName,
+        customerEmail,
+        customerPhone,
+        street,
+        postalCode,
+        city,
+        country,
+        orderNote,
+        printOption: selectedPrintOption,
+        frameOption: selectedFrameOption,
+        selectedPhotos,
+        totalPrice,
+        pricePerPhoto,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Bestellung konnte nicht gespeichert werden.");
+      setSubmittingOrder(false);
+      return;
+    }
+
+    alert("Deine Bestellung wurde erfolgreich gespeichert.");
+
+    setCustomerName("");
+    setCustomerEmail("");
+    setCustomerPhone("");
+    setStreet("");
+    setPostalCode("");
+    setCity("");
+    setCountry("Deutschland");
+    setOrderNote("");
+
+    setSelectedPhotoIds([]);
+    setCartOpen(false);
+  } catch (error) {
+    console.error("Unbekannter Fehler bei der Bestellung:", error);
+    alert("Es gab ein Problem beim Absenden der Bestellung.");
+  }
+
+  setSubmittingOrder(false);
+}
 
   function formatDate(dateString) {
     if (!dateString) return "Kein Datum";
