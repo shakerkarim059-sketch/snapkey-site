@@ -1576,11 +1576,11 @@ async function handleSubmitOrder() {
 
           {loadingOrders ? (
             <div style={styles.emptyBox}>Lade Bestellungen...</div>
-          ) : orders.length === 0 ? (
+          )!orders || orders.length === 0 (
             <div style={styles.emptyBox}>Noch keine bezahlten Bestellungen.</div>
           ) : (
             <div style={{ display: "grid", gap: "12px", marginTop: "16px" }}>
-              {orders.map((order) => (
+              {(orders || []).map((order) => (
                 <div
                   key={order.id}
                   style={{
