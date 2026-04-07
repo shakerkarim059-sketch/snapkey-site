@@ -48,7 +48,8 @@ export default function EventPage() {
   const [updatingEvent, setUpdatingEvent] = useState(false);
 
   const [likingPhotoId, setLikingPhotoId] = useState(null);
-  const [submittingCommentPhotoId, setSubmittingCommentPhotoId] = useState(null);
+  const [submittingCommentPhotoId, setSubmittingCommentPhotoId] =
+    useState(null);
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -71,15 +72,19 @@ export default function EventPage() {
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-const [customerName, setCustomerName] = useState("");
-const [customerEmail, setCustomerEmail] = useState("");
-const [customerPhone, setCustomerPhone] = useState("");
-const [street, setStreet] = useState("");
-const [postalCode, setPostalCode] = useState("");
-const [city, setCity] = useState("");
-const [country, setCountry] = useState("Deutschland");
-const [orderNote, setOrderNote] = useState("");
-const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [selectedPrintOption, setSelectedPrintOption] =
+    useState("10x15-portrait");
+  const [selectedFrameOption, setSelectedFrameOption] = useState("none");
+
+  const [customerName, setCustomerName] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [street, setStreet] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("Deutschland");
+  const [orderNote, setOrderNote] = useState("");
+  const [submittingOrder, setSubmittingOrder] = useState(false);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -119,22 +124,23 @@ const [submittingOrder, setSubmittingOrder] = useState(false);
       document.body.style.margin = "0";
     }
   }, []);
+
   useEffect(() => {
-  if (typeof document === "undefined") return;
+    if (typeof document === "undefined") return;
 
-  if (cartOpen || lightboxOpen) {
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-    document.documentElement.style.overflow = "";
-  }
+    if (cartOpen || lightboxOpen) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    }
 
-  return () => {
-    document.body.style.overflow = "";
-    document.documentElement.style.overflow = "";
-  };
-}, [cartOpen, lightboxOpen]);
+    return () => {
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
+    };
+  }, [cartOpen, lightboxOpen]);
 
   async function fetchEventBySlug() {
     setLoadingEvent(true);
@@ -492,106 +498,7 @@ const [submittingOrder, setSubmittingOrder] = useState(false);
       alert("Bitte zuerst einen Kommentar eingeben.");
       return;
     }
-async function handleSubmitOrder() {
-  if (!eventData?.id) {
-    alert("Event nicht gefunden.");
-    return;
-  }
 
-  if (selectedPhotos.length === 0) {
-    alert("Bitte zuerst Bilder auswählen.");
-    return;
-  }
-
-  if (!customerName.trim()) {
-    alert("Bitte deinen Namen eingeben.");
-    return;
-  }
-
-  if (!customerEmail.trim()) {
-    alert("Bitte deine E-Mail eingeben.");
-    return;
-  }
-
-  if (!street.trim() || !postalCode.trim() || !city.trim()) {
-    alert("Bitte die vollständige Adresse eingeben.");
-    return;
-  }
-
-  setSubmittingOrder(true);
-
-  try {
-    const { data: createdOrder, error: orderError } = await supabase
-      .from("orders")
-      .insert([
-        {
-          event_id: eventData.id,
-          customer_name: customerName.trim(),
-          customer_email: customerEmail.trim(),
-          customer_phone: customerPhone.trim() || null,
-          street: street.trim(),
-          postal_code: postalCode.trim(),
-          city: city.trim(),
-          country: country.trim() || "Deutschland",
-          note: orderNote.trim() || null,
-          print_option: selectedPrintOption,
-          frame_option: selectedFrameOption,
-          item_count: selectedPhotos.length,
-          total_price: totalPrice,
-          status: "neu",
-        },
-      ])
-      .select()
-      .single();
-
-    if (orderError) {
-      console.error("Fehler beim Speichern der Bestellung:", orderError);
-      alert("Bestellung konnte nicht gespeichert werden: " + orderError.message);
-      setSubmittingOrder(false);
-      return;
-    }
-
-    const orderItemsPayload = selectedPhotos.map((photo) => ({
-      order_id: createdOrder.id,
-      photo_id: photo.id,
-      photo_url: photo.public_url || photo.image_url || null,
-      photo_caption: photo.caption || null,
-      print_option: selectedPrintOption,
-      frame_option: selectedFrameOption,
-      unit_price: pricePerPhoto,
-    }));
-
-    const { error: itemsError } = await supabase
-      .from("order_items")
-      .insert(orderItemsPayload);
-
-    if (itemsError) {
-      console.error("Fehler beim Speichern der Bestellpositionen:", itemsError);
-      alert("Bestellpositionen konnten nicht gespeichert werden: " + itemsError.message);
-      setSubmittingOrder(false);
-      return;
-    }
-
-    alert("Deine Bestellung wurde erfolgreich gespeichert.");
-
-    setCustomerName("");
-    setCustomerEmail("");
-    setCustomerPhone("");
-    setStreet("");
-    setPostalCode("");
-    setCity("");
-    setCountry("Deutschland");
-    setOrderNote("");
-
-    setSelectedPhotoIds([]);
-    setCartOpen(false);
-  } catch (error) {
-    console.error("Unbekannter Fehler bei der Bestellung:", error);
-    alert("Es gab ein Problem beim Absenden der Bestellung.");
-  }
-
-  setSubmittingOrder(false);
-}
     setSubmittingCommentPhotoId(photoId);
 
     const { error } = await supabase.from("photo_comments").insert([
@@ -614,6 +521,115 @@ async function handleSubmitOrder() {
     }
 
     setSubmittingCommentPhotoId(null);
+  }
+
+  async function handleSubmitOrder() {
+    if (!eventData?.id) {
+      alert("Event nicht gefunden.");
+      return;
+    }
+
+    if (selectedPhotos.length === 0) {
+      alert("Bitte zuerst Bilder auswählen.");
+      return;
+    }
+
+    if (!customerName.trim()) {
+      alert("Bitte deinen Namen eingeben.");
+      return;
+    }
+
+    if (!customerEmail.trim()) {
+      alert("Bitte deine E-Mail eingeben.");
+      return;
+    }
+
+    if (!street.trim() || !postalCode.trim() || !city.trim()) {
+      alert("Bitte die vollständige Adresse eingeben.");
+      return;
+    }
+
+    setSubmittingOrder(true);
+
+    try {
+      const { data: createdOrder, error: orderError } = await supabase
+        .from("orders")
+        .insert([
+          {
+            event_id: eventData.id,
+            customer_name: customerName.trim(),
+            customer_email: customerEmail.trim(),
+            customer_phone: customerPhone.trim() || null,
+            street: street.trim(),
+            postal_code: postalCode.trim(),
+            city: city.trim(),
+            country: country.trim() || "Deutschland",
+            note: orderNote.trim() || null,
+            print_option: selectedPrintOption,
+            frame_option: selectedFrameOption,
+            item_count: selectedPhotos.length,
+            total_price: totalPrice,
+            status: "neu",
+          },
+        ])
+        .select()
+        .single();
+
+      if (orderError) {
+        console.error("Fehler beim Speichern der Bestellung:", orderError);
+        alert(
+          "Bestellung konnte nicht gespeichert werden: " + orderError.message
+        );
+        setSubmittingOrder(false);
+        return;
+      }
+
+      const orderItemsPayload = selectedPhotos.map((photo) => ({
+        order_id: createdOrder.id,
+        photo_id: photo.id,
+        photo_url: photo.public_url || photo.image_url || null,
+        photo_caption: photo.caption || null,
+        print_option: selectedPrintOption,
+        frame_option: selectedFrameOption,
+        unit_price: pricePerPhoto,
+      }));
+
+      const { error: itemsError } = await supabase
+        .from("order_items")
+        .insert(orderItemsPayload);
+
+      if (itemsError) {
+        console.error(
+          "Fehler beim Speichern der Bestellpositionen:",
+          itemsError
+        );
+        alert(
+          "Bestellpositionen konnten nicht gespeichert werden: " +
+            itemsError.message
+        );
+        setSubmittingOrder(false);
+        return;
+      }
+
+      alert("Deine Bestellung wurde erfolgreich gespeichert.");
+
+      setCustomerName("");
+      setCustomerEmail("");
+      setCustomerPhone("");
+      setStreet("");
+      setPostalCode("");
+      setCity("");
+      setCountry("Deutschland");
+      setOrderNote("");
+
+      setSelectedPhotoIds([]);
+      setCartOpen(false);
+    } catch (error) {
+      console.error("Unbekannter Fehler bei der Bestellung:", error);
+      alert("Es gab ein Problem beim Absenden der Bestellung.");
+    }
+
+    setSubmittingOrder(false);
   }
 
   function formatDate(dateString) {
@@ -642,14 +658,14 @@ async function handleSubmitOrder() {
     );
   }
 
-function openLightbox(index) {
-  setSelectedPhotoIndex(index);
-  setLightboxOpen(true);
-}
+  function openLightbox(index) {
+    setSelectedPhotoIndex(index);
+    setLightboxOpen(true);
+  }
 
-function closeLightbox() {
-  setLightboxOpen(false);
-}
+  function closeLightbox() {
+    setLightboxOpen(false);
+  }
 
   function showNextPhoto() {
     if (!filteredPhotos.length) return;
@@ -799,7 +815,9 @@ function closeLightbox() {
           ...styles.heroCard,
           ...(coverPhoto
             ? {
-                backgroundImage: `url(${coverPhoto.public_url || coverPhoto.image_url})`,
+                backgroundImage: `url(${
+                  coverPhoto.public_url || coverPhoto.image_url
+                })`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -1049,7 +1067,7 @@ function closeLightbox() {
             const commentsForPhoto = getCommentsForPhoto(photo.id);
             const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
             const isSelected = selectedPhotoIds.includes(photo.id);
-const mediaHeight = "280px";
+            const mediaHeight = "280px";
 
             return (
               <div
@@ -1067,7 +1085,6 @@ const mediaHeight = "280px";
                   <div style={styles.photoOverlay}>
                     <span style={styles.photoOverlayText}>Vergrößern</span>
                   </div>
-
 
                   {isAdmin && (
                     <button
@@ -1286,130 +1303,136 @@ const mediaHeight = "280px";
                   </div>
                 </div>
 
-<div style={styles.cartGrid}>
-  {selectedPhotos.map((photo) => (
-    <div key={photo.id} style={styles.cartPhotoCard}>
-      <img
-        src={photo.public_url || photo.image_url}
-        alt={photo.caption || photo.file_name || "Foto"}
-        style={styles.cartPhoto}
-      />
+                <div style={styles.cartGrid}>
+                  {selectedPhotos.map((photo) => (
+                    <div key={photo.id} style={styles.cartPhotoCard}>
+                      <img
+                        src={photo.public_url || photo.image_url}
+                        alt={photo.caption || photo.file_name || "Foto"}
+                        style={styles.cartPhoto}
+                      />
 
-      <div style={styles.cartPhotoInfo}>
-        <div style={styles.cartPhotoName}>
-          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
-        </div>
+                      <div style={styles.cartPhotoInfo}>
+                        <div style={styles.cartPhotoName}>
+                          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+                        </div>
 
-        <button
-          type="button"
-          onClick={() => togglePhotoSelection(photo.id)}
-          style={styles.removeFromCartButton}
-        >
-          Entfernen
-        </button>
-      </div>
-    </div>
-  ))}
-</div>
+                        <button
+                          type="button"
+                          onClick={() => togglePhotoSelection(photo.id)}
+                          style={styles.removeFromCartButton}
+                        >
+                          Entfernen
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
-<div style={styles.orderFormCard}>
-  <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
-  <p style={styles.orderFormText}>
-    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine ausgewählten
-    Bilder aus diesem Event werden zusammen mit Format und Rahmen gespeichert.
-  </p>
+                <div style={styles.orderFormCard}>
+                  <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
+                  <p style={styles.orderFormText}>
+                    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine
+                    ausgewählten Bilder aus diesem Event werden zusammen mit
+                    Format und Rahmen gespeichert.
+                  </p>
 
-  <div style={styles.orderFormGrid}>
-    <input
-      type="text"
-      placeholder="Vor- und Nachname"
-      value={customerName}
-      onChange={(e) => setCustomerName(e.target.value)}
-      style={styles.orderInput}
-    />
+                  <div style={styles.orderFormGrid}>
+                    <input
+                      type="text"
+                      placeholder="Vor- und Nachname"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      style={styles.orderInput}
+                    />
 
-    <input
-      type="email"
-      placeholder="E-Mail"
-      value={customerEmail}
-      onChange={(e) => setCustomerEmail(e.target.value)}
-      style={styles.orderInput}
-    />
+                    <input
+                      type="email"
+                      placeholder="E-Mail"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      style={styles.orderInput}
+                    />
 
-    <input
-      type="text"
-      placeholder="Telefon (optional)"
-      value={customerPhone}
-      onChange={(e) => setCustomerPhone(e.target.value)}
-      style={styles.orderInput}
-    />
+                    <input
+                      type="text"
+                      placeholder="Telefon (optional)"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      style={styles.orderInput}
+                    />
 
-    <input
-      type="text"
-      placeholder="Straße und Hausnummer"
-      value={street}
-      onChange={(e) => setStreet(e.target.value)}
-      style={styles.orderInput}
-    />
+                    <input
+                      type="text"
+                      placeholder="Straße und Hausnummer"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                      style={styles.orderInput}
+                    />
 
-    <input
-      type="text"
-      placeholder="PLZ"
-      value={postalCode}
-      onChange={(e) => setPostalCode(e.target.value)}
-      style={styles.orderInput}
-    />
+                    <input
+                      type="text"
+                      placeholder="PLZ"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      style={styles.orderInput}
+                    />
 
-    <input
-      type="text"
-      placeholder="Ort"
-      value={city}
-      onChange={(e) => setCity(e.target.value)}
-      style={styles.orderInput}
-    />
+                    <input
+                      type="text"
+                      placeholder="Ort"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      style={styles.orderInput}
+                    />
 
-    <input
-      type="text"
-      placeholder="Land"
-      value={country}
-      onChange={(e) => setCountry(e.target.value)}
-      style={styles.orderInput}
-    />
-  </div>
+                    <input
+                      type="text"
+                      placeholder="Land"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      style={styles.orderInput}
+                    />
+                  </div>
 
-  <textarea
-    placeholder="Notiz zur Bestellung (optional)"
-    value={orderNote}
-    onChange={(e) => setOrderNote(e.target.value)}
-    rows={4}
-    style={styles.orderTextarea}
-  />
-</div>
+                  <textarea
+                    placeholder="Notiz zur Bestellung (optional)"
+                    value={orderNote}
+                    onChange={(e) => setOrderNote(e.target.value)}
+                    rows={4}
+                    style={styles.orderTextarea}
+                  />
+                </div>
 
-<div style={styles.cartFooter}>
-  <div style={styles.cartFooterSummary}>
-    <div style={styles.cartFooterSmall}>
-      {selectedPhotos.length} Bild
-      {selectedPhotos.length === 1 ? "" : "er"} • {selectedPrint?.label}
-      {selectedFrame?.value !== "none" ? ` • ${selectedFrame?.label}` : ""}
-    </div>
-    <div style={styles.cartFooterTotal}>
-      {totalPrice.toFixed(2)} €
-    </div>
-  </div>
+                <div style={styles.cartFooter}>
+                  <div style={styles.cartFooterSummary}>
+                    <div style={styles.cartFooterSmall}>
+                      {selectedPhotos.length} Bild
+                      {selectedPhotos.length === 1 ? "" : "er"} •{" "}
+                      {selectedPrint?.label}
+                      {selectedFrame?.value !== "none"
+                        ? ` • ${selectedFrame?.label}`
+                        : ""}
+                    </div>
+                    <div style={styles.cartFooterTotal}>
+                      {totalPrice.toFixed(2)} €
+                    </div>
+                  </div>
 
-  <button
-    type="button"
-    style={{
-      ...styles.checkoutButton,
-      ...(submittingOrder ? styles.buttonDisabled : {}),
-    }}
-    onClick={handleSubmitOrder}
-    disabled={submittingOrder}
-  >
-    {submittingOrder ? "Bestellung wird gespeichert..." : "Erinnerungen bestellen"}
-  </button>
-</div>
+                  <button
+                    type="button"
+                    style={{
+                      ...styles.checkoutButton,
+                      ...(submittingOrder ? styles.buttonDisabled : {}),
+                    }}
+                    onClick={handleSubmitOrder}
+                    disabled={submittingOrder}
+                  >
+                    {submittingOrder
+                      ? "Bestellung wird gespeichert..."
+                      : "Erinnerungen bestellen"}
+                  </button>
+                </div>
               </>
             )}
           </div>
@@ -1463,9 +1486,7 @@ const mediaHeight = "280px";
                 {selectedPhotoIndex + 1} / {filteredPhotos.length}
               </div>
               {currentPhoto.caption && (
-                <div style={styles.lightboxCaption}>
-                  {currentPhoto.caption}
-                </div>
+                <div style={styles.lightboxCaption}>{currentPhoto.caption}</div>
               )}
             </div>
           </div>
@@ -1865,7 +1886,8 @@ const styles = {
   photoOverlay: {
     position: "absolute",
     inset: 0,
-    background: "linear-gradient(to top, rgba(15,23,42,0.26), rgba(15,23,42,0.05))",
+    background:
+      "linear-gradient(to top, rgba(15,23,42,0.26), rgba(15,23,42,0.05))",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1880,7 +1902,6 @@ const styles = {
     background: "rgba(15,23,42,0.45)",
     backdropFilter: "blur(4px)",
   },
-
   photoInfoArea: {
     padding: "14px",
     display: "grid",
@@ -2020,33 +2041,33 @@ const styles = {
     lineHeight: "1.5",
     whiteSpace: "pre-wrap",
   },
-cartBackdrop: {
-  position: "fixed",
-  inset: 0,
-  backgroundColor: "rgba(15, 23, 42, 0.55)",
-  zIndex: 1200,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "flex-end",
-  padding: "16px",
-  overflowX: "hidden",
-  overflowY: "auto",
-  overscrollBehavior: "contain",
-},
-cartPanel: {
-  width: "100%",
-  maxWidth: "900px",
-  maxHeight: "85vh",
-  overflowY: "auto",
-  overflowX: "hidden",
-  background: "#ffffff",
-  borderRadius: "24px",
-  padding: "20px",
-  boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
-  boxSizing: "border-box",
-  overscrollBehavior: "contain",
-  touchAction: "pan-y",
-},
+  cartBackdrop: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(15, 23, 42, 0.55)",
+    zIndex: 1200,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "flex-end",
+    padding: "16px",
+    overflowX: "hidden",
+    overflowY: "auto",
+    overscrollBehavior: "contain",
+  },
+  cartPanel: {
+    width: "100%",
+    maxWidth: "900px",
+    maxHeight: "85vh",
+    overflowY: "auto",
+    overflowX: "hidden",
+    background: "#ffffff",
+    borderRadius: "24px",
+    padding: "20px",
+    boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
+    boxSizing: "border-box",
+    overscrollBehavior: "contain",
+    touchAction: "pan-y",
+  },
   cartHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -2077,73 +2098,19 @@ cartPanel: {
     fontWeight: "700",
     color: "#334155",
   },
-orderOptionsGrid: {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-  gap: "14px",
-  marginBottom: "18px",
-  width: "100%",
-},
+  orderOptionsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gap: "14px",
+    marginBottom: "18px",
+    width: "100%",
+  },
   orderOptionCard: {
     background: "#f8fafc",
     border: "1px solid #e2e8f0",
     borderRadius: "18px",
     padding: "14px",
   },
-  orderFormCard: {
-  background: "#f8fafc",
-  border: "1px solid #e2e8f0",
-  borderRadius: "18px",
-  padding: "18px",
-  marginTop: "18px",
-  marginBottom: "18px",
-  display: "grid",
-  gap: "14px",
-},
-
-orderFormTitle: {
-  margin: 0,
-  fontSize: "22px",
-  fontWeight: "800",
-  color: "#0f172a",
-},
-
-orderFormText: {
-  margin: 0,
-  fontSize: "14px",
-  lineHeight: "1.7",
-  color: "#475569",
-},
-
-orderFormGrid: {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-  gap: "12px",
-},
-
-orderInput: {
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "12px 14px",
-  borderRadius: "12px",
-  border: "1px solid #cbd5e1",
-  fontSize: "14px",
-  backgroundColor: "#fff",
-  outline: "none",
-},
-
-orderTextarea: {
-  width: "100%",
-  boxSizing: "border-box",
-  padding: "12px 14px",
-  borderRadius: "12px",
-  border: "1px solid #cbd5e1",
-  fontSize: "14px",
-  backgroundColor: "#fff",
-  outline: "none",
-  resize: "vertical",
-  fontFamily: "inherit",
-},
   orderLabel: {
     display: "block",
     marginBottom: "8px",
@@ -2187,101 +2154,146 @@ orderTextarea: {
     fontSize: "18px",
     fontWeight: "800",
   },
-cartGrid: {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-  gap: "16px",
-  width: "100%",
-  overflowX: "hidden",
-  marginBottom: "18px",
-},
-cartPhotoCard: {
-  background: "#fff",
-  border: "1px solid #e2e8f0",
-  borderRadius: "18px",
-  overflow: "hidden",
-  display: "flex",
-  flexDirection: "column",
-  boxShadow: "0 6px 18px rgba(15, 23, 42, 0.05)",
-},
-cartPhoto: {
-  width: "100%",
-  height: "180px",
-  objectFit: "cover",
-  display: "block",
-  backgroundColor: "#e2e8f0",
-},
+  cartGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+    gap: "16px",
+    width: "100%",
+    overflowX: "hidden",
+    marginBottom: "18px",
+  },
+  cartPhotoCard: {
+    background: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "18px",
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    boxShadow: "0 6px 18px rgba(15, 23, 42, 0.05)",
+  },
+  cartPhoto: {
+    width: "100%",
+    height: "180px",
+    objectFit: "cover",
+    display: "block",
+    backgroundColor: "#e2e8f0",
+  },
   cartPhotoInfo: {
-  display: "grid",
-  gap: "10px",
-  padding: "12px",
-},
-
-cartPhotoName: {
-  fontSize: "13px",
-  fontWeight: "700",
-  color: "#0f172a",
-  lineHeight: "1.4",
-  overflow: "hidden",
-  display: "-webkit-box",
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: "vertical",
-},
-
-cartFooterSummary: {
-  display: "grid",
-  gap: "4px",
-},
-
-cartFooterSmall: {
-  fontSize: "13px",
-  color: "#64748b",
-  fontWeight: "600",
-},
-
-cartFooterTotal: {
-  fontSize: "26px",
-  fontWeight: "800",
-  color: "#0f172a",
-},
-removeFromCartButton: {
-  width: "100%",
-  border: "none",
-  background: "#fee2e2",
-  color: "#b91c1c",
-  padding: "10px 12px",
-  fontWeight: "700",
-  cursor: "pointer",
-  borderRadius: "12px",
-  fontSize: "13px",
-},
-cartFooter: {
-  position: "sticky",
-  bottom: 0,
-  marginTop: "8px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "14px",
-  flexWrap: "wrap",
-  background: "rgba(255,255,255,0.96)",
-  borderTop: "1px solid #e2e8f0",
-  paddingTop: "16px",
-  paddingBottom: "4px",
-  backdropFilter: "blur(10px)",
-},
-checkoutButton: {
-  backgroundColor: "#0f172a",
-  color: "#fff",
-  border: "none",
-  padding: "14px 20px",
-  borderRadius: "14px",
-  cursor: "pointer",
-  fontSize: "15px",
-  fontWeight: "700",
-  minWidth: "220px",
-  boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
-},
+    display: "grid",
+    gap: "10px",
+    padding: "12px",
+  },
+  cartPhotoName: {
+    fontSize: "13px",
+    fontWeight: "700",
+    color: "#0f172a",
+    lineHeight: "1.4",
+    overflow: "hidden",
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+  },
+  removeFromCartButton: {
+    width: "100%",
+    border: "none",
+    background: "#fee2e2",
+    color: "#b91c1c",
+    padding: "10px 12px",
+    fontWeight: "700",
+    cursor: "pointer",
+    borderRadius: "12px",
+    fontSize: "13px",
+  },
+  orderFormCard: {
+    background: "#f8fafc",
+    border: "1px solid #e2e8f0",
+    borderRadius: "18px",
+    padding: "18px",
+    marginTop: "18px",
+    marginBottom: "18px",
+    display: "grid",
+    gap: "14px",
+  },
+  orderFormTitle: {
+    margin: 0,
+    fontSize: "22px",
+    fontWeight: "800",
+    color: "#0f172a",
+  },
+  orderFormText: {
+    margin: 0,
+    fontSize: "14px",
+    lineHeight: "1.7",
+    color: "#475569",
+  },
+  orderFormGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gap: "12px",
+  },
+  orderInput: {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "12px 14px",
+    borderRadius: "12px",
+    border: "1px solid #cbd5e1",
+    fontSize: "14px",
+    backgroundColor: "#fff",
+    outline: "none",
+  },
+  orderTextarea: {
+    width: "100%",
+    boxSizing: "border-box",
+    padding: "12px 14px",
+    borderRadius: "12px",
+    border: "1px solid #cbd5e1",
+    fontSize: "14px",
+    backgroundColor: "#fff",
+    outline: "none",
+    resize: "vertical",
+    fontFamily: "inherit",
+  },
+  cartFooter: {
+    position: "sticky",
+    bottom: 0,
+    marginTop: "8px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: "14px",
+    flexWrap: "wrap",
+    background: "rgba(255,255,255,0.96)",
+    borderTop: "1px solid #e2e8f0",
+    paddingTop: "16px",
+    paddingBottom: "4px",
+    backdropFilter: "blur(10px)",
+  },
+  cartFooterSummary: {
+    display: "grid",
+    gap: "4px",
+  },
+  cartFooterSmall: {
+    fontSize: "13px",
+    color: "#64748b",
+    fontWeight: "600",
+  },
+  cartFooterTotal: {
+    fontSize: "26px",
+    fontWeight: "800",
+    color: "#0f172a",
+  },
+  checkoutButton: {
+    backgroundColor: "#0f172a",
+    color: "#fff",
+    border: "none",
+    padding: "14px 20px",
+    borderRadius: "14px",
+    cursor: "pointer",
+    fontSize: "15px",
+    fontWeight: "700",
+    minWidth: "220px",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
+  },
   emptyBox: {
     backgroundColor: "#fff",
     border: "1px solid #e2e8f0",
