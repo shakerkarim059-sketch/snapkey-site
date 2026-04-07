@@ -112,6 +112,22 @@ export default function EventPage() {
       document.body.style.margin = "0";
     }
   }, []);
+  useEffect(() => {
+  if (typeof document === "undefined") return;
+
+  if (cartOpen || lightboxOpen) {
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+  }
+
+  return () => {
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+  };
+}, [cartOpen, lightboxOpen]);
 
   async function fetchEventBySlug() {
     setLoadingEvent(true);
@@ -520,22 +536,14 @@ export default function EventPage() {
     );
   }
 
-  function openLightbox(index) {
-    setSelectedPhotoIndex(index);
-    setLightboxOpen(true);
+function openLightbox(index) {
+  setSelectedPhotoIndex(index);
+  setLightboxOpen(true);
+}
 
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = "hidden";
-    }
-  }
-
-  function closeLightbox() {
-    setLightboxOpen(false);
-
-    if (typeof document !== "undefined") {
-      document.body.style.overflow = "";
-    }
-  }
+function closeLightbox() {
+  setLightboxOpen(false);
+}
 
   function showNextPhoto() {
     if (!filteredPhotos.length) return;
@@ -1814,26 +1822,33 @@ const styles = {
     lineHeight: "1.5",
     whiteSpace: "pre-wrap",
   },
-  cartBackdrop: {
-    position: "fixed",
-    inset: 0,
-    backgroundColor: "rgba(15, 23, 42, 0.55)",
-    zIndex: 1200,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    padding: "16px",
-  },
-  cartPanel: {
-    width: "100%",
-    maxWidth: "900px",
-    maxHeight: "85vh",
-    overflowY: "auto",
-    background: "#ffffff",
-    borderRadius: "24px",
-    padding: "20px",
-    boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
-  },
+cartBackdrop: {
+  position: "fixed",
+  inset: 0,
+  backgroundColor: "rgba(15, 23, 42, 0.55)",
+  zIndex: 1200,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "flex-end",
+  padding: "16px",
+  overflowX: "hidden",
+  overflowY: "auto",
+  overscrollBehavior: "contain",
+},
+cartPanel: {
+  width: "100%",
+  maxWidth: "900px",
+  maxHeight: "85vh",
+  overflowY: "auto",
+  overflowX: "hidden",
+  background: "#ffffff",
+  borderRadius: "24px",
+  padding: "20px",
+  boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
+  boxSizing: "border-box",
+  overscrollBehavior: "contain",
+  touchAction: "pan-y",
+},
   cartHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -1864,12 +1879,13 @@ const styles = {
     fontWeight: "700",
     color: "#334155",
   },
-  orderOptionsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "14px",
-    marginBottom: "18px",
-  },
+orderOptionsGrid: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gap: "14px",
+  marginBottom: "18px",
+  width: "100%",
+},
   orderOptionCard: {
     background: "#f8fafc",
     border: "1px solid #e2e8f0",
@@ -1919,11 +1935,13 @@ const styles = {
     fontSize: "18px",
     fontWeight: "800",
   },
-  cartGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "16px",
-  },
+cartGrid: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gap: "16px",
+  width: "100%",
+  overflowX: "hidden",
+},
   cartPhotoCard: {
     background: "#fff",
     border: "1px solid #e2e8f0",
