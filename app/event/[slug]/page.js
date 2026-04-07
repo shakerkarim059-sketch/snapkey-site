@@ -85,8 +85,7 @@ export default function EventPage() {
   const [country, setCountry] = useState("Deutschland");
   const [orderNote, setOrderNote] = useState("");
   const [submittingOrder, setSubmittingOrder] = useState(false);
-  const [orders, setOrders] = useState([]);
-  const [loadingOrders, setLoadingOrders] = useState(false);
+
   
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -119,11 +118,7 @@ export default function EventPage() {
         showPrevPhoto();
       }
     }
-useEffect(() => {
-  if (isAdmin) {
-    fetchOrders();
-  }
-}, [isAdmin]);
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [lightboxOpen, selectedPhotoIndex, cartOpen, photos]);
@@ -299,25 +294,7 @@ useEffect(() => {
 
     setLoadingComments(false);
   }
-  async function fetchOrders() {
-  setLoadingOrders(true);
 
-  try {
-    const res = await fetch("/api/get-orders");
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error(data.error);
-      return;
-    }
-
-    setOrders(data.orders || []);
-  } catch (err) {
-    console.error("Fehler beim Laden der Bestellungen:", err);
-  }
-
-  setLoadingOrders(false);
-}
 
   async function handleLogin() {
     if (!eventData || !slug) return;
