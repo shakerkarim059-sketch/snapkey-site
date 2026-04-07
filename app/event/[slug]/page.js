@@ -146,11 +146,23 @@ export default function EventPage() {
     setLoadingEvent(true);
     setEventNotFound(false);
 
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .eq("slug", slug)
-      .single();
+const { data, error } = await supabase
+  .from("events")
+  .select(`
+    id,
+    title,
+    location,
+    category,
+    start_date,
+    end_date,
+    description,
+    slug,
+    likes_enabled,
+    comments_enabled,
+    created_at
+  `)
+  .eq("slug", slug)
+  .single();
 
     if (error || !data) {
       console.error("Fehler beim Laden des Events:", error);
