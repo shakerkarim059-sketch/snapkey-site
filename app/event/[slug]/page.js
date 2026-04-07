@@ -71,8 +71,15 @@ export default function EventPage() {
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const [selectedPrintOption, setSelectedPrintOption] = useState("10x15-portrait");
-  const [selectedFrameOption, setSelectedFrameOption] = useState("none");
+const [customerName, setCustomerName] = useState("");
+const [customerEmail, setCustomerEmail] = useState("");
+const [customerPhone, setCustomerPhone] = useState("");
+const [street, setStreet] = useState("");
+const [postalCode, setPostalCode] = useState("");
+const [city, setCity] = useState("");
+const [country, setCountry] = useState("Deutschland");
+const [orderNote, setOrderNote] = useState("");
+const [submittingOrder, setSubmittingOrder] = useState(false);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -485,7 +492,106 @@ export default function EventPage() {
       alert("Bitte zuerst einen Kommentar eingeben.");
       return;
     }
+async function handleSubmitOrder() {
+  if (!eventData?.id) {
+    alert("Event nicht gefunden.");
+    return;
+  }
 
+  if (selectedPhotos.length === 0) {
+    alert("Bitte zuerst Bilder auswählen.");
+    return;
+  }
+
+  if (!customerName.trim()) {
+    alert("Bitte deinen Namen eingeben.");
+    return;
+  }
+
+  if (!customerEmail.trim()) {
+    alert("Bitte deine E-Mail eingeben.");
+    return;
+  }
+
+  if (!street.trim() || !postalCode.trim() || !city.trim()) {
+    alert("Bitte die vollständige Adresse eingeben.");
+    return;
+  }
+
+  setSubmittingOrder(true);
+
+  try {
+    const { data: createdOrder, error: orderError } = await supabase
+      .from("orders")
+      .insert([
+        {
+          event_id: eventData.id,
+          customer_name: customerName.trim(),
+          customer_email: customerEmail.trim(),
+          customer_phone: customerPhone.trim() || null,
+          street: street.trim(),
+          postal_code: postalCode.trim(),
+          city: city.trim(),
+          country: country.trim() || "Deutschland",
+          note: orderNote.trim() || null,
+          print_option: selectedPrintOption,
+          frame_option: selectedFrameOption,
+          item_count: selectedPhotos.length,
+          total_price: totalPrice,
+          status: "neu",
+        },
+      ])
+      .select()
+      .single();
+
+    if (orderError) {
+      console.error("Fehler beim Speichern der Bestellung:", orderError);
+      alert("Bestellung konnte nicht gespeichert werden: " + orderError.message);
+      setSubmittingOrder(false);
+      return;
+    }
+
+    const orderItemsPayload = selectedPhotos.map((photo) => ({
+      order_id: createdOrder.id,
+      photo_id: photo.id,
+      photo_url: photo.public_url || photo.image_url || null,
+      photo_caption: photo.caption || null,
+      print_option: selectedPrintOption,
+      frame_option: selectedFrameOption,
+      unit_price: pricePerPhoto,
+    }));
+
+    const { error: itemsError } = await supabase
+      .from("order_items")
+      .insert(orderItemsPayload);
+
+    if (itemsError) {
+      console.error("Fehler beim Speichern der Bestellpositionen:", itemsError);
+      alert("Bestellpositionen konnten nicht gespeichert werden: " + itemsError.message);
+      setSubmittingOrder(false);
+      return;
+    }
+
+    alert("Deine Bestellung wurde erfolgreich gespeichert.");
+
+    setCustomerName("");
+    setCustomerEmail("");
+    setCustomerPhone("");
+    setStreet("");
+    setPostalCode("");
+    setCity("");
+    setCountry("Deutschland");
+    setOrderNote("");
+
+    setSelectedPhotoIds([]);
+    setCartOpen(false);
+  } catch (error) {
+    console.error("Unbekannter Fehler bei der Bestellung:", error);
+    alert("Es gab ein Problem beim Absenden der Bestellung.");
+  }
+
+  setSubmittingOrder(false);
+}
     setSubmittingCommentPhotoId(photoId);
 
     const { error } = await supabase.from("photo_comments").insert([
@@ -1206,6 +1312,80 @@ const mediaHeight = "280px";
   ))}
 </div>
 
+<div style={styles.orderFormCard}>
+  <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
+  <p style={styles.orderFormText}>
+    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine ausgewählten
+    Bilder aus diesem Event werden zusammen mit Format und Rahmen gespeichert.
+  </p>
+
+  <div style={styles.orderFormGrid}>
+    <input
+      type="text"
+      placeholder="Vor- und Nachname"
+      value={customerName}
+      onChange={(e) => setCustomerName(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="email"
+      placeholder="E-Mail"
+      value={customerEmail}
+      onChange={(e) => setCustomerEmail(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Telefon (optional)"
+      value={customerPhone}
+      onChange={(e) => setCustomerPhone(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Straße und Hausnummer"
+      value={street}
+      onChange={(e) => setStreet(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="PLZ"
+      value={postalCode}
+      onChange={(e) => setPostalCode(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Ort"
+      value={city}
+      onChange={(e) => setCity(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Land"
+      value={country}
+      onChange={(e) => setCountry(e.target.value)}
+      style={styles.orderInput}
+    />
+  </div>
+
+  <textarea
+    placeholder="Notiz zur Bestellung (optional)"
+    value={orderNote}
+    onChange={(e) => setOrderNote(e.target.value)}
+    rows={4}
+    style={styles.orderTextarea}
+  />
+</div>
+
 <div style={styles.cartFooter}>
   <div style={styles.cartFooterSummary}>
     <div style={styles.cartFooterSmall}>
@@ -1220,14 +1400,14 @@ const mediaHeight = "280px";
 
   <button
     type="button"
-    style={styles.checkoutButton}
-    onClick={() =>
-      alert(
-        `Weiter mit echter Bestellung: ${selectedPhotos.length} Bild(er), ${selectedPrint?.label}, ${selectedFrame?.label}, Gesamt ${totalPrice.toFixed(2)} €.`
-      )
-    }
+    style={{
+      ...styles.checkoutButton,
+      ...(submittingOrder ? styles.buttonDisabled : {}),
+    }}
+    onClick={handleSubmitOrder}
+    disabled={submittingOrder}
   >
-    Zur Bestellung weiter
+    {submittingOrder ? "Bestellung wird gespeichert..." : "Erinnerungen bestellen"}
   </button>
 </div>
               </>
@@ -1910,6 +2090,60 @@ orderOptionsGrid: {
     borderRadius: "18px",
     padding: "14px",
   },
+  orderFormCard: {
+  background: "#f8fafc",
+  border: "1px solid #e2e8f0",
+  borderRadius: "18px",
+  padding: "18px",
+  marginTop: "18px",
+  marginBottom: "18px",
+  display: "grid",
+  gap: "14px",
+},
+
+orderFormTitle: {
+  margin: 0,
+  fontSize: "22px",
+  fontWeight: "800",
+  color: "#0f172a",
+},
+
+orderFormText: {
+  margin: 0,
+  fontSize: "14px",
+  lineHeight: "1.7",
+  color: "#475569",
+},
+
+orderFormGrid: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gap: "12px",
+},
+
+orderInput: {
+  width: "100%",
+  boxSizing: "border-box",
+  padding: "12px 14px",
+  borderRadius: "12px",
+  border: "1px solid #cbd5e1",
+  fontSize: "14px",
+  backgroundColor: "#fff",
+  outline: "none",
+},
+
+orderTextarea: {
+  width: "100%",
+  boxSizing: "border-box",
+  padding: "12px 14px",
+  borderRadius: "12px",
+  border: "1px solid #cbd5e1",
+  fontSize: "14px",
+  backgroundColor: "#fff",
+  outline: "none",
+  resize: "vertical",
+  fontFamily: "inherit",
+},
   orderLabel: {
     display: "block",
     marginBottom: "8px",
