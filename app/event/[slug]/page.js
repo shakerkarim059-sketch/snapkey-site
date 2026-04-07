@@ -36,7 +36,6 @@ export default function EventPage() {
   const [photos, setPhotos] = useState([]);
   const [photoLikes, setPhotoLikes] = useState([]);
   const [photoComments, setPhotoComments] = useState([]);
-  const [photoOrientations, setPhotoOrientations] = useState({});
 
   const [loadingEvent, setLoadingEvent] = useState(true);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
@@ -576,25 +575,6 @@ export default function EventPage() {
     }
   }
 
-  function handlePhotoImageLoad(photoId, e) {
-    const img = e.currentTarget;
-    const orientation =
-      img.naturalWidth > img.naturalHeight
-        ? "landscape"
-        : img.naturalHeight > img.naturalWidth
-        ? "portrait"
-        : "square";
-
-    setPhotoOrientations((prev) => {
-      if (prev[photoId] === orientation) return prev;
-      return { ...prev, [photoId]: orientation };
-    });
-  }
-
-  function getPhotoOrientation(photoId) {
-    return photoOrientations[photoId] || "square";
-  }
-
   const availableYears = useMemo(() => {
     const years = photos
       .map((photo) => {
@@ -966,14 +946,7 @@ export default function EventPage() {
             const commentsForPhoto = getCommentsForPhoto(photo.id);
             const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
             const isSelected = selectedPhotoIds.includes(photo.id);
-            const orientation = getPhotoOrientation(photo.id);
-
-            const mediaHeight =
-              orientation === "portrait"
-                ? "360px"
-                : orientation === "landscape"
-                ? "240px"
-                : "280px";
+const mediaHeight = "280px";
 
             return (
               <div
@@ -986,20 +959,12 @@ export default function EventPage() {
                     src={photo.public_url || photo.image_url}
                     alt={photo.caption || photo.file_name || "Foto"}
                     style={styles.photo}
-                    onLoad={(e) => handlePhotoImageLoad(photo.id, e)}
                   />
 
                   <div style={styles.photoOverlay}>
                     <span style={styles.photoOverlayText}>Vergrößern</span>
                   </div>
 
-                  <div style={styles.orientationBadge}>
-                    {orientation === "portrait"
-                      ? "Hochformat"
-                      : orientation === "landscape"
-                      ? "Querformat"
-                      : "Quadratisch"}
-                  </div>
 
                   {isAdmin && (
                     <button
@@ -1720,18 +1685,7 @@ const styles = {
     background: "rgba(15,23,42,0.45)",
     backdropFilter: "blur(4px)",
   },
-  orientationBadge: {
-    position: "absolute",
-    left: "12px",
-    bottom: "12px",
-    background: "rgba(255,255,255,0.92)",
-    color: "#0f172a",
-    borderRadius: "999px",
-    padding: "7px 10px",
-    fontSize: "12px",
-    fontWeight: "700",
-    zIndex: 2,
-  },
+
   photoInfoArea: {
     padding: "14px",
     display: "grid",
