@@ -1216,7 +1216,360 @@ async function handleSubmitOrder() {
                     <span style={styles.photoOverlayText}>Vergrößern</span>
                   </div>
 
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeletePhoto(photo);
+                      }}
+                      style={styles.deleteButton}
+                    >
+                      Löschen
+                    </button>
+                  )}
+                </div>
 
+                <div
+                  style={styles.photoInfoArea}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {photo.caption && (
+                    <div style={styles.photoCaption}>{photo.caption}</div>
+                  )}
+
+                  <div style={styles.photoActionRow}>
+                    <button
+                      type="button"
+                      onClick={() => togglePhotoSelection(photo.id)}
+                      style={{
+                        ...styles.selectPhotoButton,
+                        ...(isSelected ? styles.selectPhotoButtonActive : {}),
+                      }}
+                    >
+                      {isSelected ? "Ausgewählt ✓" : "Auswählen"}
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => openLightbox(index)}
+                      style={styles.previewButton}
+                    >
+                      Ansehen
+                    </button>
+                  </div>
+
+                  {eventData.likes_enabled !== false && (
+                    <div style={styles.likeRow}>
+                      <button
+                        type="button"
+                        onClick={() => handleToggleLike(photo.id)}
+                        disabled={likingPhotoId === photo.id}
+                        style={{
+                          ...styles.likeButton,
+                          ...(likedByThisBrowser
+                            ? styles.likeButtonActive
+                            : {}),
+                        }}
+                      >
+                        {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
+                      </button>
+
+                      <span style={styles.likeCount}>
+                        {likesForPhoto.length} Like
+                        {likesForPhoto.length === 1 ? "" : "s"}
+                      </span>
+                    </div>
+                  )}
+
+                  {eventData.comments_enabled !== false && (
+                    <>
+                      <div style={styles.commentForm}>
+                        <input
+                          type="text"
+                          placeholder="Dein Name"
+                          value={commentNames[photo.id] || ""}
+                          onChange={(e) =>
+                            setCommentNames((prev) => ({
+                              ...prev,
+                              [photo.id]: e.target.value,
+                            }))
+                          }
+                          style={styles.commentInput}
+                        />
+
+                        <textarea
+                          placeholder="Kommentar schreiben"
+                          value={commentDrafts[photo.id] || ""}
+                          onChange={(e) =>
+                            setCommentDrafts((prev) => ({
+                              ...prev,
+                              [photo.id]: e.target.value,
+                            }))
+                          }
+                          rows={3}
+                          style={styles.commentTextarea}
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => handleSubmitComment(photo.id)}
+                          disabled={submittingCommentPhotoId === photo.id}
+                          style={styles.commentButton}
+                        >
+                          {submittingCommentPhotoId === photo.id
+                            ? "Speichert..."
+                            : "Kommentieren"}
+                        </button>
+                      </div>
+
+                      <div style={styles.commentList}>
+                        {commentsForPhoto.length === 0 ? (
+                          <div style={styles.noCommentsText}>
+                            Noch keine Kommentare.
+                          </div>
+                        ) : (
+                          commentsForPhoto.map((comment) => (
+                            <div key={comment.id} style={styles.commentItem}>
+                              <div style={styles.commentAuthorRow}>
+                                <span style={styles.commentAuthor}>
+                                  {comment.author_name || "Unbekannt"}
+                                </span>
+                                <span style={styles.commentDate}>
+                                  {formatDateTime(comment.created_at)}
+                                </span>
+                              </div>
+                              <div style={styles.commentText}>
+                                {comment.comment_text}
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {cartOpen && (
+        <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
+          <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.cartHeader}>
+              <h3 style={styles.cartTitle}>Ausgewählte Bilder</h3>
+              <button
+                type="button"
+                onClick={() => setCartOpen(false)}
+                style={styles.cartCloseButton}
+              >
+                ✕
+              </button>
+            </div>
+
+            {selectedPhotos.length === 0 ? (
+              <div style={styles.emptyBox}>Keine Bilder ausgewählt.</div>
+            ) : (
+              <>
+                <div style={styles.cartInfo}>
+                  {selectedPhotos.length} Bild
+                  {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
+                </div>
+
+                <div style={styles.orderOptionsGrid}>
+                  <div style={styles.orderOptionCard}>
+                    <label style={styles.orderLabel}>Format wählen</label>
+                    <select
+                      value={selectedPrintOption}
+                      onChange={(e) => setSelectedPrintOption(e.target.value)}
+                      style={styles.orderSelect}
+                    >
+                      {PRINT_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} • {option.price} €
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div style={styles.orderOptionCard}>
+                    <label style={styles.orderLabel}>Rahmen wählen</label>
+                    <select
+                      value={selectedFrameOption}
+                      onChange={(e) => setSelectedFrameOption(e.target.value)}
+                      style={styles.orderSelect}
+                    >
+                      {FRAME_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label} • {option.price} €
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div style={styles.priceSummaryCard}>
+                  <div style={styles.priceRow}>
+                    <span>Format</span>
+                    <span>{selectedPrint?.label}</span>
+                  </div>
+                  <div style={styles.priceRow}>
+                    <span>Rahmen</span>
+                    <span>{selectedFrame?.label}</span>
+                  </div>
+                  <div style={styles.priceRow}>
+                    <span>Preis pro Bild</span>
+                    <span>{pricePerPhoto.toFixed(2)} €</span>
+                  </div>
+                  <div style={styles.priceRow}>
+                    <span>Anzahl Bilder</span>
+                    <span>{selectedPhotos.length}</span>
+                  </div>
+                  <div style={styles.totalRow}>
+                    <span>Gesamt</span>
+                    <span>{totalPrice.toFixed(2)} €</span>
+                  </div>
+                </div>
+
+                <div style={styles.cartGrid}>
+                  {selectedPhotos.map((photo) => (
+                    <div key={photo.id} style={styles.cartPhotoCard}>
+                      <img
+                        src={photo.signed_url || ""}
+                        alt={photo.caption || photo.file_name || "Foto"}
+                        style={styles.cartPhoto}
+                      />
+
+                      <div style={styles.cartPhotoInfo}>
+                        <div style={styles.cartPhotoName}>
+                          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => togglePhotoSelection(photo.id)}
+                          style={styles.removeFromCartButton}
+                        >
+                          Entfernen
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={styles.orderFormCard}>
+                  <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
+                  <p style={styles.orderFormText}>
+                    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine
+                    ausgewählten Bilder aus diesem Event werden zusammen mit
+                    Format und Rahmen gespeichert.
+                  </p>
+
+                  <div style={styles.orderFormGrid}>
+                    <input
+                      type="text"
+                      placeholder="Vor- und Nachname"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      style={styles.orderInput}
+                    />
+
+                    <input
+                      type="email"
+                      placeholder="E-Mail"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      style={styles.orderInput}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Telefon (optional)"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      style={styles.orderInput}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Straße und Hausnummer"
+                      value={street}
+                      onChange={(e) => setStreet(e.target.value)}
+                      style={styles.orderInput}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="PLZ"
+                      value={postalCode}
+                      onChange={(e) => setPostalCode(e.target.value)}
+                      style={styles.orderInput}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Ort"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      style={styles.orderInput}
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Land"
+                      value={country}
+                      onChange={(e) => setCountry(e.target.value)}
+                      style={styles.orderInput}
+                    />
+                  </div>
+
+                  <textarea
+                    placeholder="Notiz zur Bestellung (optional)"
+                    value={orderNote}
+                    onChange={(e) => setOrderNote(e.target.value)}
+                    rows={4}
+                    style={styles.orderTextarea}
+                  />
+                </div>
+
+                <div style={styles.cartFooter}>
+                  <div style={styles.cartFooterSummary}>
+                    <div style={styles.cartFooterSmall}>
+                      {selectedPhotos.length} Bild
+                      {selectedPhotos.length === 1 ? "" : "er"} •{" "}
+                      {selectedPrint?.label}
+                      {selectedFrame?.value !== "none"
+                        ? ` • ${selectedFrame?.label}`
+                        : ""}
+                    </div>
+                    <div style={styles.cartFooterTotal}>
+                      {totalPrice.toFixed(2)} €
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    style={{
+                      ...styles.checkoutButton,
+                      ...(submittingOrder ? styles.buttonDisabled : {}),
+                    }}
+                    onClick={handleSubmitOrder}
+                    disabled={submittingOrder}
+                  >
+                    {submittingOrder
+                      ? "Bestellung wird gespeichert..."
+                      : "Erinnerungen bestellen"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      {lightboxOpen && currentPhoto && (
         <div style={styles.lightboxBackdrop} onClick={closeLightbox}>
           <div
             style={styles.lightboxContent}
