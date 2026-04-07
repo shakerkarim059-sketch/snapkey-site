@@ -204,6 +204,38 @@ export default function EventPage() {
     }
   }
 
+  async function attachSignedUrls(photoRows) {
+    const mapped = await Promise.all(
+      (photoRows || []).map(async (photo) => {
+        if (!photo.file_path) {
+          return {
+            ...photo,
+            signed_url: null,
+          };
+        }
+
+        const { data, error } = await supabase.storage
+          .from("photos")
+          .createSignedUrl(photo.file_path, 60 * 60);
+
+        if (error) {
+          console.error("Fehler beim Erzeugen der Signed URL:", error);
+          return {
+            ...photo,
+            signed_url: null,
+          };
+        }
+
+        return {
+          ...photo,
+          signed_url: data?.signedUrl || null,
+        };
+      })
+    );
+
+    return mapped;
+  }
+
   async function fetchPhotosForEvent(eventId) {
     setLoadingPhotos(true);
 
@@ -216,9 +248,12 @@ export default function EventPage() {
     if (error) {
       console.error("Fehler beim Laden der Fotos:", error);
       alert("Fehler beim Laden der Fotos: " + error.message);
-    } else {
-      setPhotos(data || []);
+      setLoadingPhotos(false);
+      return;
     }
+
+    const photosWithSignedUrls = await attachSignedUrls(data || []);
+    setPhotos(photosWithSignedUrls);
 
     setLoadingPhotos(false);
   }
@@ -408,18 +443,11 @@ export default function EventPage() {
         continue;
       }
 
-      const { data: publicUrlData } = supabase.storage
-        .from("photos")
-        .getPublicUrl(filePath);
-
-      const publicUrl = publicUrlData.publicUrl;
-
       const { error: insertError } = await supabase.from("photos").insert([
         {
           event_id: eventData.id,
           file_name: generatedFileName,
           file_path: filePath,
-          public_url: publicUrl,
           caption: caption || null,
         },
       ]);
@@ -650,7 +678,7 @@ export default function EventPage() {
       const orderItemsPayload = selectedPhotos.map((photo) => ({
         order_id: createdOrder.id,
         photo_id: photo.id,
-        photo_url: photo.public_url || photo.image_url || null,
+        photo_url: photo.file_path || null,
         photo_caption: photo.caption || null,
         print_option: selectedPrintOption,
         frame_option: selectedFrameOption,
@@ -876,11 +904,9 @@ export default function EventPage() {
       <div
         style={{
           ...styles.heroCard,
-          ...(coverPhoto
+          ...(coverPhoto?.signed_url
             ? {
-                backgroundImage: `url(${
-                  coverPhoto.public_url || coverPhoto.image_url
-                })`,
+                backgroundImage: `url(${coverPhoto.signed_url})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -1141,7 +1167,7 @@ export default function EventPage() {
               >
                 <div style={{ ...styles.photoMediaWrap, height: mediaHeight }}>
                   <img
-                    src={photo.public_url || photo.image_url}
+                    src={photo.signed_url || ""}
                     alt={photo.caption || photo.file_name || "Foto"}
                     style={styles.photo}
                   />
@@ -1371,7 +1397,7 @@ export default function EventPage() {
                   {selectedPhotos.map((photo) => (
                     <div key={photo.id} style={styles.cartPhotoCard}>
                       <img
-                        src={photo.public_url || photo.image_url}
+                        src={photo.signed_url || ""}
                         alt={photo.caption || photo.file_name || "Foto"}
                         style={styles.cartPhoto}
                       />
@@ -1540,7 +1566,7 @@ export default function EventPage() {
             )}
 
             <img
-              src={currentPhoto.public_url || currentPhoto.image_url}
+              src={currentPhoto?.signed_url || ""}
               alt={currentPhoto.caption || currentPhoto.file_name || "Foto"}
               style={styles.lightboxImage}
             />
