@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function HomePage() {
   const demoEventLink = "/event/demo";
   const youtubeVideoUrl = "https://www.youtube.com/";
-  const createEventLink = "/admin";
+const createEventLink = "/event";
 
   return (
     <main style={styles.page}>
