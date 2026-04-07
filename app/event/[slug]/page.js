@@ -239,23 +239,47 @@ const { data, error } = await supabase
     setLoadingComments(false);
   }
 
-  function handleLogin() {
-    if (!eventData) return;
+ async function handleLogin() {
+  if (!eventData || !slug) return;
 
-    if (passwordInput === eventData.access_password) {
-      setIsAuthenticated(true);
-      setIsAdmin(false);
+  try {
+    const response = await fetch("/api/event-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        slug,
+        password: passwordInput,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      console.log("LOGIN DEBUG:", result);
+      alert((result.error || "Login fehlgeschlagen.") + " — bitte Konsole öffnen");
       return;
     }
 
-    if (passwordInput === eventData.admin_password) {
+    if (result.role === "admin") {
       setIsAuthenticated(true);
       setIsAdmin(true);
       return;
     }
 
-    alert("Falsches Passwort.");
+    if (result.role === "guest") {
+      setIsAuthenticated(true);
+      setIsAdmin(false);
+      return;
+    }
+
+    alert("Unbekannte Login-Antwort.");
+  } catch (error) {
+    console.error("Fehler beim Login:", error);
+    alert("Login fehlgeschlagen.");
   }
+}
 
   function handleLogout() {
     setIsAuthenticated(false);
