@@ -1,47 +1,83 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+
+const imageUrls = {
+  heroMain: "/images/family-trip-1.jpg",
+  heroGallery1: "/images/family-trip-2.jpg",
+  heroGallery2: "/images/family-party-1.jpg",
+  heroGallery3: "/images/wedding-1.jpg",
+  heroGallery4: "/images/demo-gallery-1.jpg",
+
+  personalization: "/images/nfc-key-closeup.jpg",
+
+  useCaseVacation: "/images/usecase-vacation.jpg",
+  useCaseBirthday: "/images/usecase-birthday.jpg",
+  useCaseWedding: "/images/usecase-wedding.jpg",
+  useCaseFamily: "/images/usecase-family-dinner.jpg",
+
+  demo1: "/images/demo-gallery-1.jpg",
+  demo2: "/images/demo-gallery-2.jpg",
+  demo3: "/images/demo-gallery-3.jpg",
+  demo4: "/images/demo-gallery-4.jpg",
+
+  videoThumb: "/images/video-thumb.jpg",
+};
+
+function SectionBadge({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+  return (
+    <div
+      style={{
+        ...styles.sectionBadge,
+        ...(light ? styles.sectionBadgeLight : {}),
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ImageCard({
+  src,
+  alt,
+  height = 220,
+  priority = false,
+  overlay = true,
+}: {
+  src: string;
+  alt: string;
+  height?: number;
+  priority?: boolean;
+  overlay?: boolean;
+}) {
+  return (
+    <div style={{ ...styles.imageWrap, height }}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        priority={priority}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        style={styles.image as any}
+      />
+      {overlay && <div style={styles.imageOverlay} />}
+    </div>
+  );
+}
 
 export default function HomePage() {
   const demoEventLink = "/event/demo";
   const createEventLink = "/event";
   const youtubeVideoUrl = "https://www.youtube.com/";
 
-  const imageUrls = {
-    heroTall: "/images/family-trip-1.jpg",
-    heroWide: "/images/family-trip-2.jpg",
-    heroSmall1: "/images/family-party-1.jpg",
-    heroSmall2: "/images/wedding-1.jpg",
-
-    personalization: "/images/nfc-key-closeup.jpg",
-
-    useCaseVacation: "/images/usecase-vacation.jpg",
-    useCaseBirthday: "/images/usecase-birthday.jpg",
-    useCaseWedding: "/images/usecase-wedding.jpg",
-    useCaseFamily: "/images/usecase-family-dinner.jpg",
-
-    demo1: "/images/demo-gallery-1.jpg",
-    demo2: "/images/demo-gallery-2.jpg",
-    demo3: "/images/demo-gallery-3.jpg",
-    demo4: "/images/demo-gallery-4.jpg",
-
-    videoThumb: "/images/video-thumb.jpg",
-  };
-
-  const coverImage = (
-    url: string,
-    position: string = "center"
-  ): CSSProperties => ({
-    backgroundImage: `linear-gradient(rgba(15,23,42,0.14), rgba(15,23,42,0.14)), url("${url}")`,
-    backgroundSize: "cover",
-    backgroundPosition: position,
-    backgroundRepeat: "no-repeat",
-  });
-
   return (
     <main style={styles.page}>
       <section style={styles.heroSection}>
+        <div style={styles.heroGlowA} />
+        <div style={styles.heroGlowB} />
+
         <div style={styles.heroContent}>
           <div style={styles.heroBadge}>Personalisierter NFC-Key für Familien & Events</div>
 
@@ -76,49 +112,40 @@ export default function HomePage() {
         </div>
 
         <div style={styles.heroVisual}>
-          <div style={styles.nfcCardMock}>
-            <div style={styles.nfcCardTop}>NFC Familien-Key</div>
-            <div style={styles.nfcCardName}>Familie Schneider</div>
-            <div style={styles.nfcCardSub}>Sommerurlaub 2026</div>
+          <div style={styles.heroVisualCard}>
+            <div style={styles.heroVisualTopRow}>
+              <div>
+                <div style={styles.nfcCardTop}>NFC Familien-Key</div>
+                <div style={styles.nfcCardName}>Familie Schneider</div>
+                <div style={styles.nfcCardSub}>Sommerurlaub 2026</div>
+              </div>
+              <div style={styles.heroChip}>Event geöffnet</div>
+            </div>
 
-            <div style={styles.phoneMock}>
-              <div style={styles.phoneTopBar} />
-              <div style={styles.phoneScreen}>
-                <div style={styles.phoneScreenBadge}>Event geöffnet</div>
-                <div style={styles.phoneScreenTitle}>Sommerurlaub 2026</div>
-                <div style={styles.phoneScreenText}>
-                  Fotos hochladen, ansehen und gemeinsam Erinnerungen sammeln.
-                </div>
-
-                <div style={styles.phoneImageGrid}>
-                  <div
-                    style={{
-                      ...styles.phoneImage,
-                      ...styles.phoneImageTall,
-                      ...coverImage(imageUrls.heroTall, "center"),
-                    }}
-                  />
-                  <div
-                    style={{
-                      ...styles.phoneImage,
-                      ...styles.phoneImageWide,
-                      ...coverImage(imageUrls.heroWide, "center"),
-                    }}
-                  />
-                  <div
-                    style={{
-                      ...styles.phoneImage,
-                      ...coverImage(imageUrls.heroSmall1, "center"),
-                    }}
-                  />
-                  <div
-                    style={{
-                      ...styles.phoneImage,
-                      ...coverImage(imageUrls.heroSmall2, "center"),
-                    }}
-                  />
+            <div style={styles.heroVisualMainImage}>
+              <Image
+                src={imageUrls.heroMain}
+                alt="Familienmoment mit Erinnerungscharakter"
+                fill
+                priority
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={styles.image as any}
+              />
+              <div style={styles.heroVisualMainOverlay} />
+              <div style={styles.heroVisualCaption}>
+                <div style={styles.heroVisualCaptionBadge}>Gemeinsame Erinnerungen</div>
+                <div style={styles.heroVisualCaptionTitle}>Sommerurlaub 2026</div>
+                <div style={styles.heroVisualCaptionText}>
+                  Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln.
                 </div>
               </div>
+            </div>
+
+            <div style={styles.heroThumbGrid}>
+              <ImageCard src={imageUrls.heroGallery1} alt="Familienurlaub Galerie 1" height={130} />
+              <ImageCard src={imageUrls.heroGallery2} alt="Familienfeier Galerie 2" height={130} />
+              <ImageCard src={imageUrls.heroGallery3} alt="Hochzeit Galerie 3" height={130} />
+              <ImageCard src={imageUrls.heroGallery4} alt="Eventgalerie Vorschau" height={130} />
             </div>
           </div>
         </div>
@@ -126,7 +153,7 @@ export default function HomePage() {
 
       <section style={styles.section}>
         <div style={styles.sectionHeader}>
-          <div style={styles.sectionBadge}>Die eigentliche Idee</div>
+          <SectionBadge>Die eigentliche Idee</SectionBadge>
           <h2 style={styles.sectionTitle}>
             Nicht nur ein Fotoalbum. Sondern ein persönlicher NFC-Zugang zu gemeinsamen Erinnerungen.
           </h2>
@@ -172,7 +199,7 @@ export default function HomePage() {
       <section style={styles.sectionAlt}>
         <div style={styles.contentSplit}>
           <div style={styles.contentText}>
-            <div style={styles.sectionBadge}>Was ist der NFC-Key?</div>
+            <SectionBadge>Was ist der NFC-Key?</SectionBadge>
             <h2 style={styles.sectionTitle}>
               Ein personalisierter Schlüssel zu eurem Familien- oder Eventalbum
             </h2>
@@ -194,12 +221,16 @@ export default function HomePage() {
           <div style={styles.imageStoryCard}>
             <div style={styles.imageStoryTop}>Personalisierung</div>
             <div style={styles.imageStoryMain}>
-              <div
-                style={{
-                  ...styles.imageStoryLargeImage,
-                  ...coverImage(imageUrls.personalization, "center"),
-                }}
-              />
+              <div style={styles.imageStoryLargeWrap}>
+                <Image
+                  src={imageUrls.personalization}
+                  alt="Personalisierter NFC-Key als Produktaufnahme"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  style={styles.image as any}
+                />
+                <div style={styles.imageOverlayDark} />
+              </div>
               <div style={styles.imageStoryTextBlock}>
                 <div style={styles.imageStoryTitle}>Individuell statt Standard</div>
                 <div style={styles.imageStoryText}>
@@ -214,10 +245,8 @@ export default function HomePage() {
 
       <section style={styles.section}>
         <div style={styles.sectionHeader}>
-          <div style={styles.sectionBadge}>So läuft es ab</div>
-          <h2 style={styles.sectionTitle}>
-            Vom NFC-Tap bis zur gemeinsamen Fotosammlung
-          </h2>
+          <SectionBadge>So läuft es ab</SectionBadge>
+          <h2 style={styles.sectionTitle}>Vom NFC-Tap bis zur gemeinsamen Fotosammlung</h2>
           <p style={styles.sectionText}>
             Der Ablauf muss leicht verständlich sein. Genau das sollte die Seite
             zeigen.
@@ -225,47 +254,24 @@ export default function HomePage() {
         </div>
 
         <div style={styles.stepsGrid}>
-          <div style={styles.stepCard}>
-            <div style={styles.stepNumber}>1</div>
-            <h3 style={styles.stepTitle}>NFC-Key bereitlegen</h3>
-            <p style={styles.stepText}>
-              Der personalisierte Key gehört zur Familie oder zum Anlass und ist
-              sofort als Zugangspunkt erkennbar.
-            </p>
-          </div>
-
-          <div style={styles.stepCard}>
-            <div style={styles.stepNumber}>2</div>
-            <h3 style={styles.stepTitle}>Mit dem Handy antippen</h3>
-            <p style={styles.stepText}>
-              Gäste oder Familie öffnen direkt das passende Event, ohne lange
-              nach einem Link zu suchen.
-            </p>
-          </div>
-
-          <div style={styles.stepCard}>
-            <div style={styles.stepNumber}>3</div>
-            <h3 style={styles.stepTitle}>Fotos hochladen & teilen</h3>
-            <p style={styles.stepText}>
-              Bilder werden gesammelt, kommentiert, gelikt und bleiben sauber an
-              einem Ort statt in mehreren Chats.
-            </p>
-          </div>
-
-          <div style={styles.stepCard}>
-            <div style={styles.stepNumber}>4</div>
-            <h3 style={styles.stepTitle}>Lieblingsbilder auswählen</h3>
-            <p style={styles.stepText}>
-              Die besten Fotos können markiert und später direkt als Drucke
-              bestellt werden.
-            </p>
-          </div>
+          {[
+            ["1", "NFC-Key bereitlegen", "Der personalisierte Key gehört zur Familie oder zum Anlass und ist sofort als Zugangspunkt erkennbar."],
+            ["2", "Mit dem Handy antippen", "Gäste oder Familie öffnen direkt das passende Event, ohne lange nach einem Link zu suchen."],
+            ["3", "Fotos hochladen & teilen", "Bilder werden gesammelt, kommentiert, gelikt und bleiben sauber an einem Ort statt in mehreren Chats."],
+            ["4", "Lieblingsbilder auswählen", "Die besten Fotos können markiert und später direkt als Drucke bestellt werden."],
+          ].map(([num, title, text]) => (
+            <div key={num} style={styles.stepCard}>
+              <div style={styles.stepNumber}>{num}</div>
+              <h3 style={styles.stepTitle}>{title}</h3>
+              <p style={styles.stepText}>{text}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       <section style={styles.sectionAlt}>
         <div style={styles.sectionHeader}>
-          <div style={styles.sectionBadge}>Warum nicht einfach WhatsApp?</div>
+          <SectionBadge>Warum nicht einfach WhatsApp?</SectionBadge>
           <h2 style={styles.sectionTitle}>
             Weil Fotos dort untergehen, komprimiert werden und niemand am Ende alles gesammelt hat
           </h2>
@@ -301,7 +307,7 @@ export default function HomePage() {
 
       <section style={styles.section}>
         <div style={styles.sectionHeader}>
-          <div style={styles.sectionBadge}>Einsatzbereiche</div>
+          <SectionBadge>Einsatzbereiche</SectionBadge>
           <h2 style={styles.sectionTitle}>
             Für genau die Momente, in denen viele Erinnerungen zusammenkommen
           </h2>
@@ -312,75 +318,28 @@ export default function HomePage() {
         </div>
 
         <div style={styles.useCaseGrid}>
-          <div style={styles.useCaseCard}>
-            <div
-              style={{
-                ...styles.useCaseImage,
-                ...coverImage(imageUrls.useCaseVacation, "center"),
-              }}
-            />
-            <div style={styles.useCaseBody}>
-              <h3 style={styles.useCaseTitle}>Familienurlaub</h3>
-              <p style={styles.useCaseText}>
-                Alle laden ihre schönsten Urlaubsbilder in ein gemeinsames Album.
-              </p>
+          {[
+            [imageUrls.useCaseVacation, "Familienurlaub", "Alle laden ihre schönsten Urlaubsbilder in ein gemeinsames Album."],
+            [imageUrls.useCaseBirthday, "Geburtstag", "Gäste öffnen per Tap direkt die Eventseite und teilen ihre Bilder."],
+            [imageUrls.useCaseWedding, "Hochzeit", "Stilvoller Zugang zu Erinnerungen statt chaotischer Fotolinks."],
+            [imageUrls.useCaseFamily, "Familienfeier", "Ein gemeinsamer Ort für Bilder, Reaktionen und spätere Drucke."],
+          ].map(([src, title, text]) => (
+            <div key={title} style={styles.useCaseCard}>
+              <ImageCard src={src} alt={title} height={240} />
+              <div style={styles.useCaseBody}>
+                <h3 style={styles.useCaseTitle}>{title}</h3>
+                <p style={styles.useCaseText}>{text}</p>
+              </div>
             </div>
-          </div>
-
-          <div style={styles.useCaseCard}>
-            <div
-              style={{
-                ...styles.useCaseImage,
-                ...coverImage(imageUrls.useCaseBirthday, "center"),
-              }}
-            />
-            <div style={styles.useCaseBody}>
-              <h3 style={styles.useCaseTitle}>Geburtstag</h3>
-              <p style={styles.useCaseText}>
-                Gäste öffnen per Tap direkt die Eventseite und teilen ihre Bilder.
-              </p>
-            </div>
-          </div>
-
-          <div style={styles.useCaseCard}>
-            <div
-              style={{
-                ...styles.useCaseImage,
-                ...coverImage(imageUrls.useCaseWedding, "center"),
-              }}
-            />
-            <div style={styles.useCaseBody}>
-              <h3 style={styles.useCaseTitle}>Hochzeit</h3>
-              <p style={styles.useCaseText}>
-                Stilvoller Zugang zu Erinnerungen statt chaotischer Fotolinks.
-              </p>
-            </div>
-          </div>
-
-          <div style={styles.useCaseCard}>
-            <div
-              style={{
-                ...styles.useCaseImage,
-                ...coverImage(imageUrls.useCaseFamily, "center"),
-              }}
-            />
-            <div style={styles.useCaseBody}>
-              <h3 style={styles.useCaseTitle}>Familienfeier</h3>
-              <p style={styles.useCaseText}>
-                Ein gemeinsamer Ort für Bilder, Reaktionen und spätere Drucke.
-              </p>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 
       <section style={styles.sectionAlt}>
         <div style={styles.demoLayout}>
           <div style={styles.demoTextWrap}>
-            <div style={styles.sectionBadge}>Demo & Einblick</div>
-            <h2 style={styles.sectionTitle}>
-              So fühlt sich die Eventseite hinter dem NFC-Key an
-            </h2>
+            <SectionBadge>Demo & Einblick</SectionBadge>
+            <h2 style={styles.sectionTitle}>So fühlt sich die Eventseite hinter dem NFC-Key an</h2>
             <p style={styles.sectionText}>
               Die Eventseite ist der digitale Teil deiner Idee: Uploads, Galerie,
               Likes, Kommentare und Bildauswahl für Drucke.
@@ -414,42 +373,16 @@ export default function HomePage() {
               <div style={styles.demoPreviewHeader}>
                 <div>
                   <div style={styles.demoPreviewTitle}>Sommerfest Familie Weber</div>
-                  <div style={styles.demoPreviewMeta}>
-                    Galerie • Upload • Kommentare • Bestellung
-                  </div>
+                  <div style={styles.demoPreviewMeta}>Galerie • Upload • Kommentare • Bestellung</div>
                 </div>
                 <div style={styles.demoPreviewChip}>NFC geöffnet</div>
               </div>
 
               <div style={styles.demoPreviewGrid}>
-                <div
-                  style={{
-                    ...styles.demoPreviewImage,
-                    height: "160px",
-                    ...coverImage(imageUrls.demo1, "center"),
-                  }}
-                />
-                <div
-                  style={{
-                    ...styles.demoPreviewImage,
-                    height: "160px",
-                    ...coverImage(imageUrls.demo2, "center"),
-                  }}
-                />
-                <div
-                  style={{
-                    ...styles.demoPreviewImage,
-                    height: "220px",
-                    ...coverImage(imageUrls.demo3, "center"),
-                  }}
-                />
-                <div
-                  style={{
-                    ...styles.demoPreviewImage,
-                    height: "220px",
-                    ...coverImage(imageUrls.demo4, "center"),
-                  }}
-                />
+                <ImageCard src={imageUrls.demo1} alt="Demo Galerie 1" height={160} />
+                <ImageCard src={imageUrls.demo2} alt="Demo Galerie 2" height={160} />
+                <ImageCard src={imageUrls.demo3} alt="Demo Galerie 3" height={220} />
+                <ImageCard src={imageUrls.demo4} alt="Demo Galerie 4" height={220} />
               </div>
             </div>
           </div>
@@ -459,37 +392,35 @@ export default function HomePage() {
       <section style={styles.section}>
         <div style={styles.videoSection}>
           <div style={styles.videoText}>
-            <div style={styles.sectionBadge}>Video</div>
-            <h2 style={styles.sectionTitle}>
-              Zeig den NFC-Moment am besten in einem kurzen Video
-            </h2>
+            <SectionBadge>Video</SectionBadge>
+            <h2 style={styles.sectionTitle}>Zeig den NFC-Moment am besten in einem kurzen Video</h2>
             <p style={styles.sectionText}>
               Ein kurzes Demo-Video kann in wenigen Sekunden zeigen, was die
               Idee besonders macht: NFC antippen, Event öffnen, Bilder teilen.
             </p>
 
-            <a
-              href={youtubeVideoUrl}
-              target="_blank"
-              rel="noreferrer"
-              style={styles.primaryButton}
-            >
+            <a href={youtubeVideoUrl} target="_blank" rel="noreferrer" style={styles.primaryButton}>
               Video öffnen
             </a>
           </div>
 
           <div style={styles.videoCard}>
-            <div
-              style={{
-                ...styles.videoPlaceholder,
-                backgroundImage: `linear-gradient(rgba(15,23,42,0.5), rgba(15,23,42,0.5)), url("${imageUrls.videoThumb}")`,
-              }}
-            >
-              <div style={styles.playButton}>▶</div>
-              <div style={styles.videoPlaceholderTitle}>NFC-Demo</div>
-              <div style={styles.videoPlaceholderText}>
-                Hier kannst du später ein echtes Video oder Thumbnail einsetzen,
-                das den Tap und die Eventseite zeigt.
+            <div style={styles.videoImageWrap}>
+              <Image
+                src={imageUrls.videoThumb}
+                alt="Video-Vorschaubild für NFC-Demo"
+                fill
+                sizes="(max-width: 768px) 100vw, 50vw"
+                style={styles.image as any}
+              />
+              <div style={styles.videoOverlay} />
+              <div style={styles.videoCenterContent}>
+                <div style={styles.playButton}>▶</div>
+                <div style={styles.videoPlaceholderTitle}>NFC-Demo</div>
+                <div style={styles.videoPlaceholderText}>
+                  Hier kannst du später ein echtes Video oder Thumbnail einsetzen,
+                  das den Tap und die Eventseite zeigt.
+                </div>
               </div>
             </div>
           </div>
@@ -498,10 +429,8 @@ export default function HomePage() {
 
       <section style={styles.sectionAlt}>
         <div style={styles.sectionHeader}>
-          <div style={styles.sectionBadge}>Preise</div>
-          <h2 style={styles.sectionTitle}>
-            Nicht nur Software, sondern ein personalisiertes Erlebnis
-          </h2>
+          <SectionBadge>Preise</SectionBadge>
+          <h2 style={styles.sectionTitle}>Nicht nur Software, sondern ein personalisiertes Erlebnis</h2>
           <p style={styles.sectionText}>
             Preislich sollte sichtbar werden, dass dein Angebot Produkt,
             Personalisierung und digitale Nutzung verbindet.
@@ -560,10 +489,8 @@ export default function HomePage() {
       <section style={styles.ctaSection}>
         <div style={styles.ctaCard}>
           <div>
-            <div style={styles.sectionBadgeLight}>Bereit für den ersten echten Test?</div>
-            <h2 style={styles.ctaTitle}>
-              Starte mit einem Event und bring die NFC-Idee direkt in die Praxis
-            </h2>
+            <SectionBadge light>Bereit für den ersten echten Test?</SectionBadge>
+            <h2 style={styles.ctaTitle}>Starte mit einem Event und bring die NFC-Idee direkt in die Praxis</h2>
             <p style={styles.ctaText}>
               Der beste Schritt ist jetzt, ein echtes Event anzulegen und zu
               testen, wie sich dein Konzept mit Familie oder Gästen anfühlt.
@@ -587,8 +514,7 @@ export default function HomePage() {
 
 const styles: Record<string, CSSProperties> = {
   page: {
-    background:
-      "linear-gradient(180deg, #f8fafc 0%, #ffffff 35%, #f8fafc 100%)",
+    background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 35%, #f8fafc 100%)",
     minHeight: "100vh",
     color: "#0f172a",
     overflowX: "hidden",
@@ -597,15 +523,40 @@ const styles: Record<string, CSSProperties> = {
   heroSection: {
     maxWidth: "1280px",
     margin: "0 auto",
-    padding: "64px 24px 48px",
+    padding: "72px 24px 56px",
     display: "grid",
-    gridTemplateColumns: "1.05fr 0.95fr",
-    gap: "36px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "40px",
     alignItems: "center",
+    position: "relative",
+  },
+  heroGlowA: {
+    position: "absolute",
+    top: "-60px",
+    left: "-80px",
+    width: "240px",
+    height: "240px",
+    borderRadius: "999px",
+    background: "rgba(59,130,246,0.10)",
+    filter: "blur(40px)",
+    pointerEvents: "none",
+  },
+  heroGlowB: {
+    position: "absolute",
+    right: "0px",
+    top: "20px",
+    width: "260px",
+    height: "260px",
+    borderRadius: "999px",
+    background: "rgba(15,23,42,0.08)",
+    filter: "blur(44px)",
+    pointerEvents: "none",
   },
   heroContent: {
     display: "grid",
     gap: "20px",
+    position: "relative",
+    zIndex: 1,
   },
   heroBadge: {
     width: "fit-content",
@@ -614,19 +565,19 @@ const styles: Record<string, CSSProperties> = {
     padding: "9px 14px",
     borderRadius: "999px",
     fontSize: "13px",
-    fontWeight: "700",
+    fontWeight: 700,
   },
   heroTitle: {
     margin: 0,
-    fontSize: "58px",
-    lineHeight: "1.03",
-    fontWeight: "800",
-    letterSpacing: "-1.5px",
+    fontSize: "clamp(2.5rem, 5vw, 4.2rem)",
+    lineHeight: 1.02,
+    fontWeight: 800,
+    letterSpacing: "-0.04em",
   },
   heroText: {
     margin: 0,
     fontSize: "18px",
-    lineHeight: "1.75",
+    lineHeight: 1.75,
     color: "#475569",
     maxWidth: "720px",
   },
@@ -643,27 +594,29 @@ const styles: Record<string, CSSProperties> = {
     textDecoration: "none",
     backgroundColor: "#0f172a",
     color: "#fff",
-    border: "none",
+    border: "1px solid #0f172a",
     padding: "15px 20px",
     borderRadius: "14px",
     fontSize: "15px",
-    fontWeight: "700",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
+    fontWeight: 700,
+    boxShadow: "0 14px 30px rgba(15, 23, 42, 0.16)",
     minWidth: "180px",
+    transition: "transform 180ms ease, box-shadow 180ms ease",
   },
   secondaryButton: {
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     textDecoration: "none",
-    backgroundColor: "#ffffff",
+    backgroundColor: "rgba(255,255,255,0.78)",
     color: "#0f172a",
     border: "1px solid #cbd5e1",
     padding: "15px 20px",
     borderRadius: "14px",
     fontSize: "15px",
-    fontWeight: "700",
+    fontWeight: 700,
     minWidth: "180px",
+    backdropFilter: "blur(10px)",
   },
   heroMiniInfoRow: {
     display: "flex",
@@ -672,121 +625,126 @@ const styles: Record<string, CSSProperties> = {
     marginTop: "6px",
   },
   heroMiniInfo: {
-    background: "#ffffff",
+    background: "rgba(255,255,255,0.82)",
     border: "1px solid #e2e8f0",
     borderRadius: "999px",
     padding: "10px 14px",
     fontSize: "13px",
-    fontWeight: "700",
+    fontWeight: 700,
     color: "#334155",
+    backdropFilter: "blur(12px)",
   },
 
   heroVisual: {
     display: "flex",
     justifyContent: "center",
-  },
-  nfcCardMock: {
-    width: "100%",
-    maxWidth: "560px",
-    borderRadius: "30px",
-    padding: "24px",
-    background:
-      "linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #334155 100%)",
-    boxShadow: "0 28px 60px rgba(15, 23, 42, 0.24)",
-    color: "#fff",
     position: "relative",
-    overflow: "hidden",
+    zIndex: 1,
+  },
+  heroVisualCard: {
+    width: "100%",
+    maxWidth: "600px",
+    borderRadius: "32px",
+    padding: "20px",
+    background: "linear-gradient(145deg, #0f172a 0%, #1e293b 52%, #334155 100%)",
+    boxShadow: "0 28px 70px rgba(15, 23, 42, 0.22)",
+    color: "#fff",
+    border: "1px solid rgba(255,255,255,0.08)",
+  },
+  heroVisualTopRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    gap: "16px",
+    alignItems: "flex-start",
+    flexWrap: "wrap",
+    marginBottom: "18px",
+  },
+  heroChip: {
+    background: "rgba(255,255,255,0.14)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    color: "#fff",
+    padding: "9px 12px",
+    borderRadius: "999px",
+    fontSize: "12px",
+    fontWeight: 700,
+    backdropFilter: "blur(8px)",
   },
   nfcCardTop: {
     fontSize: "13px",
-    fontWeight: "700",
-    opacity: 0.85,
-    marginBottom: "12px",
+    fontWeight: 700,
+    opacity: 0.84,
+    marginBottom: "10px",
   },
   nfcCardName: {
     fontSize: "34px",
-    fontWeight: "800",
-    lineHeight: "1.1",
+    fontWeight: 800,
+    lineHeight: 1.08,
     marginBottom: "8px",
   },
   nfcCardSub: {
     fontSize: "15px",
     color: "rgba(255,255,255,0.82)",
-    marginBottom: "20px",
   },
-  phoneMock: {
-    marginTop: "10px",
-    width: "100%",
+  heroVisualMainImage: {
+    position: "relative",
+    height: "360px",
     borderRadius: "26px",
-    background: "rgba(255,255,255,0.12)",
-    padding: "12px",
-    backdropFilter: "blur(6px)",
+    overflow: "hidden",
+    marginBottom: "14px",
+    border: "1px solid rgba(255,255,255,0.08)",
   },
-  phoneTopBar: {
-    width: "38%",
-    height: "8px",
-    borderRadius: "999px",
-    background: "rgba(255,255,255,0.28)",
-    margin: "0 auto 12px",
+  heroVisualMainOverlay: {
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(180deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.62) 100%)",
   },
-  phoneScreen: {
-    background: "#ffffff",
-    borderRadius: "22px",
-    padding: "18px",
-    color: "#0f172a",
+  heroVisualCaption: {
+    position: "absolute",
+    left: "18px",
+    right: "18px",
+    bottom: "18px",
+    display: "grid",
+    gap: "6px",
   },
-  phoneScreenBadge: {
+  heroVisualCaptionBadge: {
     width: "fit-content",
-    background: "#e2e8f0",
-    color: "#0f172a",
-    padding: "7px 11px",
+    background: "rgba(255,255,255,0.16)",
+    color: "#fff",
+    padding: "7px 10px",
     borderRadius: "999px",
     fontSize: "12px",
-    fontWeight: "700",
-    marginBottom: "12px",
+    fontWeight: 700,
+    backdropFilter: "blur(8px)",
   },
-  phoneScreenTitle: {
-    fontSize: "24px",
-    fontWeight: "800",
-    marginBottom: "8px",
+  heroVisualCaptionTitle: {
+    fontSize: "28px",
+    fontWeight: 800,
+    lineHeight: 1.1,
   },
-  phoneScreenText: {
+  heroVisualCaptionText: {
     fontSize: "14px",
-    lineHeight: "1.6",
-    color: "#475569",
-    marginBottom: "16px",
+    lineHeight: 1.6,
+    color: "rgba(255,255,255,0.88)",
+    maxWidth: "420px",
   },
-  phoneImageGrid: {
+  heroThumbGrid: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "repeat(4, 1fr)",
     gap: "10px",
-  },
-  phoneImage: {
-    borderRadius: "16px",
-    minHeight: "120px",
-    backgroundColor: "#e2e8f0",
-    boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.18)",
-  },
-  phoneImageTall: {
-    minHeight: "180px",
-  },
-  phoneImageWide: {
-    minHeight: "180px",
   },
 
   section: {
     maxWidth: "1280px",
     margin: "0 auto",
-    padding: "40px 24px 56px",
+    padding: "44px 24px 62px",
   },
   sectionAlt: {
-    padding: "56px 24px",
-    background:
-      "linear-gradient(180deg, rgba(241,245,249,0.72) 0%, rgba(255,255,255,1) 100%)",
+    padding: "62px 24px",
+    background: "linear-gradient(180deg, rgba(241,245,249,0.72) 0%, rgba(255,255,255,1) 100%)",
   },
   sectionHeader: {
     maxWidth: "860px",
-    margin: "0 auto 30px",
+    margin: "0 auto 34px",
     textAlign: "center",
     display: "grid",
     gap: "12px",
@@ -799,33 +757,39 @@ const styles: Record<string, CSSProperties> = {
     padding: "8px 13px",
     borderRadius: "999px",
     fontSize: "13px",
-    fontWeight: "700",
+    fontWeight: 700,
+  },
+  sectionBadgeLight: {
+    background: "rgba(255,255,255,0.14)",
+    color: "#fff",
   },
   sectionTitle: {
     margin: 0,
-    fontSize: "40px",
-    lineHeight: "1.14",
-    fontWeight: "800",
+    fontSize: "clamp(2rem, 4vw, 2.8rem)",
+    lineHeight: 1.12,
+    fontWeight: 800,
     color: "#0f172a",
+    letterSpacing: "-0.03em",
   },
   sectionText: {
     margin: 0,
     fontSize: "17px",
-    lineHeight: "1.75",
+    lineHeight: 1.75,
     color: "#475569",
   },
 
   coreGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "18px",
   },
   coreCard: {
-    background: "#fff",
+    background: "rgba(255,255,255,0.88)",
     border: "1px solid #e2e8f0",
-    borderRadius: "22px",
+    borderRadius: "24px",
     padding: "24px",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.05)",
+    boxShadow: "0 12px 28px rgba(15, 23, 42, 0.05)",
+    backdropFilter: "blur(10px)",
   },
   coreIcon: {
     width: "46px",
@@ -837,18 +801,18 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     fontSize: "20px",
-    fontWeight: "800",
+    fontWeight: 800,
     marginBottom: "16px",
   },
   coreTitle: {
     margin: "0 0 10px 0",
     fontSize: "22px",
-    fontWeight: "800",
+    fontWeight: 800,
   },
   coreText: {
     margin: 0,
     fontSize: "15px",
-    lineHeight: "1.75",
+    lineHeight: 1.75,
     color: "#475569",
   },
 
@@ -856,7 +820,7 @@ const styles: Record<string, CSSProperties> = {
     maxWidth: "1280px",
     margin: "0 auto",
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
     gap: "30px",
     alignItems: "center",
   },
@@ -870,37 +834,39 @@ const styles: Record<string, CSSProperties> = {
     marginTop: "8px",
   },
   featureItem: {
-    background: "#fff",
+    background: "rgba(255,255,255,0.86)",
     border: "1px solid #e2e8f0",
-    borderRadius: "14px",
+    borderRadius: "16px",
     padding: "14px 16px",
     fontSize: "15px",
-    fontWeight: "600",
+    fontWeight: 600,
     color: "#334155",
+    boxShadow: "0 8px 18px rgba(15, 23, 42, 0.04)",
   },
   imageStoryCard: {
     background: "#fff",
     border: "1px solid #e2e8f0",
-    borderRadius: "26px",
+    borderRadius: "28px",
     overflow: "hidden",
-    boxShadow: "0 16px 34px rgba(15, 23, 42, 0.07)",
+    boxShadow: "0 18px 40px rgba(15, 23, 42, 0.07)",
   },
   imageStoryTop: {
     padding: "14px 18px",
     borderBottom: "1px solid #e2e8f0",
     fontSize: "13px",
     color: "#64748b",
-    fontWeight: "700",
+    fontWeight: 700,
   },
   imageStoryMain: {
     padding: "18px",
     display: "grid",
     gap: "16px",
   },
-  imageStoryLargeImage: {
-    borderRadius: "22px",
-    minHeight: "280px",
-    backgroundColor: "#cbd5e1",
+  imageStoryLargeWrap: {
+    position: "relative",
+    borderRadius: "24px",
+    minHeight: "320px",
+    overflow: "hidden",
   },
   imageStoryTextBlock: {
     display: "grid",
@@ -908,24 +874,24 @@ const styles: Record<string, CSSProperties> = {
   },
   imageStoryTitle: {
     fontSize: "24px",
-    fontWeight: "800",
+    fontWeight: 800,
     color: "#0f172a",
   },
   imageStoryText: {
     fontSize: "15px",
-    lineHeight: "1.7",
+    lineHeight: 1.7,
     color: "#475569",
   },
 
   stepsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
     gap: "18px",
   },
   stepCard: {
     background: "#fff",
     border: "1px solid #e2e8f0",
-    borderRadius: "22px",
+    borderRadius: "24px",
     padding: "22px",
     boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
   },
@@ -938,18 +904,18 @@ const styles: Record<string, CSSProperties> = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontWeight: "800",
+    fontWeight: 800,
     marginBottom: "16px",
   },
   stepTitle: {
     margin: "0 0 10px 0",
     fontSize: "20px",
-    fontWeight: "800",
+    fontWeight: 800,
   },
   stepText: {
     margin: 0,
     fontSize: "15px",
-    lineHeight: "1.75",
+    lineHeight: 1.75,
     color: "#475569",
   },
 
@@ -957,7 +923,7 @@ const styles: Record<string, CSSProperties> = {
     maxWidth: "1280px",
     margin: "0 auto",
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
     gap: "18px",
   },
   compareBadCard: {
@@ -979,7 +945,7 @@ const styles: Record<string, CSSProperties> = {
     padding: "8px 12px",
     borderRadius: "999px",
     fontSize: "12px",
-    fontWeight: "700",
+    fontWeight: 700,
     marginBottom: "16px",
   },
   compareLabelGood: {
@@ -989,14 +955,14 @@ const styles: Record<string, CSSProperties> = {
     padding: "8px 12px",
     borderRadius: "999px",
     fontSize: "12px",
-    fontWeight: "700",
+    fontWeight: 700,
     marginBottom: "16px",
   },
   compareTitle: {
     margin: "0 0 16px 0",
     fontSize: "24px",
-    fontWeight: "800",
-    lineHeight: "1.25",
+    fontWeight: 800,
+    lineHeight: 1.25,
   },
   compareList: {
     display: "grid",
@@ -1009,7 +975,7 @@ const styles: Record<string, CSSProperties> = {
     padding: "14px 16px",
     color: "#7f1d1d",
     fontSize: "15px",
-    fontWeight: "600",
+    fontWeight: 600,
   },
   compareGoodItem: {
     background: "#fff",
@@ -1018,24 +984,20 @@ const styles: Record<string, CSSProperties> = {
     padding: "14px 16px",
     color: "#0f172a",
     fontSize: "15px",
-    fontWeight: "600",
+    fontWeight: 600,
   },
 
   useCaseGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "18px",
   },
   useCaseCard: {
     background: "#fff",
     border: "1px solid #e2e8f0",
-    borderRadius: "22px",
+    borderRadius: "24px",
     overflow: "hidden",
     boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
-  },
-  useCaseImage: {
-    minHeight: "220px",
-    backgroundColor: "#cbd5e1",
   },
   useCaseBody: {
     padding: "18px",
@@ -1043,12 +1005,12 @@ const styles: Record<string, CSSProperties> = {
   useCaseTitle: {
     margin: "0 0 8px 0",
     fontSize: "20px",
-    fontWeight: "800",
+    fontWeight: 800,
   },
   useCaseText: {
     margin: 0,
     fontSize: "15px",
-    lineHeight: "1.7",
+    lineHeight: 1.7,
     color: "#475569",
   },
 
@@ -1056,7 +1018,7 @@ const styles: Record<string, CSSProperties> = {
     maxWidth: "1280px",
     margin: "0 auto",
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
     gap: "28px",
     alignItems: "center",
   },
@@ -1093,7 +1055,7 @@ const styles: Record<string, CSSProperties> = {
   demoTopText: {
     fontSize: "13px",
     color: "#64748b",
-    fontWeight: "700",
+    fontWeight: 700,
   },
   demoPreviewCard: {
     padding: "18px",
@@ -1109,7 +1071,7 @@ const styles: Record<string, CSSProperties> = {
   },
   demoPreviewTitle: {
     fontSize: "24px",
-    fontWeight: "800",
+    fontWeight: 800,
     color: "#0f172a",
   },
   demoPreviewMeta: {
@@ -1123,21 +1085,17 @@ const styles: Record<string, CSSProperties> = {
     borderRadius: "999px",
     padding: "8px 12px",
     fontSize: "12px",
-    fontWeight: "700",
+    fontWeight: 700,
   },
   demoPreviewGrid: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     gap: "12px",
   },
-  demoPreviewImage: {
-    borderRadius: "16px",
-    backgroundColor: "#cbd5e1",
-  },
 
   videoSection: {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
     gap: "28px",
     alignItems: "center",
   },
@@ -1150,18 +1108,25 @@ const styles: Record<string, CSSProperties> = {
     border: "1px solid #e2e8f0",
     borderRadius: "24px",
     overflow: "hidden",
-    minHeight: "360px",
+    minHeight: "380px",
     boxShadow: "0 16px 34px rgba(15, 23, 42, 0.08)",
   },
-  videoPlaceholder: {
-    minHeight: "360px",
+  videoImageWrap: {
+    position: "relative",
+    minHeight: "380px",
+  },
+  videoOverlay: {
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(135deg, rgba(15,23,42,0.55), rgba(51,65,85,0.6))",
+  },
+  videoCenterContent: {
+    position: "absolute",
+    inset: 0,
     display: "grid",
     placeItems: "center",
     textAlign: "center",
     padding: "24px",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat",
     color: "#fff",
   },
   playButton: {
@@ -1173,24 +1138,26 @@ const styles: Record<string, CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     fontSize: "28px",
-    marginBottom: "14px",
+    margin: "0 auto 14px",
+    backdropFilter: "blur(10px)",
   },
   videoPlaceholderTitle: {
     fontSize: "28px",
-    fontWeight: "800",
+    fontWeight: 800,
     marginBottom: "8px",
   },
   videoPlaceholderText: {
     fontSize: "15px",
-    color: "rgba(255,255,255,0.85)",
-    lineHeight: "1.7",
+    color: "rgba(255,255,255,0.88)",
+    lineHeight: 1.7,
+    maxWidth: "440px",
   },
 
   pricingGrid: {
     maxWidth: "1280px",
     margin: "0 auto",
     display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
     gap: "18px",
   },
   priceCard: {
@@ -1203,6 +1170,7 @@ const styles: Record<string, CSSProperties> = {
   priceCardFeatured: {
     border: "1px solid #0f172a",
     boxShadow: "0 18px 36px rgba(15, 23, 42, 0.10)",
+    transform: "translateY(-4px)",
   },
   priceTag: {
     width: "fit-content",
@@ -1211,7 +1179,7 @@ const styles: Record<string, CSSProperties> = {
     padding: "8px 12px",
     borderRadius: "999px",
     fontSize: "12px",
-    fontWeight: "700",
+    fontWeight: 700,
     marginBottom: "16px",
   },
   priceTagDark: {
@@ -1221,24 +1189,24 @@ const styles: Record<string, CSSProperties> = {
     padding: "8px 12px",
     borderRadius: "999px",
     fontSize: "12px",
-    fontWeight: "700",
+    fontWeight: 700,
     marginBottom: "16px",
   },
   priceTitle: {
     margin: "0 0 10px 0",
     fontSize: "24px",
-    fontWeight: "800",
+    fontWeight: 800,
   },
   priceValue: {
     fontSize: "30px",
-    fontWeight: "800",
+    fontWeight: 800,
     marginBottom: "14px",
     color: "#0f172a",
   },
   priceText: {
     margin: "0 0 18px 0",
     fontSize: "15px",
-    lineHeight: "1.75",
+    lineHeight: 1.75,
     color: "#475569",
   },
   priceList: {
@@ -1248,7 +1216,7 @@ const styles: Record<string, CSSProperties> = {
   priceListItem: {
     fontSize: "15px",
     color: "#334155",
-    fontWeight: "600",
+    fontWeight: 600,
   },
 
   ctaSection: {
@@ -1257,34 +1225,24 @@ const styles: Record<string, CSSProperties> = {
     padding: "24px 24px 72px",
   },
   ctaCard: {
-    background:
-      "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
+    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)",
     color: "#fff",
-    borderRadius: "28px",
-    padding: "32px",
+    borderRadius: "30px",
+    padding: "34px",
     display: "grid",
     gap: "20px",
     boxShadow: "0 24px 56px rgba(15, 23, 42, 0.22)",
   },
-  sectionBadgeLight: {
-    width: "fit-content",
-    background: "rgba(255,255,255,0.14)",
-    color: "#fff",
-    padding: "8px 13px",
-    borderRadius: "999px",
-    fontSize: "13px",
-    fontWeight: "700",
-  },
   ctaTitle: {
     margin: "8px 0 10px 0",
-    fontSize: "36px",
-    lineHeight: "1.15",
-    fontWeight: "800",
+    fontSize: "clamp(2rem, 4vw, 2.5rem)",
+    lineHeight: 1.1,
+    fontWeight: 800,
   },
   ctaText: {
     margin: 0,
     fontSize: "17px",
-    lineHeight: "1.75",
+    lineHeight: 1.75,
     color: "rgba(255,255,255,0.82)",
     maxWidth: "760px",
   },
@@ -1299,7 +1257,7 @@ const styles: Record<string, CSSProperties> = {
     padding: "15px 20px",
     borderRadius: "14px",
     fontSize: "15px",
-    fontWeight: "700",
+    fontWeight: 700,
     minWidth: "180px",
   },
   secondaryButtonLight: {
@@ -1313,7 +1271,28 @@ const styles: Record<string, CSSProperties> = {
     padding: "15px 20px",
     borderRadius: "14px",
     fontSize: "15px",
-    fontWeight: "700",
+    fontWeight: 700,
     minWidth: "180px",
+  },
+
+  imageWrap: {
+    position: "relative",
+    overflow: "hidden",
+    borderRadius: "18px",
+    background: "#cbd5e1",
+    border: "1px solid rgba(148,163,184,0.22)",
+  },
+  image: {
+    objectFit: "cover",
+  },
+  imageOverlay: {
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(180deg, rgba(15,23,42,0.05) 0%, rgba(15,23,42,0.16) 100%)",
+  },
+  imageOverlayDark: {
+    position: "absolute",
+    inset: 0,
+    background: "linear-gradient(180deg, rgba(15,23,42,0.08) 0%, rgba(15,23,42,0.28) 100%)",
   },
 };
