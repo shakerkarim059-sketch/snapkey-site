@@ -1977,6 +1977,39 @@ cartPhoto: {
   display: "block",
   backgroundColor: "#e2e8f0",
 },
+  cartPhotoInfo: {
+  display: "grid",
+  gap: "10px",
+  padding: "12px",
+},
+
+cartPhotoName: {
+  fontSize: "13px",
+  fontWeight: "700",
+  color: "#0f172a",
+  lineHeight: "1.4",
+  overflow: "hidden",
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical",
+},
+
+cartFooterSummary: {
+  display: "grid",
+  gap: "4px",
+},
+
+cartFooterSmall: {
+  fontSize: "13px",
+  color: "#64748b",
+  fontWeight: "600",
+},
+
+cartFooterTotal: {
+  fontSize: "26px",
+  fontWeight: "800",
+  color: "#0f172a",
+},
 removeFromCartButton: {
   width: "100%",
   border: "none",
