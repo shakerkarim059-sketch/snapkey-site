@@ -96,6 +96,11 @@ export default function EventPage() {
   }, [slug]);
 
   useEffect(() => {
+  if (!slug) return;
+  checkExistingSession();
+}, [slug]);
+
+  useEffect(() => {
     function handleKeyDown(e) {
       if (cartOpen && e.key === "Escape") {
         setCartOpen(false);
@@ -180,7 +185,20 @@ const { data, error } = await supabase
       fetchAllLikes(),
       fetchAllComments(),
     ]);
+async function checkExistingSession() {
+  try {
+    const response = await fetch("/api/event-session");
+    const result = await response.json();
 
+    if (!response.ok || !result?.authenticated) return;
+    if (result.slug !== slug) return;
+
+    setIsAuthenticated(true);
+    setIsAdmin(result.role === "admin");
+  } catch (error) {
+    console.error("Fehler beim Prüfen der Session:", error);
+  }
+}
     setLoadingEvent(false);
   }
 
@@ -239,7 +257,7 @@ const { data, error } = await supabase
     setLoadingComments(false);
   }
 
- async function handleLogin() {
+async function handleLogin() {
   if (!eventData || !slug) return;
 
   try {
@@ -257,8 +275,7 @@ const { data, error } = await supabase
     const result = await response.json();
 
     if (!response.ok) {
-      console.log("LOGIN DEBUG:", result);
-      alert((result.error || "Login fehlgeschlagen.") + " — bitte Konsole öffnen");
+      alert(result.error || "Login fehlgeschlagen.");
       return;
     }
 
@@ -281,14 +298,41 @@ const { data, error } = await supabase
   }
 }
 
-  function handleLogout() {
-    setIsAuthenticated(false);
-    setIsAdmin(false);
-    setPasswordInput("");
-    setEditingEventId(null);
-    setLightboxOpen(false);
-    setCartOpen(false);
+    if (result.role === "admin") {
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      return;
+    }
+
+    if (result.role === "guest") {
+      setIsAuthenticated(true);
+      setIsAdmin(false);
+      return;
+    }
+
+    alert("Unbekannte Login-Antwort.");
+  } catch (error) {
+    console.error("Fehler beim Login:", error);
+    alert("Login fehlgeschlagen.");
   }
+}
+
+async function handleLogout() {
+  try {
+    await fetch("/api/event-logout", {
+      method: "POST",
+    });
+  } catch (error) {
+    console.error("Fehler beim Logout:", error);
+  }
+
+  setIsAuthenticated(false);
+  setIsAdmin(false);
+  setPasswordInput("");
+  setEditingEventId(null);
+  setLightboxOpen(false);
+  setCartOpen(false);
+}
 
   function fillEditForm(event) {
     setTitle(event.title || "");
