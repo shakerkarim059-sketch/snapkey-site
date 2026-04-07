@@ -4,27 +4,26 @@ import Image from "next/image";
 import Link from "next/link";
 
 const imageUrls = {
-  heroMain: "/images/family-trip-1.jpg",
-  heroGallery1: "/images/family-trip-2.jpg",
-  heroGallery2: "/images/family-party-1.jpg",
-  heroGallery3: "/images/wedding-1.jpg",
-  heroGallery4: "/images/demo-gallery-1.jpg",
+  heroMain: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200",
+  heroGallery1: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?q=80&w=800",
+  heroGallery2: "https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=800",
+  heroGallery3: "https://images.unsplash.com/photo-1529636798458-92182e662485?q=80&w=800",
+  heroGallery4: "https://images.unsplash.com/photo-1504198458649-3128b932f49b?q=80&w=800",
 
-  personalization: "/images/nfc-key-closeup.jpg",
+  personalization: "https://images.unsplash.com/photo-1580894732444-8ecded7900cd?q=80&w=1200",
 
-  useCaseVacation: "/images/usecase-vacation.jpg",
-  useCaseBirthday: "/images/usecase-birthday.jpg",
-  useCaseWedding: "/images/usecase-wedding.jpg",
-  useCaseFamily: "/images/usecase-family-dinner.jpg",
+  useCaseVacation: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=800",
+  useCaseBirthday: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?q=80&w=800",
+  useCaseWedding: "https://images.unsplash.com/photo-1520854221256-17451cc331bf?q=80&w=800",
+  useCaseFamily: "https://images.unsplash.com/photo-1511895426328-dc8714191300?q=80&w=800",
 
-  demo1: "/images/demo-gallery-1.jpg",
-  demo2: "/images/demo-gallery-2.jpg",
-  demo3: "/images/demo-gallery-3.jpg",
-  demo4: "/images/demo-gallery-4.jpg",
+  demo1: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=800",
+  demo2: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?q=80&w=800",
+  demo3: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=800",
+  demo4: "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?q=80&w=800",
 
-  videoThumb: "/images/video-thumb.jpg",
+  videoThumb: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?q=80&w=1200",
 };
-
 function SectionBadge({ children, light = false }) {
   return (
     <div
