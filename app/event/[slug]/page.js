@@ -662,34 +662,27 @@ async function handleSubmitOrder() {
   setSubmittingOrder(true);
 
   try {
-    const orderItems = selectedPhotos.map((photo) => ({
-      photoId: photo.id,
-      photoUrl: photo.signed_url || null,
-      title: photo.caption || photo.file_name || "Foto",
-      quantity: 1,
-      printSize: selectedPrintOption,
-      frame: selectedFrameOption,
-      unitPrice: Math.round(pricePerPhoto * 100),
-    }));
+
 
     const orderResponse = await fetch("/api/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        eventId: eventData.id,
-        customerName,
-        customerEmail,
-        customerPhone,
-        street,
-        postalCode,
-        city,
-        country,
-        orderNote,
-        items: orderItems,
-        totalPrice: Math.round(totalPrice * 100),
-      }),
+    body: JSON.stringify({
+  eventId: eventData.id,
+  customerName,
+  customerEmail,
+  customerPhone,
+  street,
+  postalCode,
+  city,
+  country,
+  orderNote,
+  photoIds: selectedPhotos.map((photo) => photo.id),
+  printOption: selectedPrintOption,
+  frameOption: selectedFrameOption,
+}),
     });
 
     const orderResult = await orderResponse.json();
