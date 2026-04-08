@@ -662,27 +662,25 @@ async function handleSubmitOrder() {
   setSubmittingOrder(true);
 
   try {
-
-
     const orderResponse = await fetch("/api/create-order", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-    body: JSON.stringify({
-  eventId: eventData.id,
-  customerName,
-  customerEmail,
-  customerPhone,
-  street,
-  postalCode,
-  city,
-  country,
-  orderNote,
-  photoIds: selectedPhotos.map((photo) => photo.id),
-  printOption: selectedPrintOption,
-  frameOption: selectedFrameOption,
-}),
+      body: JSON.stringify({
+        eventId: eventData.id,
+        customerName,
+        customerEmail,
+        customerPhone,
+        street,
+        postalCode,
+        city,
+        country,
+        orderNote,
+        photoIds: selectedPhotos.map((photo) => photo.id),
+        printOption: selectedPrintOption,
+        frameOption: selectedFrameOption,
+      }),
     });
 
     const orderResult = await orderResponse.json();
@@ -714,7 +712,9 @@ async function handleSubmitOrder() {
     const checkoutResult = await checkoutResponse.json();
 
     if (!checkoutResponse.ok) {
-      alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
+      alert(
+        checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden."
+      );
       setSubmittingOrder(false);
       return;
     }
