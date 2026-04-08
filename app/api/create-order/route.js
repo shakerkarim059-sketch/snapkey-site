@@ -197,19 +197,20 @@ export async function POST(request) {
 
     const photoMap = new Map(photoRows.map((photo) => [String(photo.id), photo]));
 
-    const orderItemsPayload = uniquePhotoIds.map((photoId) => {
-      const photo = photoMap.get(String(photoId));
+const orderItemsPayload = uniquePhotoIds.map((photoId) => {
+  const photo = photoMap.get(String(photoId));
 
-      return {
-        order_id: createdOrder.id,
-        photo_id: photo.id,
-        photo_url: null,
-        photo_caption: photo.caption || photo.file_name || "Foto",
-        print_option: printOption,
-        frame_option: frameOption,
-        unit_price: unitPrice,
-      };
-    });
+  return {
+    order_id: createdOrder.id,
+    photo_id: photo.id,
+    photo_url: null,
+    photo_path: photo.file_path,
+    photo_caption: photo.caption || photo.file_name || "Foto",
+    print_option: printOption,
+    frame_option: frameOption,
+    unit_price: unitPrice,
+  };
+});
 
     const { error: itemsError } = await supabase
       .from("order_items")
