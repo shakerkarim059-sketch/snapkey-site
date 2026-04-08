@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
+import {
+  calculateUnitPrice,
+  calculateTotalPrice,
+} from "../../../lib/pricing";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -56,15 +60,13 @@ export async function POST(request) {
       city,
       country,
       orderNote,
-      items,
-      totalPrice,
+      photoIds,
+      printOption,
+      frameOption,
     } = body || {};
 
     if (!eventId) {
-      return NextResponse.json(
-        { error: "Event fehlt." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Event fehlt." }, { status: 400 });
     }
 
     if (!customerName?.trim()) {
@@ -88,9 +90,23 @@ export async function POST(request) {
       );
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
+    if (!Array.isArray(photoIds) || photoIds.length === 0) {
       return NextResponse.json(
         { error: "Bitte zuerst Bilder auswählen." },
+        { status: 400 }
+      );
+    }
+
+    if (!printOption) {
+      return NextResponse.json(
+        { error: "Bitte ein Format auswählen." },
+        { status: 400 }
+      );
+    }
+
+    if (!frameOption) {
+      return NextResponse.json(
+        { error: "Bitte eine Rahmenoption auswählen." },
         { status: 400 }
       );
     }
@@ -102,10 +118,49 @@ export async function POST(request) {
       );
     }
 
-    const firstItem = items[0] || {};
-    const printOption = firstItem.printSize || null;
-    const frameOption = firstItem.frame || null;
-    const unitPriceInCent = Number(firstItem.unitPrice || 0);
+    const unitPrice = calculateUnitPrice(printOption, frameOption);
+    if (unitPrice === null) {
+      return NextResponse.json(
+        { error: "Ungültige Produktauswahl." },
+        { status: 400 }
+      );
+    }
+
+    const totalPrice = calculateTotalPrice(
+      printOption,
+      frameOption,
+      photoIds.length
+    );
+
+    if (totalPrice === null) {
+      return NextResponse.json(
+        { error: "Gesamtpreis konnte nicht berechnet werden." },
+        { status: 400 }
+      );
+    }
+
+    const uniquePhotoIds = [...new Set(photoIds)];
+
+    const { data: photoRows, error: photosError } = await supabase
+      .from("photos")
+      .select("id, event_id, file_name, file_path, caption")
+      .eq("event_id", eventId)
+      .in("id", uniquePhotoIds);
+
+    if (photosError) {
+      console.error("Fehler beim Laden der Fotos:", photosError);
+      return NextResponse.json(
+        { error: "Fotos konnten nicht geprüft werden." },
+        { status: 500 }
+      );
+    }
+
+    if (!photoRows || photoRows.length !== uniquePhotoIds.length) {
+      return NextResponse.json(
+        { error: "Ein oder mehrere Fotos gehören nicht zu diesem Event." },
+        { status: 400 }
+      );
+    }
 
     const { data: createdOrder, error: orderError } = await supabase
       .from("orders")
@@ -122,10 +177,11 @@ export async function POST(request) {
           note: orderNote?.trim() || null,
           print_option: printOption,
           frame_option: frameOption,
-          item_count: items.length,
-          total_price: Number(totalPrice || 0),
+          item_count: uniquePhotoIds.length,
+          total_price: totalPrice,
           payment_status: "pending",
           status: "neu",
+          fulfillment_status: "not_started",
         },
       ])
       .select()
@@ -139,15 +195,21 @@ export async function POST(request) {
       );
     }
 
-    const orderItemsPayload = items.map((item) => ({
-      order_id: createdOrder.id,
-      photo_id: item.photoId,
-      photo_url: item.photoUrl || null,
-      photo_caption: item.title || null,
-      print_option: item.printSize || null,
-      frame_option: item.frame || null,
-      unit_price: Number(item.unitPrice || 0),
-    }));
+    const photoMap = new Map(photoRows.map((photo) => [String(photo.id), photo]));
+
+    const orderItemsPayload = uniquePhotoIds.map((photoId) => {
+      const photo = photoMap.get(String(photoId));
+
+      return {
+        order_id: createdOrder.id,
+        photo_id: photo.id,
+        photo_url: null,
+        photo_caption: photo.caption || photo.file_name || "Foto",
+        print_option: printOption,
+        frame_option: frameOption,
+        unit_price: unitPrice,
+      };
+    });
 
     const { error: itemsError } = await supabase
       .from("order_items")
@@ -155,6 +217,9 @@ export async function POST(request) {
 
     if (itemsError) {
       console.error("Fehler beim Speichern der Bestellpositionen:", itemsError);
+
+      await supabase.from("orders").delete().eq("id", createdOrder.id);
+
       return NextResponse.json(
         { error: "Bestellpositionen konnten nicht gespeichert werden." },
         { status: 500 }
