@@ -632,7 +632,10 @@ async function handleDeletePhoto(photo) {
 
     setSubmittingCommentPhotoId(null);
   }
-
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+  
 async function handleSubmitOrder() {
   if (!eventData?.id) {
     alert("Event nicht gefunden.");
@@ -649,10 +652,15 @@ async function handleSubmitOrder() {
     return;
   }
 
-  if (!customerEmail.trim()) {
-    alert("Bitte deine E-Mail eingeben.");
-    return;
-  }
+if (!customerEmail.trim()) {
+  alert("Bitte deine E-Mail eingeben.");
+  return;
+}
+
+if (!isValidEmail(customerEmail)) {
+  alert("Bitte eine gültige E-Mail-Adresse eingeben.");
+  return;
+}
 
   if (!street.trim() || !postalCode.trim() || !city.trim()) {
     alert("Bitte die vollständige Adresse eingeben.");
