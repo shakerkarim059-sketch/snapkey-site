@@ -135,13 +135,13 @@ export async function POST(req) {
     console.error("Webhook Verarbeitung Fehler:", err);
 
     try {
-      const eventObj = stripe.webhooks.constructEvent(
-        body,
-        signature,
-        process.env.STRIPE_WEBHOOK_SECRET
-      );
-      const session = eventObj.data.object;
-      const orderId = session?.metadata?.order_id;
+const eventObj = stripe.webhooks.constructEvent(
+  body,
+  signature,
+  process.env.STRIPE_WEBHOOK_SECRET!
+);
+const session = eventObj.data.object as Stripe.Checkout.Session;
+const orderId = session.metadata?.order_id;
 
       if (orderId) {
         await supabase
