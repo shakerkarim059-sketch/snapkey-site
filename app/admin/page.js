@@ -10,8 +10,13 @@ export default function AdminPage() {
   const [deletingId, setDeletingId] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  const [batchCount, setBatchCount] = useState(0);
+  const [loadingBatchCount, setLoadingBatchCount] = useState(true);
+  const [runningBatch, setRunningBatch] = useState(false);
+
   useEffect(() => {
     fetchEvents();
+    fetchBatchCount();
   }, []);
 
   async function fetchEvents() {
@@ -32,6 +37,67 @@ export default function AdminPage() {
 
     setEvents(data || []);
     setLoading(false);
+  }
+
+  async function fetchBatchCount() {
+    setLoadingBatchCount(true);
+
+    const { count, error } = await supabase
+      .from("orders")
+      .select("*", { count: "exact", head: true })
+      .eq("fulfillment_status", "waiting_for_batch");
+
+    if (error) {
+      console.error("Fehler beim Laden der Batch-Anzahl:", error);
+      setBatchCount(0);
+      setLoadingBatchCount(false);
+      return;
+    }
+
+    setBatchCount(count || 0);
+    setLoadingBatchCount(false);
+  }
+
+  async function handleRunBatch() {
+    if (batchCount === 0) {
+      alert("Keine offenen Bestellungen für den Batch.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Wirklich ${batchCount} Bestellung${batchCount === 1 ? "" : "en"} gesammelt an Gelato senden?`
+    );
+
+    if (!confirmed) return;
+
+    setRunningBatch(true);
+
+    try {
+      const response = await fetch("/api/create-gelato-batch", {
+        method: "POST",
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        alert(result.error || "Batch konnte nicht erstellt werden.");
+        setRunningBatch(false);
+        return;
+      }
+
+      alert(
+        `Batch erfolgreich gesendet. ${result.orders} Bestellung${
+          result.orders === 1 ? "" : "en"
+        } verarbeitet.`
+      );
+
+      await fetchBatchCount();
+    } catch (error) {
+      console.error("Fehler beim Starten des Batchs:", error);
+      alert("Batch konnte nicht gestartet werden.");
+    }
+
+    setRunningBatch(false);
   }
 
   async function handleDeleteEvent(eventItem) {
@@ -141,6 +207,34 @@ export default function AdminPage() {
           <Link href="/event" style={styles.primaryButton}>
             Neues Event
           </Link>
+        </div>
+      </section>
+
+      <section style={styles.batchSection}>
+        <div style={styles.batchInfoCard}>
+          <div style={styles.batchLabel}>Offene Batch-Bestellungen</div>
+          <div style={styles.batchValue}>
+            {loadingBatchCount ? "…" : batchCount}
+          </div>
+          <div style={styles.batchSub}>
+            Bestellungen mit Status „waiting_for_batch“
+          </div>
+        </div>
+
+        <div style={styles.batchActionCard}>
+          <button
+            type="button"
+            onClick={handleRunBatch}
+            disabled={runningBatch || loadingBatchCount || batchCount === 0}
+            style={{
+              ...styles.batchButton,
+              ...((runningBatch || loadingBatchCount || batchCount === 0)
+                ? styles.buttonDisabled
+                : {}),
+            }}
+          >
+            {runningBatch ? "Batch wird gesendet..." : "Batch an Gelato senden"}
+          </button>
         </div>
       </section>
 
@@ -347,6 +441,63 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  batchSection: {
+    maxWidth: "1280px",
+    margin: "0 auto 24px",
+    display: "grid",
+    gridTemplateColumns: "1fr 320px",
+    gap: "16px",
+    alignItems: "stretch",
+  },
+  batchInfoCard: {
+    background: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "22px",
+    padding: "20px",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
+    display: "grid",
+    gap: "8px",
+  },
+  batchLabel: {
+    fontSize: "13px",
+    color: "#64748b",
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+  },
+  batchValue: {
+    fontSize: "38px",
+    fontWeight: "800",
+    color: "#0f172a",
+    lineHeight: 1,
+  },
+  batchSub: {
+    fontSize: "14px",
+    color: "#475569",
+    fontWeight: "600",
+  },
+  batchActionCard: {
+    background: "#fff",
+    border: "1px solid #e2e8f0",
+    borderRadius: "22px",
+    padding: "20px",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  batchButton: {
+    backgroundColor: "#0f172a",
+    color: "#fff",
+    border: "none",
+    padding: "15px 18px",
+    borderRadius: "14px",
+    fontSize: "15px",
+    fontWeight: "700",
+    minWidth: "220px",
+    cursor: "pointer",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.16)",
   },
   contentSection: {
     maxWidth: "1280px",
