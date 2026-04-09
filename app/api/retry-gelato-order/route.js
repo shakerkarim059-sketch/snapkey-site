@@ -19,7 +19,6 @@ export async function POST(req) {
       );
     }
 
-    // Order holen
     const { data: order, error: orderError } = await supabase
       .from("orders")
       .select("*")
@@ -33,7 +32,6 @@ export async function POST(req) {
       );
     }
 
-    // Order Items holen
     const { data: items, error: itemsError } = await supabase
       .from("order_items")
       .select("*")
@@ -54,6 +52,8 @@ export async function POST(req) {
         .update({
           fulfillment_status: "submitted",
           gelato_order_id: gelatoOrder.id,
+          gelato_status: gelatoOrder.status || "created",
+          partner_name: "gelato",
           fulfillment_error: null,
         })
         .eq("id", orderId);
@@ -69,14 +69,14 @@ export async function POST(req) {
         .from("orders")
         .update({
           fulfillment_status: "failed",
-          fulfillment_error: String(error.message || error),
+          fulfillment_error: String(error?.message || error),
         })
         .eq("id", orderId);
 
       return NextResponse.json(
         {
           error: "Gelato Retry fehlgeschlagen",
-          details: String(error.message || error),
+          details: String(error?.message || error),
         },
         { status: 500 }
       );
