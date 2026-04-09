@@ -9,51 +9,86 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export async function POST() {
-  try {
-    const { data: orders, error: ordersError } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("fulfillment_status", "waiting_for_batch");
+async function runBatch() {
+  const { data: orders, error: ordersError } = await supabase
+    .from("orders")
+    .select("*")
+    .eq("fulfillment_status", "waiting_for_batch");
 
-    if (ordersError || !orders || orders.length === 0) {
-      return NextResponse.json(
-        { error: "Keine offenen Bestellungen" },
-        { status: 400 }
-      );
-    }
+  if (ordersError || !orders || orders.length === 0) {
+    return {
+      ok: false,
+      status: 400,
+      body: { error: "Keine offenen Bestellungen" },
+    };
+  }
 
-    const orderIds = orders.map((o) => o.id);
+  const orderIds = orders.map((o) => o.id);
 
-    const { data: items, error: itemsError } = await supabase
-      .from("order_items")
-      .select("*")
-      .in("order_id", orderIds);
+  const { data: items, error: itemsError } = await supabase
+    .from("order_items")
+    .select("*")
+    .in("order_id", orderIds);
 
-    if (itemsError || !items) {
-      return NextResponse.json(
-        { error: "Items konnten nicht geladen werden" },
-        { status: 500 }
-      );
-    }
+  if (itemsError || !items) {
+    return {
+      ok: false,
+      status: 500,
+      body: { error: "Items konnten nicht geladen werden" },
+    };
+  }
 
-    const firstOrder = orders[0];
+  const firstOrder = orders[0];
 
-    const gelatoResult = await createGelatoOrder(firstOrder, items);
+  const gelatoResult = await createGelatoOrder(firstOrder, items);
 
-    await supabase
-      .from("orders")
-      .update({
-        fulfillment_status: "submitted",
-        gelato_order_id: gelatoResult?.id || null,
-        gelato_status: gelatoResult?.status || "created",
-      })
-      .in("id", orderIds);
+  const { error: updateError } = await supabase
+    .from("orders")
+    .update({
+      fulfillment_status: "submitted",
+      gelato_order_id: gelatoResult?.id || null,
+      gelato_status: gelatoResult?.status || "created",
+      partner_name: "gelato",
+      fulfillment_error: null,
+    })
+    .in("id", orderIds);
 
-    return NextResponse.json({
+  if (updateError) {
+    return {
+      ok: false,
+      status: 500,
+      body: { error: "Orders konnten nicht aktualisiert werden" },
+    };
+  }
+
+  return {
+    ok: true,
+    status: 200,
+    body: {
       success: true,
       orders: orderIds.length,
-    });
+      gelato_order_id: gelatoResult?.id || null,
+    },
+  };
+}
+
+export async function POST() {
+  try {
+    const result = await runBatch();
+    return NextResponse.json(result.body, { status: result.status });
+  } catch (error) {
+    console.error("Batch Fehler:", error);
+    return NextResponse.json(
+      { error: "Batch fehlgeschlagen" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const result = await runBatch();
+    return NextResponse.json(result.body, { status: result.status });
   } catch (error) {
     console.error("Batch Fehler:", error);
     return NextResponse.json(
