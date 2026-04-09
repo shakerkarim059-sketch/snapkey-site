@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+"use client";
 
-
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { supabase } from "../../lib/supabase";
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
