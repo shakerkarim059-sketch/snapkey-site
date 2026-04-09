@@ -86,49 +86,24 @@ export async function POST(req) {
         return NextResponse.json({ received: true, skipped: true });
       }
 
-      const { data: orderItems, error: itemsError } = await supabase
-        .from("order_items")
-        .select("*")
-        .eq("order_id", orderId)
-        .order("id", { ascending: true });
+const { error: batchUpdateError } = await supabase
+  .from("orders")
+  .update({
+    fulfillment_status: "waiting_for_batch",
+    fulfillment_error: null,
+    partner_name: null,
+    gelato_order_id: null,
+    gelato_status: null,
+    gelato_response: null,
+  })
+  .eq("id", orderId);
 
-      if (itemsError || !orderItems || orderItems.length === 0) {
-        console.error("Bestellpositionen fehlen:", itemsError);
-        await supabase
-          .from("orders")
-          .update({
-            fulfillment_status: "failed",
-            fulfillment_error: "Bestellpositionen konnten nicht geladen werden.",
-          })
-          .eq("id", orderId);
-
-        return new NextResponse("Bestellpositionen fehlen", { status: 500 });
-      }
-
-      const gelatoResult = await createGelatoOrder(order, orderItems);
-
-      const { error: fulfillmentUpdateError } = await supabase
-        .from("orders")
-        .update({
-          partner_name: "gelato",
-          fulfillment_status: "submitted",
-          gelato_order_id: gelatoResult?.id || null,
-          gelato_status: gelatoResult?.status || "created",
-          gelato_response: gelatoResult,
-          fulfillment_error: null,
-        })
-        .eq("id", orderId);
-
-      if (fulfillmentUpdateError) {
-        console.error(
-          "Fehler beim Speichern der Gelato-Antwort:",
-          fulfillmentUpdateError
-        );
-        return new NextResponse("Gelato-Antwort konnte nicht gespeichert werden", {
-          status: 500,
-        });
-      }
-    }
+if (batchUpdateError) {
+  console.error("Fehler beim Setzen von waiting_for_batch:", batchUpdateError);
+  return new NextResponse("Batch-Status konnte nicht gespeichert werden", {
+    status: 500,
+  });
+}
 
     return NextResponse.json({ received: true });
   } catch (err) {
