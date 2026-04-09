@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import crypto from "crypto";
 import {
-  calculateUnitPrice,
+  getProductPrice,
   calculateTotalPrice,
 } from "../../../lib/pricing";
 
@@ -118,7 +118,8 @@ export async function POST(request) {
       );
     }
 
-    const unitPrice = calculateUnitPrice(printOption, frameOption);
+    const unitPrice = getProductPrice(printOption, frameOption);
+
     if (unitPrice === null) {
       return NextResponse.json(
         { error: "Ungültige Produktauswahl." },
@@ -126,10 +127,12 @@ export async function POST(request) {
       );
     }
 
+    const uniquePhotoIds = [...new Set(photoIds)];
+
     const totalPrice = calculateTotalPrice(
       printOption,
       frameOption,
-      photoIds.length
+      uniquePhotoIds.length
     );
 
     if (totalPrice === null) {
@@ -138,8 +141,6 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-
-    const uniquePhotoIds = [...new Set(photoIds)];
 
     const { data: photoRows, error: photosError } = await supabase
       .from("photos")
@@ -195,22 +196,28 @@ export async function POST(request) {
       );
     }
 
-    const photoMap = new Map(photoRows.map((photo) => [String(photo.id), photo]));
+    const photoMap = new Map(
+      photoRows.map((photo) => [String(photo.id), photo])
+    );
 
-const orderItemsPayload = uniquePhotoIds.map((photoId) => {
-  const photo = photoMap.get(String(photoId));
+    const orderItemsPayload = uniquePhotoIds.map((photoId) => {
+      const photo = photoMap.get(String(photoId));
 
-  return {
-    order_id: createdOrder.id,
-    photo_id: photo.id,
-    photo_url: null,
-    photo_path: photo.file_path,
-    photo_caption: photo.caption || photo.file_name || "Foto",
-    print_option: printOption,
-    frame_option: frameOption,
-    unit_price: unitPrice,
-  };
-});
+      if (!photo) {
+        throw new Error(`Foto ${photoId} konnte nicht gefunden werden.`);
+      }
+
+      return {
+        order_id: createdOrder.id,
+        photo_id: photo.id,
+        photo_url: null,
+        photo_path: photo.file_path,
+        photo_caption: photo.caption || photo.file_name || "Foto",
+        print_option: printOption,
+        frame_option: frameOption,
+        unit_price: unitPrice,
+      };
+    });
 
     const { error: itemsError } = await supabase
       .from("order_items")
