@@ -3,24 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabase";
+import {
+  SIZE_OPTIONS,
+  FRAME_OPTIONS,
+  getBasePrintOption,
+  getFrameOption,
+  getProductPrice,
+  formatEuroFromCent,
+} from "../../../lib/pricing";
 
 const LOCAL_LIKE_STORAGE_KEY = "family-photo-liked-map";
-
-const PRINT_OPTIONS = [
-  { value: "10x15-portrait", label: "10x15 Hochformat", price: 3 },
-  { value: "15x10-landscape", label: "15x10 Querformat", price: 3 },
-  { value: "20x30-portrait", label: "20x30 Hochformat", price: 12 },
-  { value: "30x20-landscape", label: "30x20 Querformat", price: 12 },
-  { value: "30x40-portrait", label: "30x40 Hochformat", price: 19 },
-  { value: "40x30-landscape", label: "40x30 Querformat", price: 19 },
-];
-
-const FRAME_OPTIONS = [
-  { value: "none", label: "Kein Rahmen", price: 0 },
-  { value: "black", label: "Schwarz", price: 15 },
-  { value: "white", label: "Weiß", price: 15 },
-  { value: "wood", label: "Holz", price: 18 },
-];
 
 export default function EventPage() {
   const params = useParams();
@@ -72,8 +64,7 @@ export default function EventPage() {
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const [selectedPrintOption, setSelectedPrintOption] =
-    useState("10x15-portrait");
+  const [selectedPrintOption, setSelectedPrintOption] = useState("13x18");
   const [selectedFrameOption, setSelectedFrameOption] = useState("none");
 
   const [customerName, setCustomerName] = useState("");
@@ -834,16 +825,13 @@ if (!isValidEmail(customerEmail)) {
     selectedPhotoIds.includes(photo.id)
   );
 
-  const selectedPrint = PRINT_OPTIONS.find(
-    (option) => option.value === selectedPrintOption
-  );
-  const selectedFrame = FRAME_OPTIONS.find(
-    (option) => option.value === selectedFrameOption
-  );
+const selectedPrint = getBasePrintOption(selectedPrintOption);
+const selectedFrame = getFrameOption(selectedFrameOption);
 
-  const pricePerPhoto =
-    (selectedPrint?.price || 0) + (selectedFrame?.price || 0);
-  const totalPrice = pricePerPhoto * selectedPhotos.length;
+const pricePerPhotoInCent =
+  getProductPrice(selectedPrintOption, selectedFrameOption) || 0;
+const pricePerPhoto = pricePerPhotoInCent / 100;
+const totalPrice = pricePerPhoto * selectedPhotos.length;
 
   const coverPhoto = photos.length > 0 ? photos[0] : null;
   const currentPhoto = filteredPhotos[selectedPhotoIndex];
@@ -1359,32 +1347,36 @@ if (!isValidEmail(customerEmail)) {
                 <div style={styles.orderOptionsGrid}>
                   <div style={styles.orderOptionCard}>
                     <label style={styles.orderLabel}>Format wählen</label>
-                    <select
-                      value={selectedPrintOption}
-                      onChange={(e) => setSelectedPrintOption(e.target.value)}
-                      style={styles.orderSelect}
-                    >
-                      {PRINT_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label} • {option.price} €
-                        </option>
-                      ))}
-                    </select>
+                   <select
+  value={selectedPrintOption}
+  onChange={(e) => setSelectedPrintOption(e.target.value)}
+  style={styles.orderSelect}
+>
+  {SIZE_OPTIONS.map((option) => {
+    const price = getProductPrice(option.value, selectedFrameOption) || 0;
+
+    return (
+      <option key={option.value} value={option.value}>
+        {option.label} • {formatEuroFromCent(price)} €
+      </option>
+    );
+  })}
+</select>
                   </div>
 
                   <div style={styles.orderOptionCard}>
                     <label style={styles.orderLabel}>Rahmen wählen</label>
-                    <select
-                      value={selectedFrameOption}
-                      onChange={(e) => setSelectedFrameOption(e.target.value)}
-                      style={styles.orderSelect}
-                    >
-                      {FRAME_OPTIONS.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.label} • {option.price} €
-                        </option>
-                      ))}
-                    </select>
+                   <select
+  value={selectedFrameOption}
+  onChange={(e) => setSelectedFrameOption(e.target.value)}
+  style={styles.orderSelect}
+>
+  {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
+    <option key={value} value={value}>
+      {option.label} • {formatEuroFromCent(option.price)} €
+    </option>
+  ))}
+</select>
                   </div>
                 </div>
 
@@ -1516,11 +1508,11 @@ if (!isValidEmail(customerEmail)) {
                   <div style={styles.cartFooterSummary}>
                     <div style={styles.cartFooterSmall}>
                       {selectedPhotos.length} Bild
-                      {selectedPhotos.length === 1 ? "" : "er"} •{" "}
-                      {selectedPrint?.label}
-                      {selectedFrame?.value !== "none"
-                        ? ` • ${selectedFrame?.label}`
-                        : ""}
+{selectedPhotos.length === 1 ? "" : "er"} •{" "}
+{selectedPrint?.label || "—"}
+{selectedFrameOption !== "none"
+  ? ` • ${selectedFrame?.label || ""}`
+  : ""}
                     </div>
                     <div style={styles.cartFooterTotal}>
                       {totalPrice.toFixed(2)} €
