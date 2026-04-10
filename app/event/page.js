@@ -32,9 +32,9 @@ export default function CreateEventPage() {
   async function handleCreateEvent(e) {
     e.preventDefault();
 
-    if (!title.trim()) return alert("Titel fehlt");
-    if (!password.trim()) return alert("Passwort fehlt");
-    if (!adminPassword.trim()) return alert("Admin Passwort fehlt");
+    if (!title.trim()) return alert("Bitte Titel eingeben");
+    if (!password.trim()) return alert("Bitte Zugangspasswort eingeben");
+    if (!adminPassword.trim()) return alert("Bitte Admin Passwort eingeben");
 
     setCreating(true);
 
@@ -65,67 +65,99 @@ export default function CreateEventPage() {
   return (
     <main style={styles.page}>
       <section style={styles.container}>
-        <h1 style={styles.title}>Event erstellen</h1>
-        <p style={styles.subtitle}>
-          Erstelle schnell dein Event – perfekt für Handy-Nutzung.
-        </p>
+        <div style={styles.hero}>
+          <h1 style={styles.title}>Erstelle dein Event</h1>
+          <p style={styles.subtitle}>
+            Teile Erinnerungen mit Familie & Freunden – einfach per Link oder NFC.
+          </p>
+        </div>
 
         <div style={styles.card}>
-          <input
-            placeholder="Titel *"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Event Name *</label>
+            <input
+              placeholder="z.B. Hochzeit Anna & Max"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              style={styles.input}
+            />
+          </div>
 
-          <input
-            placeholder="Ort"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Ort</label>
+            <input
+              placeholder="z.B. Stuttgart"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              style={styles.input}
+            />
+          </div>
 
-          <input
-            placeholder="Kategorie"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Kategorie</label>
+            <input
+              placeholder="Hochzeit, Geburtstag..."
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={styles.input}
+            />
+          </div>
 
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Datum der Veranstaltung</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              style={styles.dateInput}
+            />
+            <div style={styles.helper}>
+              Wann findet das Event statt? (nicht heutiges Datum)
+            </div>
+          </div>
 
-          <textarea
-            placeholder="Beschreibung"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            style={styles.textarea}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Beschreibung</label>
+            <textarea
+              placeholder="Kurze Beschreibung für Gäste..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              style={styles.textarea}
+            />
+          </div>
 
-          <input
-            placeholder="Zugangspasswort *"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Zugang für Gäste *</label>
+            <input
+              placeholder="Passwort für Familie & Freunde"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              style={styles.input}
+            />
+            <div style={styles.helper}>
+              Gäste brauchen dieses Passwort um Fotos zu sehen
+            </div>
+          </div>
 
-          <input
-            placeholder="Admin Passwort *"
-            value={adminPassword}
-            onChange={(e) => setAdminPassword(e.target.value)}
-            style={styles.input}
-          />
+          <div style={styles.field}>
+            <label style={styles.label}>Admin Passwort *</label>
+            <input
+              placeholder="Zum Bearbeiten & Löschen von Bildern"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              style={styles.input}
+            />
+            <div style={styles.helper}>
+              Nur für dich – damit verwaltest du das Event
+            </div>
+          </div>
 
           <button
             onClick={handleCreateEvent}
             disabled={creating}
             style={styles.button}
           >
-            {creating ? "Erstelle..." : "Event erstellen"}
+            {creating ? "Erstelle Event..." : "Event erstellen"}
           </button>
         </div>
       </section>
@@ -136,7 +168,7 @@ export default function CreateEventPage() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "#f8fafc",
+    background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
     display: "flex",
     justifyContent: "center",
   },
@@ -144,14 +176,17 @@ const styles = {
   container: {
     width: "100%",
     maxWidth: "420px",
-    padding: "18px 14px",
-    boxSizing: "border-box",
+    padding: "20px 14px",
     display: "grid",
-    gap: "18px",
+    gap: "20px",
+  },
+
+  hero: {
+    textAlign: "center",
   },
 
   title: {
-    fontSize: "28px",
+    fontSize: "30px",
     fontWeight: "800",
     margin: 0,
     color: "#0f172a",
@@ -159,46 +194,65 @@ const styles = {
 
   subtitle: {
     fontSize: "15px",
-    color: "#475569",
-    lineHeight: "1.5",
+    color: "#64748b",
   },
 
   card: {
     background: "#fff",
-    padding: "18px",
-    borderRadius: "18px",
+    padding: "20px",
+    borderRadius: "20px",
     display: "grid",
-    gap: "14px",
+    gap: "16px",
     border: "1px solid #e2e8f0",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
+    boxShadow: "0 15px 35px rgba(0,0,0,0.05)",
+  },
+
+  field: {
+    display: "grid",
+    gap: "6px",
+  },
+
+  label: {
+    fontSize: "14px",
+    fontWeight: "700",
+  },
+
+  helper: {
+    fontSize: "12px",
+    color: "#64748b",
   },
 
   input: {
-    width: "100%",
     padding: "14px",
-    fontSize: "16px",
     borderRadius: "12px",
     border: "1px solid #cbd5e1",
+    fontSize: "16px",
+  },
+
+  dateInput: {
+    padding: "14px",
+    borderRadius: "12px",
+    border: "1px solid #cbd5e1",
+    fontSize: "16px",
+    backgroundColor: "#fff",
   },
 
   textarea: {
-    width: "100%",
     padding: "14px",
-    fontSize: "16px",
     borderRadius: "12px",
     border: "1px solid #cbd5e1",
+    fontSize: "16px",
     minHeight: "90px",
   },
 
   button: {
-    width: "100%",
+    marginTop: "10px",
     padding: "16px",
-    fontSize: "16px",
     borderRadius: "14px",
-    backgroundColor: "#0f172a",
+    background: "#0f172a",
     color: "#fff",
-    border: "none",
     fontWeight: "700",
-    marginTop: "6px",
+    fontSize: "16px",
+    border: "none",
   },
 };
