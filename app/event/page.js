@@ -136,7 +136,7 @@ export default function CreateEventPage() {
 const styles = {
   page: {
     minHeight: "100vh",
-    background: "#ffefef", // DEBUG sichtbar!
+    background: "#f8fafc",
     display: "flex",
     justifyContent: "center",
   },
@@ -144,57 +144,61 @@ const styles = {
   container: {
     width: "100%",
     maxWidth: "420px",
-    padding: "16px",
+    padding: "18px 14px",
     boxSizing: "border-box",
     display: "grid",
-    gap: "16px",
+    gap: "18px",
   },
 
   title: {
-    fontSize: "26px",
+    fontSize: "28px",
     fontWeight: "800",
     margin: 0,
+    color: "#0f172a",
   },
 
   subtitle: {
-    fontSize: "14px",
-    color: "#555",
+    fontSize: "15px",
+    color: "#475569",
+    lineHeight: "1.5",
   },
 
   card: {
     background: "#fff",
-    padding: "16px",
-    borderRadius: "16px",
+    padding: "18px",
+    borderRadius: "18px",
     display: "grid",
-    gap: "12px",
-    border: "1px solid #ddd",
+    gap: "14px",
+    border: "1px solid #e2e8f0",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.04)",
   },
 
   input: {
     width: "100%",
     padding: "14px",
     fontSize: "16px",
-    borderRadius: "10px",
-    border: "1px solid #ccc",
+    borderRadius: "12px",
+    border: "1px solid #cbd5e1",
   },
 
   textarea: {
     width: "100%",
     padding: "14px",
     fontSize: "16px",
-    borderRadius: "10px",
-    border: "1px solid #ccc",
-    minHeight: "80px",
+    borderRadius: "12px",
+    border: "1px solid #cbd5e1",
+    minHeight: "90px",
   },
 
   button: {
     width: "100%",
     padding: "16px",
     fontSize: "16px",
-    borderRadius: "12px",
+    borderRadius: "14px",
     backgroundColor: "#0f172a",
     color: "#fff",
     border: "none",
     fontWeight: "700",
+    marginTop: "6px",
   },
 };
