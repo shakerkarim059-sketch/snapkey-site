@@ -80,7 +80,7 @@ export default function CreateEventPage() {
   return (
     <main style={styles.page}>
       <section style={styles.heroSection}>
-        <div style={styles.heroBadge}>Event erstellen</div>
+        <div style={styles.heroBadge}>TEST MOBILE</div>
         <h1 style={styles.heroTitle}>Lege in wenigen Schritten ein neues Event an</h1>
         <p style={styles.heroText}>
           Erstelle hier die Event-Seite, die später per Link oder NFC geöffnet
