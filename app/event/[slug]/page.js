@@ -2500,5 +2500,80 @@ const styles = {
   lightboxCaption: {
     fontSize: "15px",
     lineHeight: "1.5",
-  },
+  newHeroCard: {
+  width: "100%",
+  background: "#0f172a",
+  color: "#fff",
+  padding: "26px",
+  borderRadius: "26px",
+  marginBottom: "32px",
+  boxShadow: "0 10px 40px rgba(0,0,0,0.35)"
+},
+newHeroTop: {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "10px"
+},
+newHeroBrand: {
+  fontSize: "12px",
+  textTransform: "uppercase",
+  letterSpacing: "1px",
+  opacity: "0.8"
+},
+newHeroBadge: {
+  background: "rgba(255,255,255,0.15)",
+  padding: "6px 12px",
+  borderRadius: "10px",
+  fontSize: "12px",
+  fontWeight: "700"
+},
+newHeroTitle: {
+  fontSize: "26px",
+  fontWeight: "800",
+  margin: "10px 0 4px 0"
+},
+newHeroSubtitle: {
+  fontSize: "14px",
+  opacity: 0.85,
+  marginBottom: "16px"
+},
+newHeroImage: {
+  width: "100%",
+  borderRadius: "20px",
+  overflow: "hidden",
+  marginBottom: "16px"
+},
+newHeroImageTag: {
+  width: "100%",
+  height: "220px",
+  objectFit: "cover"
+},
+newHeroDescription: {
+  margin: "0 0 18px 0",
+  fontSize: "14px",
+  opacity: 0.9
+},
+newHeroPreviewRow: {
+  display: "flex",
+  gap: "10px",
+  marginTop: "10px"
+},
+newHeroPreviewImg: {
+  width: "70px",
+  height: "70px",
+  borderRadius: "12px",
+  objectFit: "cover"
+},
+newHeroMoreBox: {
+  width: "70px",
+  height: "70px",
+  borderRadius: "12px",
+  background: "rgba(255,255,255,0.1)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontWeight: "700",
+  fontSize: "18px"
+},
 };
