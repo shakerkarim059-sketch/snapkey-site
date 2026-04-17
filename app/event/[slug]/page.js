@@ -994,97 +994,94 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
           <div style={styles.twoCol}>
             <input
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-
-          <textarea
-            placeholder="Beschreibung"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            style={{ ...styles.input, resize: "vertical" }}
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            style={styles.input}
           />
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            style={styles.input}
+          />
+        </div>
 
-          <button
-            type="submit"
-            disabled={updatingEvent}
-            style={styles.primaryButton}
+        <textarea
+          placeholder="Beschreibung"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          rows={4}
+          style={{ ...styles.input, resize: "vertical" }}
+        />
+
+        <button
+          type="submit"
+          disabled={updatingEvent}
+          style={styles.primaryButton}
+        >
+          {updatingEvent
+            ? "Ereignis wird gespeichert..."
+            : "Änderungen speichern"}
+        </button>
+      </form>
+    )}
+
+    {["familienalbum", "album", "rückblick"].includes(
+      (eventData.category || "").toLowerCase()
+    ) && (
+      <div style={styles.filterCard}>
+        <h2 style={styles.formTitle}>Filter</h2>
+
+        <div style={styles.filterGrid}>
+          <select
+            value={selectedYearFilter}
+            onChange={(e) => setSelectedYearFilter(e.target.value)}
+            style={styles.input}
           >
-            {updatingEvent
-              ? "Ereignis wird gespeichert..."
-              : "Änderungen speichern"}
-          </button>
-        </form>
-      )}
+            <option value="all">Alle Jahre</option>
+            {availableYears.map((year) => (
+              <option key={year} value={String(year)}>
+                {year}
+              </option>
+            ))}
+          </select>
 
-{["familienalbum", "album", "rückblick"].includes(
-  (eventData.category || "").toLowerCase()
-) && (
-  <div style={styles.filterCard}>
-    <h2 style={styles.formTitle}>Filter</h2>
-
-    <div style={styles.filterGrid}>
-      <select
-        value={selectedYearFilter}
-        onChange={(e) => setSelectedYearFilter(e.target.value)}
-        style={styles.input}
-      >
-        <option value="all">Alle Jahre</option>
-        {availableYears.map((year) => (
-          <option key={year} value={String(year)}>
-            {year}
-          </option>
-        ))}
-      </select>
-
-      <select
-        value={selectedMonthFilter}
-        onChange={(e) => setSelectedMonthFilter(e.target.value)}
-        style={styles.input}
-      >
-        <option value="all">Alle Monate</option>
-        <option value="1">Januar</option>
-        <option value="2">Februar</option>
-        <option value="3">März</option>
-        <option value="4">April</option>
-        <option value="5">Mai</option>
-        <option value="6">Juni</option>
-        <option value="7">Juli</option>
-        <option value="8">August</option>
-        <option value="9">September</option>
-        <option value="10">Oktober</option>
-        <option value="11">November</option>
-        <option value="12">Dezember</option>
-      </select>
-    </div>
-
-    <div style={styles.filterInfo}>
-      Gefundene Fotos: {filteredPhotos.length}
-    </div>
-  </div>
-)}
+          <select
+            value={selectedMonthFilter}
+            onChange={(e) => setSelectedMonthFilter(e.target.value)}
+            style={styles.input}
+          >
+            <option value="all">Alle Monate</option>
+            <option value="1">Januar</option>
+            <option value="2">Februar</option>
+            <option value="3">März</option>
+            <option value="4">April</option>
+            <option value="5">Mai</option>
+            <option value="6">Juni</option>
+            <option value="7">Juli</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">Oktober</option>
+            <option value="11">November</option>
+            <option value="12">Dezember</option>
+          </select>
+        </div>
 
         <div style={styles.filterInfo}>
           Gefundene Fotos: {filteredPhotos.length}
         </div>
       </div>
+    )}
 
-      <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
-        <div style={styles.uploadTopRow}>
-          <div>
-            <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
-            <p style={styles.uploadSubtitle}>
-              Mehrere Bilder auswählen und gesammelt hochladen.
-            </p>
+    <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
+      <div style={styles.uploadTopRow}>
+        <div>
+          <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
+          <p style={styles.uploadSubtitle}>
+            Mehrere Bilder auswählen und gesammelt hochladen.
+          </p>
+        </div>
+
           </div>
 
           <div style={styles.uploadBadge}>
