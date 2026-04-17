@@ -1082,43 +1082,42 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
           </p>
         </div>
 
-          </div>
+        <div style={styles.uploadBadge}>
+          {selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"}
+        </div>
+      </div>
 
-          <div style={styles.uploadBadge}>
-            {selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"}
-          </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        onChange={(e) => handleFileSelection(e.target.files)}
+        style={{ display: "none" }}
+      />
+
+      <div
+        style={styles.uploadPickerBox}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        <div style={styles.uploadIcon}>↑</div>
+        <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
+        <div style={styles.uploadPickerText}>
+          Tippe hier, um Fotos vom Handy oder Computer auszuwählen.
         </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={(e) => handleFileSelection(e.target.files)}
-          style={{ display: "none" }}
-        />
-
-        <div
-          style={styles.uploadPickerBox}
-          onClick={() => fileInputRef.current?.click()}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            fileInputRef.current?.click();
+          }}
+          style={styles.uploadPickerButton}
         >
-          <div style={styles.uploadIcon}>↑</div>
-          <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
-          <div style={styles.uploadPickerText}>
-            Tippe hier, um Fotos vom Handy oder Computer auszuwählen.
-          </div>
+          Dateien öffnen
+        </button>
+      </div>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              fileInputRef.current?.click();
-            }}
-            style={styles.uploadPickerButton}
-          >
-            Dateien öffnen
-          </button>
-        </div>
 
         {selectedFiles.length > 0 && (
           <div style={styles.selectedFilesWrap}>
