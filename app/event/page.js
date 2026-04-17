@@ -93,15 +93,28 @@ export default function CreateEventPage() {
             />
           </div>
 
-          <div style={styles.field}>
-            <label style={styles.label}>Kategorie</label>
-            <input
-              placeholder="Hochzeit, Geburtstag..."
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              style={styles.input}
-            />
-          </div>
+<div style={styles.field}>
+  <label style={styles.label}>Kategorie</label>
+  <select
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    style={styles.input}
+  >
+    <option value="">Bitte auswählen</option>
+    <option value="Hochzeit">Hochzeit</option>
+    <option value="Geburtstag">Geburtstag</option>
+    <option value="Familienalbum">Familienalbum</option>
+    <option value="Urlaub">Urlaub</option>
+    <option value="Baby / Taufe">Baby / Taufe</option>
+    <option value="Jubiläum">Jubiläum</option>
+    <option value="Rückblick">Rückblick</option>
+    <option value="Sonstiges">Sonstiges</option>
+  </select>
+  <div style={styles.helper}>
+    Bitte Kategorie wählen, um dein Event zuzuordnen.
+  </div>
+</div>
+
 
           <div style={styles.field}>
             <label style={styles.label}>Datum der Veranstaltung</label>
