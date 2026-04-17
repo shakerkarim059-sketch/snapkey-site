@@ -983,13 +983,25 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             style={styles.input}
           />
 
-          <input
-            type="text"
-            placeholder="Kategorie"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-            style={styles.input}
-          />
+<div style={{ display: "grid", gap: "4px" }}>
+  <label style={styles.label}>Kategorie</label>
+  <select
+    value={category}
+    onChange={(e) => setCategory(e.target.value)}
+    style={styles.input}
+  >
+    <option value="">Bitte auswählen</option>
+    <option value="Hochzeit">Hochzeit</option>
+    <option value="Geburtstag">Geburtstag</option>
+    <option value="Familienalbum">Familienalbum</option>
+    <option value="Urlaub">Urlaub</option>
+    <option value="Baby / Taufe">Baby / Taufe</option>
+    <option value="Jubiläum">Jubiläum</option>
+    <option value="Rückblick">Rückblick</option>
+    <option value="Sonstiges">Sonstiges</option>
+  </select>
+</div>
+
 
           <div style={styles.twoCol}>
             <input
