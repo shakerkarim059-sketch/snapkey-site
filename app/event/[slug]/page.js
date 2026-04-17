@@ -2213,15 +2213,19 @@ const styles = {
   },
 
   // NEW HERO DESIGN
-  newHeroCard: {
-    width: "100%",
-    background: "#0f172a",
-    color: "#fff",
-    padding: "26px",
-    borderRadius: "26px",
-    marginBottom: "32px",
-    boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
-  },
+newHeroCard: {
+  width: "100%",
+  maxWidth: "640px",              // hält das Ganze schön mittig auf großen & kleinen Displays
+  margin: "0 auto 32px auto",     // zentriert horizontal
+  background: "#0f172a",
+  color: "#fff",
+  padding: "26px",
+  borderRadius: "26px",
+  boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
+  position: "relative",
+  boxSizing: "border-box",
+},
+
   newHeroTop: {
     display: "flex",
     justifyContent: "space-between",
