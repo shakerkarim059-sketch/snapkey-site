@@ -901,57 +901,50 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
 
   return (
     <div style={styles.page}>
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>{eventData.title}</h1>
-          <p style={styles.subtitle}>
-            {eventData.description ||
-              "Fotos dieses Ereignisses ansehen, liken und kommentieren."}
-          </p>
-          <p style={styles.accessInfo}>
-            Zugang: {isAdmin ? "Admin" : "Gast"}
-          </p>
-        </div>
+<div style={styles.newHeroCard}>
+  <div style={styles.newHeroTop}>
+    <div style={styles.newHeroBrand}>NFC Familien-Key</div>
+    <div style={styles.newHeroBadge}>
+      {isAdmin ? "Event geöffnet" : "Gastansicht"}
+    </div>
+  </div>
 
-        <div style={styles.headerButtons}>
-          {isAdmin && !editingEventId && (
-            <button onClick={startEditingEvent} style={styles.primaryButton}>
-              Ereignis bearbeiten
-            </button>
-          )}
+  <h1 style={styles.newHeroTitle}>{eventData.title}</h1>
+  <p style={styles.newHeroSubtitle}>
+    {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
+  </p>
 
-          <button onClick={handleLogout} style={styles.secondaryButton}>
-            Abmelden
-          </button>
-        </div>
-      </div>
+  <div style={styles.newHeroImage}>
+    <img
+      src={coverPhoto?.signed_url || ""}
+      alt="Event Cover"
+      style={styles.newHeroImageTag}
+    />
+  </div>
 
-      <div
-        style={{
-          ...styles.heroCard,
-          ...(coverPhoto?.signed_url
-            ? {
-                backgroundImage: `url(${coverPhoto.signed_url})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }
-            : {}),
-        }}
-      >
-        <div style={styles.heroShade} />
-        <div style={styles.heroContent}>
-          <span style={styles.eventChip}>
-            {eventData.category || "Ereignis"}
-          </span>
-          <h2 style={styles.heroTitle}>{eventData.title}</h2>
-          <p style={styles.heroMeta}>
-            {eventData.location || "Kein Ort"} •{" "}
-            {formatDate(eventData.start_date)}
-            {eventData.end_date ? ` - ${formatDate(eventData.end_date)}` : ""}
-          </p>
-        </div>
-      </div>
+  <p style={styles.newHeroDescription}>
+    {eventData.description ||
+      "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
+  </p>
+
+  {photos.length > 0 && (
+    <div style={styles.newHeroPreviewRow}>
+      {photos.slice(0, 4).map((p) => (
+        <img
+          key={p.id}
+          src={p.signed_url}
+          alt=""
+          style={styles.newHeroPreviewImg}
+        />
+      ))}
+
+      {photos.length > 4 && (
+        <div style={styles.newHeroMoreBox}>+{photos.length - 4}</div>
+      )}
+    </div>
+  )}
+</div>
+
 
       {editingEventId && isAdmin && (
         <form onSubmit={handleUpdateEvent} style={styles.formCard}>
