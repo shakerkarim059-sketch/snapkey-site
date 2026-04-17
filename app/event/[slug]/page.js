@@ -24,6 +24,7 @@ export default function EventPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
+  const [loginError, setLoginError] = useState("");
 
   const [photos, setPhotos] = useState([]);
   const [photoLikes, setPhotoLikes] = useState([]);
@@ -287,46 +288,42 @@ export default function EventPage() {
   }
 
 
-  async function handleLogin() {
-    if (!eventData || !slug) return;
+async function handleLogin() {
+  if (!eventData || !slug) return;
+  setLoginError("");
 
-    try {
-      const response = await fetch("/api/event-login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          slug,
-          password: passwordInput,
-        }),
-      });
+  try {
+    const response = await fetch("/api/event-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ slug, password: passwordInput }),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (!response.ok) {
-        alert(result.error || "Login fehlgeschlagen.");
-        return;
-      }
-
-      if (result.role === "admin") {
-        setIsAuthenticated(true);
-        setIsAdmin(true);
-        return;
-      }
-
-      if (result.role === "guest") {
-        setIsAuthenticated(true);
-        setIsAdmin(false);
-        return;
-      }
-
-      alert("Unbekannte Login-Antwort.");
-    } catch (error) {
-      console.error("Fehler beim Login:", error);
-      alert("Login fehlgeschlagen.");
+    if (!response.ok) {
+      setLoginError(result.error || "Falsches Passwort. Bitte erneut versuchen.");
+      return;
     }
+
+    if (result.role === "admin") {
+      setIsAuthenticated(true);
+      setIsAdmin(true);
+      return;
+    }
+
+    if (result.role === "guest") {
+      setIsAuthenticated(true);
+      setIsAdmin(false);
+      return;
+    }
+
+    setLoginError("Unbekannte Login-Antwort.");
+  } catch (error) {
+    console.error("Fehler beim Login:", error);
+    setLoginError("Login fehlgeschlagen. Bitte später erneut versuchen.");
   }
+}
 
   async function handleLogout() {
     try {
@@ -861,20 +858,42 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             Bitte Passwort eingeben, um dieses Event zu öffnen.
           </p>
 
-          <input
-            type="password"
-            placeholder="Passwort eingeben"
-            value={passwordInput}
-            onChange={(e) => setPasswordInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleLogin();
-            }}
-            style={styles.input}
-          />
+<input
+  type="password"
+  placeholder="Passwort eingeben"
+  value={passwordInput}
+  onChange={(e) => {
+    setPasswordInput(e.target.value);
+    setLoginError(""); // löscht Fehlermeldung beim Tippen
+  }}
+  onKeyDown={(e) => {
+    if (e.key === "Enter") handleLogin();
+  }}
+  style={{
+    ...styles.input,
+    ...(loginError
+      ? { borderColor: "#dc2626", backgroundColor: "#fef2f2" }
+      : {}),
+  }}
+/>
 
-          <button onClick={handleLogin} style={styles.primaryButton}>
-            Einloggen
-          </button>
+{loginError && (
+  <p
+    style={{
+      color: "#dc2626",
+      fontSize: "14px",
+      margin: "4px 0 0 0",
+      fontWeight: "600",
+    }}
+  >
+    {loginError}
+  </p>
+)}
+
+<button onClick={handleLogin} style={styles.primaryButton}>
+  Einloggen
+</button>
+
         </div>
       </div>
     );
