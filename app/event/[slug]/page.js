@@ -1414,43 +1414,31 @@ const totalPrice = totalPriceInCent / 100;
                   {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
                 </div>
 
-                <div style={styles.orderOptionsGrid}>
-                  <div style={styles.orderOptionCard}>
-                    <label style={styles.orderLabel}>Format wählen</label>
-                    <select
-                      value={selectedPrintOption}
-                      onChange={(e) => setSelectedPrintOption(e.target.value)}
-                      style={styles.orderSelect}
-                    >
-                      {SIZE_OPTIONS.map((option) => {
-                        const price =
-                          getProductPrice(option.value, selectedFrameOption) ||
-                          0;
+              <div style={styles.cartGrid}>
+  {selectedPhotos.map((photo) => (
+    <div key={photo.id} style={styles.cartPhotoCard}>
+      <img
+        src={photo.signed_url || ""}
+        alt={photo.caption || photo.file_name || "Foto"}
+        style={styles.cartPhoto}
+      />
 
-                        return (
-                          <option key={option.value} value={option.value}>
-                            {option.label} • {formatEuroFromCent(price)} €
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
+      <div style={styles.cartPhotoInfo}>
+        <div style={styles.cartPhotoName}>
+          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+        </div>
 
-                  <div style={styles.orderOptionCard}>
-                    <label style={styles.orderLabel}>Rahmen wählen</label>
-                    <select
-                      value={selectedFrameOption}
-                      onChange={(e) => setSelectedFrameOption(e.target.value)}
-                      style={styles.orderSelect}
-                    >
-                      {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
-                        <option key={value} value={value}>
-                          {option.label} • {formatEuroFromCent(option.price)} €
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+        <button
+          type="button"
+          onClick={() => togglePhotoSelection(photo.id)}
+          style={styles.removeFromCartButton}
+        >
+          Entfernen
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
 
                 <div style={styles.priceSummaryCard}>
                   <div style={styles.priceRow}>
