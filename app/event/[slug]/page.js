@@ -949,6 +949,7 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
         </div>
       )}
     </div>
+  )}
 
 
       {editingEventId && isAdmin && (
