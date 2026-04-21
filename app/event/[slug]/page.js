@@ -65,8 +65,7 @@ export default function EventPage() {
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const [selectedPrintOption, setSelectedPrintOption] = useState("13x18");
-  const [selectedFrameOption, setSelectedFrameOption] = useState("none");
+const [photoOrderOptions, setPhotoOrderOptions] = useState({});
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
