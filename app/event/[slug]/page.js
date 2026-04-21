@@ -945,15 +945,6 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
   </div>
 )}
 
-            {filteredPhotos.length > 4 && (
-              <div style={styles.newHeroMoreBox}>
-                +{filteredPhotos.length - 4}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
       {editingEventId && isAdmin && (
         <form onSubmit={handleUpdateEvent} style={styles.formCard}>
           <div style={styles.editHeader}>
