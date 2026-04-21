@@ -858,42 +858,41 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             Bitte Passwort eingeben, um dieses Event zu öffnen.
           </p>
 
-<input
-  type="password"
-  placeholder="Passwort eingeben"
-  value={passwordInput}
-  onChange={(e) => {
-    setPasswordInput(e.target.value);
-    setLoginError(""); // löscht Fehlermeldung beim Tippen
-  }}
-  onKeyDown={(e) => {
-    if (e.key === "Enter") handleLogin();
-  }}
-  style={{
-    ...styles.input,
-    ...(loginError
-      ? { borderColor: "#dc2626", backgroundColor: "#fef2f2" }
-      : {}),
-  }}
-/>
+          <input
+            type="password"
+            placeholder="Passwort eingeben"
+            value={passwordInput}
+            onChange={(e) => {
+              setPasswordInput(e.target.value);
+              setLoginError("");
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleLogin();
+            }}
+            style={{
+              ...styles.input,
+              ...(loginError
+                ? { borderColor: "#dc2626", backgroundColor: "#fef2f2" }
+                : {}),
+            }}
+          />
 
-{loginError && (
-  <p
-    style={{
-      color: "#dc2626",
-      fontSize: "14px",
-      margin: "4px 0 0 0",
-      fontWeight: "600",
-    }}
-  >
-    {loginError}
-  </p>
-)}
+          {loginError && (
+            <p
+              style={{
+                color: "#dc2626",
+                fontSize: "14px",
+                margin: "4px 0 0 0",
+                fontWeight: "600",
+              }}
+            >
+              {loginError}
+            </p>
+          )}
 
-<button onClick={handleLogin} style={styles.primaryButton}>
-  Einloggen
-</button>
-
+          <button onClick={handleLogin} style={styles.primaryButton}>
+            Einloggen
+          </button>
         </div>
       </div>
     );
@@ -901,66 +900,62 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
 
   return (
     <div style={styles.page}>
-<div style={styles.newHeroCard}>
-  <div style={styles.newHeroTop}>
-    <div style={styles.newHeroBrand}>NFC Familien-Key</div>
-    <div style={styles.newHeroBadge}>
-      {isAdmin ? "Event geöffnet" : "Gastansicht"}
-    </div>
-  </div>
-
-  <h1 style={styles.newHeroTitle}>{eventData.title}</h1>
-  <p style={styles.newHeroSubtitle}>
-    {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
-  </p>
-
-  <div style={styles.newHeroImage}>
-    <img
-      src={coverPhoto?.signed_url || ""}
-      alt="Event Cover"
-      style={styles.newHeroImageTag}
-  <div style={styles.newHeroImage}>
-    <img
-      src={coverPhoto?.signed_url || ""}
-      alt="Event Cover"
-      style={styles.newHeroImageTag}
-    />
-  </div>
-
-  <p style={styles.newHeroDescription}>
-    {eventData.description ||
-      "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
-  </p>
-
-  {filteredPhotos.length > 0 && (
-    <div style={styles.newHeroPreviewRow}>
-      {filteredPhotos.slice(0, 4).map((p, i) => (
-        <img
-          key={p.id}
-          src={p.signed_url}
-          alt=""
-          style={styles.newHeroPreviewImg}
-          onClick={() => {
-            const el = document.getElementById(`photo-${i}`);
-            if (el) {
-              el.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-          }}
-        />
-      ))}
-
-      {filteredPhotos.length > 4 && (
-        <div style={styles.newHeroMoreBox}>
-          +{filteredPhotos.length - 4}
+      <div style={styles.newHeroCard}>
+        <div style={styles.newHeroTop}>
+          <div style={styles.newHeroBrand}>NFC Familien-Key</div>
+          <div style={styles.newHeroBadge}>
+            {isAdmin ? "Event geöffnet" : "Gastansicht"}
+          </div>
         </div>
-      )}
-    </div>
-  )}
-</div>
 
-{editingEventId && isAdmin && (
-  <form onSubmit={handleUpdateEvent} style={styles.formCard}>
+        <h1 style={styles.newHeroTitle}>{eventData.title}</h1>
+        <p style={styles.newHeroSubtitle}>
+          {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
+        </p>
 
+        <div style={styles.newHeroImage}>
+          <img
+            src={coverPhoto?.signed_url || ""}
+            alt="Event Cover"
+            style={styles.newHeroImageTag}
+          />
+        </div>
+
+        <p style={styles.newHeroDescription}>
+          {eventData.description ||
+            "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
+        </p>
+
+        {filteredPhotos.length > 0 && (
+          <div style={styles.newHeroPreviewRow}>
+            {filteredPhotos.slice(0, 4).map((p, i) => (
+              <img
+                key={p.id}
+                src={p.signed_url}
+                alt=""
+                style={styles.newHeroPreviewImg}
+                onClick={() => {
+                  const el = document.getElementById(`photo-${i}`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+              />
+            ))}
+
+            {filteredPhotos.length > 4 && (
+              <div style={styles.newHeroMoreBox}>
+                +{filteredPhotos.length - 4}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {editingEventId && isAdmin && (
+        <form onSubmit={handleUpdateEvent} style={styles.formCard}>
+          <div style={styles.editHeader}>
+            <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
             <button
               type="button"
               onClick={cancelEditingEvent}
@@ -987,153 +982,151 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             style={styles.input}
           />
 
-<div style={{ display: "grid", gap: "4px" }}>
-  <label style={styles.label}>Kategorie</label>
-  <select
-    value={category}
-    onChange={(e) => setCategory(e.target.value)}
-    style={styles.input}
-  >
-    <option value="">Bitte auswählen</option>
-    <option value="Hochzeit">Hochzeit</option>
-    <option value="Geburtstag">Geburtstag</option>
-    <option value="Familienalbum">Familienalbum</option>
-    <option value="Urlaub">Urlaub</option>
-    <option value="Baby / Taufe">Baby / Taufe</option>
-    <option value="Jubiläum">Jubiläum</option>
-    <option value="Rückblick">Rückblick</option>
-    <option value="Sonstiges">Sonstiges</option>
-  </select>
-</div>
-
+          <div style={{ display: "grid", gap: "4px" }}>
+            <label style={styles.label}>Kategorie</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              style={styles.input}
+            >
+              <option value="">Bitte auswählen</option>
+              <option value="Hochzeit">Hochzeit</option>
+              <option value="Geburtstag">Geburtstag</option>
+              <option value="Familienalbum">Familienalbum</option>
+              <option value="Urlaub">Urlaub</option>
+              <option value="Baby / Taufe">Baby / Taufe</option>
+              <option value="Jubiläum">Jubiläum</option>
+              <option value="Rückblick">Rückblick</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
+          </div>
 
           <div style={styles.twoCol}>
             <input
               type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            style={styles.input}
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              style={styles.input}
+            />
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              style={styles.input}
+            />
+          </div>
+
+          <textarea
+            placeholder="Beschreibung"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={4}
+            style={{ ...styles.input, resize: "vertical" }}
           />
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            style={styles.input}
-          />
+
+          <button
+            type="submit"
+            disabled={updatingEvent}
+            style={styles.primaryButton}
+          >
+            {updatingEvent
+              ? "Ereignis wird gespeichert..."
+              : "Änderungen speichern"}
+          </button>
+        </form>
+      )}
+
+      {["familienalbum", "album", "rückblick"].includes(
+        (eventData.category || "").toLowerCase()
+      ) && (
+        <div style={styles.filterCard}>
+          <h2 style={styles.formTitle}>Filter</h2>
+
+          <div style={styles.filterGrid}>
+            <select
+              value={selectedYearFilter}
+              onChange={(e) => setSelectedYearFilter(e.target.value)}
+              style={styles.input}
+            >
+              <option value="all">Alle Jahre</option>
+              {availableYears.map((year) => (
+                <option key={year} value={String(year)}>
+                  {year}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={selectedMonthFilter}
+              onChange={(e) => setSelectedMonthFilter(e.target.value)}
+              style={styles.input}
+            >
+              <option value="all">Alle Monate</option>
+              <option value="1">Januar</option>
+              <option value="2">Februar</option>
+              <option value="3">März</option>
+              <option value="4">April</option>
+              <option value="5">Mai</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Dezember</option>
+            </select>
+          </div>
+
+          <div style={styles.filterInfo}>
+            Gefundene Fotos: {filteredPhotos.length}
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
+        <div style={styles.uploadTopRow}>
+          <div>
+            <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
+            <p style={styles.uploadSubtitle}>
+              Mehrere Bilder auswählen und gesammelt hochladen.
+            </p>
+          </div>
+
+          <div style={styles.uploadBadge}>
+            {selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"}
+          </div>
         </div>
 
-        <textarea
-          placeholder="Beschreibung"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          rows={4}
-          style={{ ...styles.input, resize: "vertical" }}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={(e) => handleFileSelection(e.target.files)}
+          style={{ display: "none" }}
         />
 
-        <button
-          type="submit"
-          disabled={updatingEvent}
-          style={styles.primaryButton}
+        <div
+          style={styles.uploadPickerBox}
+          onClick={() => fileInputRef.current?.click()}
         >
-          {updatingEvent
-            ? "Ereignis wird gespeichert..."
-            : "Änderungen speichern"}
-        </button>
-      </form>
-    )}
+          <div style={styles.uploadIcon}>↑</div>
+          <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
+          <div style={styles.uploadPickerText}>
+            Tippe hier, um Fotos vom Handy oder Computer auszuwählen.
+          </div>
 
-    {["familienalbum", "album", "rückblick"].includes(
-      (eventData.category || "").toLowerCase()
-    ) && (
-      <div style={styles.filterCard}>
-        <h2 style={styles.formTitle}>Filter</h2>
-
-        <div style={styles.filterGrid}>
-          <select
-            value={selectedYearFilter}
-            onChange={(e) => setSelectedYearFilter(e.target.value)}
-            style={styles.input}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              fileInputRef.current?.click();
+            }}
+            style={styles.uploadPickerButton}
           >
-            <option value="all">Alle Jahre</option>
-            {availableYears.map((year) => (
-              <option key={year} value={String(year)}>
-                {year}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedMonthFilter}
-            onChange={(e) => setSelectedMonthFilter(e.target.value)}
-            style={styles.input}
-          >
-            <option value="all">Alle Monate</option>
-            <option value="1">Januar</option>
-            <option value="2">Februar</option>
-            <option value="3">März</option>
-            <option value="4">April</option>
-            <option value="5">Mai</option>
-            <option value="6">Juni</option>
-            <option value="7">Juli</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option value="10">Oktober</option>
-            <option value="11">November</option>
-            <option value="12">Dezember</option>
-          </select>
+            Dateien öffnen
+          </button>
         </div>
-
-        <div style={styles.filterInfo}>
-          Gefundene Fotos: {filteredPhotos.length}
-        </div>
-      </div>
-    )}
-
-    <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
-      <div style={styles.uploadTopRow}>
-        <div>
-          <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
-          <p style={styles.uploadSubtitle}>
-            Mehrere Bilder auswählen und gesammelt hochladen.
-          </p>
-        </div>
-
-        <div style={styles.uploadBadge}>
-          {selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"}
-        </div>
-      </div>
-
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={(e) => handleFileSelection(e.target.files)}
-        style={{ display: "none" }}
-      />
-
-      <div
-        style={styles.uploadPickerBox}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <div style={styles.uploadIcon}>↑</div>
-        <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
-        <div style={styles.uploadPickerText}>
-          Tippe hier, um Fotos vom Handy oder Computer auszuwählen.
-        </div>
-
-        <button
-          type="button"
-          onClick={(e) => {
-            e.stopPropagation();
-            fileInputRef.current?.click();
-          }}
-          style={styles.uploadPickerButton}
-        >
-          Dateien öffnen
-        </button>
-      </div>
-
 
         {selectedFiles.length > 0 && (
           <div style={styles.selectedFilesWrap}>
@@ -1208,6 +1201,7 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             return (
               <div
                 key={photo.id}
+                id={`photo-${index}`}
                 style={styles.photoCard}
                 onClick={() => openLightbox(index)}
               >
@@ -1387,36 +1381,37 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
                 <div style={styles.orderOptionsGrid}>
                   <div style={styles.orderOptionCard}>
                     <label style={styles.orderLabel}>Format wählen</label>
-                   <select
-  value={selectedPrintOption}
-  onChange={(e) => setSelectedPrintOption(e.target.value)}
-  style={styles.orderSelect}
->
-  {SIZE_OPTIONS.map((option) => {
-    const price = getProductPrice(option.value, selectedFrameOption) || 0;
+                    <select
+                      value={selectedPrintOption}
+                      onChange={(e) => setSelectedPrintOption(e.target.value)}
+                      style={styles.orderSelect}
+                    >
+                      {SIZE_OPTIONS.map((option) => {
+                        const price =
+                          getProductPrice(option.value, selectedFrameOption) || 0;
 
-    return (
-      <option key={option.value} value={option.value}>
-        {option.label} • {formatEuroFromCent(price)} €
-      </option>
-    );
-  })}
-</select>
+                        return (
+                          <option key={option.value} value={option.value}>
+                            {option.label} • {formatEuroFromCent(price)} €
+                          </option>
+                        );
+                      })}
+                    </select>
                   </div>
 
                   <div style={styles.orderOptionCard}>
                     <label style={styles.orderLabel}>Rahmen wählen</label>
-                   <select
-  value={selectedFrameOption}
-  onChange={(e) => setSelectedFrameOption(e.target.value)}
-  style={styles.orderSelect}
->
-  {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
-    <option key={value} value={value}>
-      {option.label} • {formatEuroFromCent(option.price)} €
-    </option>
-  ))}
-</select>
+                    <select
+                      value={selectedFrameOption}
+                      onChange={(e) => setSelectedFrameOption(e.target.value)}
+                      style={styles.orderSelect}
+                    >
+                      {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
+                        <option key={value} value={value}>
+                          {option.label} • {formatEuroFromCent(option.price)} €
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -1548,11 +1543,11 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
                   <div style={styles.cartFooterSummary}>
                     <div style={styles.cartFooterSmall}>
                       {selectedPhotos.length} Bild
-{selectedPhotos.length === 1 ? "" : "er"} •{" "}
-{selectedPrint?.label || "—"}
-{selectedFrameOption !== "none"
-  ? ` • ${selectedFrame?.label || ""}`
-  : ""}
+                      {selectedPhotos.length === 1 ? "" : "er"} •{" "}
+                      {selectedPrint?.label || "—"}
+                      {selectedFrameOption !== "none"
+                        ? ` • ${selectedFrame?.label || ""}`
+                        : ""}
                     </div>
                     <div style={styles.cartFooterTotal}>
                       {totalPrice.toFixed(2)} €
@@ -1635,6 +1630,7 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
     </div>
   );
 }
+
 
 const styles = {
   page: {
