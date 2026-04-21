@@ -926,22 +926,24 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
         </p>
 
-        {filteredPhotos.length > 0 && (
-          <div style={styles.newHeroPreviewRow}>
-            {filteredPhotos.slice(0, 4).map((p, i) => (
-              <img
-                key={p.id}
-                src={p.signed_url}
-                alt=""
-                style={styles.newHeroPreviewImg}
-                onClick={() => {
-                  const el = document.getElementById(`photo-${i}`);
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }
-                }}
-              />
-            ))}
+{filteredPhotos.length > 0 && (
+  <div style={styles.newHeroPreviewRow}>
+    {filteredPhotos.map((p, i) => (
+      <img
+        key={p.id}
+        src={p.signed_url}
+        alt={p.caption || `Vorschaubild ${i + 1}`}
+        style={styles.newHeroPreviewImg}
+        onClick={() => {
+          const el = document.getElementById(`photo-${i}`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }}
+      />
+    ))}
+  </div>
+)}
 
             {filteredPhotos.length > 4 && (
               <div style={styles.newHeroMoreBox}>
