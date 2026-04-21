@@ -1631,18 +1631,19 @@ export default function EventPage() {
 
 
 const styles = {
-  page: {
-    padding: "24px",
-    paddingBottom: "140px",
-    maxWidth: "1280px",
-    margin: "0 auto",
-    backgroundColor: "#f8fafc",
-    minHeight: "100vh",
-    overflowX: "hidden",
-    width: "100%",
-    boxSizing: "border-box",
-    touchAction: "pan-y",
-  },
+page: {
+  position: "relative",
+  width: "100%",
+  maxWidth: "1280px",
+  margin: "0 auto",
+  padding: "16px",
+  paddingBottom: "140px",
+  backgroundColor: "#f8fafc",
+  minHeight: "100vh",
+  boxSizing: "border-box",
+  overflowX: "clip",
+  touchAction: "pan-y",
+},
   loginBox: {
     maxWidth: "420px",
     margin: "120px auto",
