@@ -927,28 +927,28 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
       "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
   </p>
 
-  {photos.length > 0 && (
+{filteredPhotos.length > 0 && (
     <div style={styles.newHeroPreviewRow}>
-{photos.slice(0, 4).map((p, i) => (
-  <img
-    key={p.id}
-    src={p.signed_url}
-    alt=""
-    style={styles.newHeroPreviewImg}
-    onClick={() => {
-      const el = document.getElementById(`photo-${i}`);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }}
-  />
-))}
-
-
-      {photos.length > 4 && (
-        <div style={styles.newHeroMoreBox}>+{photos.length - 4}</div>
+      {filteredPhotos.slice(0, 4).map((p, i) => (
+        <img
+          key={p.id}
+          src={p.signed_url}
+          alt=""
+          style={styles.newHeroPreviewImg}
+          onClick={() => {
+            const el = document.getElementById(`photo-${i}`);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+        />
+      ))}
+      {filteredPhotos.length > 4 && (
+        <div style={styles.newHeroMoreBox}>
+          +{filteredPhotos.length - 4}
+        </div>
       )}
     </div>
-  )}
-</div>
 
 
       {editingEventId && isAdmin && (
