@@ -919,6 +919,11 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
       src={coverPhoto?.signed_url || ""}
       alt="Event Cover"
       style={styles.newHeroImageTag}
+  <div style={styles.newHeroImage}>
+    <img
+      src={coverPhoto?.signed_url || ""}
+      alt="Event Cover"
+      style={styles.newHeroImageTag}
     />
   </div>
 
@@ -927,7 +932,7 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
       "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
   </p>
 
-{filteredPhotos.length > 0 && (
+  {filteredPhotos.length > 0 && (
     <div style={styles.newHeroPreviewRow}>
       {filteredPhotos.slice(0, 4).map((p, i) => (
         <img
@@ -943,6 +948,7 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
           }}
         />
       ))}
+
       {filteredPhotos.length > 4 && (
         <div style={styles.newHeroMoreBox}>
           +{filteredPhotos.length - 4}
@@ -950,12 +956,11 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
       )}
     </div>
   )}
+</div>
 
+{editingEventId && isAdmin && (
+  <form onSubmit={handleUpdateEvent} style={styles.formCard}>
 
-      {editingEventId && isAdmin && (
-        <form onSubmit={handleUpdateEvent} style={styles.formCard}>
-          <div style={styles.editHeader}>
-            <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
             <button
               type="button"
               onClick={cancelEditingEvent}
