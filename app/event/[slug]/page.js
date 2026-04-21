@@ -849,13 +849,16 @@ function togglePhotoSelection(photoId) {
     selectedPhotoIds.includes(photo.id)
   );
 
-  const selectedPrint = getBasePrintOption(selectedPrintOption);
-  const selectedFrame = getFrameOption(selectedFrameOption);
+const totalPriceInCent = selectedPhotos.reduce((sum, photo) => {
+  const options = photoOrderOptions[photo.id] || {
+    printOption: "13x18",
+    frameOption: "none",
+  };
 
-  const pricePerPhotoInCent =
-    getProductPrice(selectedPrintOption, selectedFrameOption) || 0;
-  const pricePerPhoto = pricePerPhotoInCent / 100;
-  const totalPrice = pricePerPhoto * selectedPhotos.length;
+  return sum + (getProductPrice(options.printOption, options.frameOption) || 0);
+}, 0);
+
+const totalPrice = totalPriceInCent / 100;
 
   const coverPhoto = photos.length > 0 ? photos[0] : null;
   const currentPhoto = filteredPhotos[selectedPhotoIndex];
