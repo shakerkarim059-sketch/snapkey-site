@@ -538,53 +538,62 @@ export default function EventPage() {
     return Boolean(likeMap[photoId]);
   }
 
-  async function handleToggleLike(photoId) {
-    if (eventData?.likes_enabled === false) return;
+async function handleToggleLike(photoId) {
+  if (eventData?.likes_enabled === false) return;
 
-    setLikingPhotoId(photoId);
+  setLikingPhotoId(photoId);
 
-    try {
-      const likeMap = getStoredLikeMap();
-      const existingLikeId = likeMap[photoId];
+  const currentScrollY =
+    typeof window !== "undefined" ? window.scrollY : 0;
 
-      if (existingLikeId) {
-        const { error } = await supabase
-          .from("photo_likes")
-          .delete()
-          .eq("id", existingLikeId);
+  try {
+    const likeMap = getStoredLikeMap();
+    const existingLikeId = likeMap[photoId];
 
-        if (error) {
-          console.error("Fehler beim Entfernen des Likes:", error);
-          alert("Like konnte nicht entfernt werden: " + error.message);
-          setLikingPhotoId(null);
-          return;
-        }
+    if (existingLikeId) {
+      const { error } = await supabase
+        .from("photo_likes")
+        .delete()
+        .eq("id", existingLikeId);
 
-        delete likeMap[photoId];
-        setStoredLikeMap(likeMap);
-      } else {
-        const { data, error } = await supabase
-          .from("photo_likes")
-          .insert([{ photo_id: photoId }])
-          .select()
-          .single();
-
-        if (error) {
-          console.error("Fehler beim Liken:", error);
-          alert("Like konnte nicht gespeichert werden: " + error.message);
-          setLikingPhotoId(null);
-          return;
-        }
-
-        likeMap[photoId] = data.id;
-        setStoredLikeMap(likeMap);
+      if (error) {
+        console.error("Fehler beim Entfernen des Likes:", error);
+        alert("Like konnte nicht entfernt werden: " + error.message);
+        return;
       }
 
-      await fetchAllLikes();
-    } finally {
-      setLikingPhotoId(null);
+      delete likeMap[photoId];
+      setStoredLikeMap(likeMap);
+
+      setPhotoLikes((prev) => prev.filter((like) => like.id !== existingLikeId));
+    } else {
+      const { data, error } = await supabase
+        .from("photo_likes")
+        .insert([{ photo_id: photoId }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Fehler beim Liken:", error);
+        alert("Like konnte nicht gespeichert werden: " + error.message);
+        return;
+      }
+
+      likeMap[photoId] = data.id;
+      setStoredLikeMap(likeMap);
+
+      setPhotoLikes((prev) => [...prev, data]);
+    }
+  } finally {
+    setLikingPhotoId(null);
+
+    if (typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        window.scrollTo({ top: currentScrollY, behavior: "auto" });
+      });
     }
   }
+}
 
   async function handleSubmitComment(photoId) {
     if (eventData?.comments_enabled === false) return;
