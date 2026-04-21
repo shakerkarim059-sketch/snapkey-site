@@ -1446,7 +1446,7 @@ const totalPrice = totalPriceInCent / 100;
                   setPhotoOrderOptions((prev) => ({
                     ...prev,
                     [photo.id]: {
-                      ...prev[photo.id],
+                      ...(prev[photo.id] || {}),
                       printOption: e.target.value,
                     },
                   }))
@@ -1474,7 +1474,7 @@ const totalPrice = totalPriceInCent / 100;
                   setPhotoOrderOptions((prev) => ({
                     ...prev,
                     [photo.id]: {
-                      ...prev[photo.id],
+                      ...(prev[photo.id] || {}),
                       frameOption: e.target.value,
                     },
                   }))
