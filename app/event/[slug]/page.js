@@ -1256,17 +1256,20 @@ export default function EventPage() {
 
                   {eventData.likes_enabled !== false && (
                     <div style={styles.likeRow}>
-                      <button
-                        type="button"
-                        onClick={() => handleToggleLike(photo.id)}
-                        disabled={likingPhotoId === photo.id}
-                        style={{
-                          ...styles.likeButton,
-                          ...(likedByThisBrowser
-                            ? styles.likeButtonActive
-                            : {}),
-                        }}
-                      >
+                    <button
+  type="button"
+  onClick={(e) => {
+    e.stopPropagation();
+    handleToggleLike(photo.id);
+  }}
+  disabled={likingPhotoId === photo.id}
+  style={{
+    ...styles.likeButton,
+    ...(likedByThisBrowser
+      ? styles.likeButtonActive
+      : {}),
+  }}
+>
                         {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
                       </button>
 
