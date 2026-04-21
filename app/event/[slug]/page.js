@@ -1633,16 +1633,10 @@ const totalPrice = totalPriceInCent / 100;
                   />
                 </div>
 
-                <div style={styles.cartFooter}>
-                  <div style={styles.cartFooterSummary}>
-                    <div style={styles.cartFooterSmall}>
-                      {selectedPhotos.length} Bild
-                      {selectedPhotos.length === 1 ? "" : "er"} •{" "}
-                      {selectedPrint?.label || "—"}
-                      {selectedFrameOption !== "none"
-                        ? ` • ${selectedFrame?.label || ""}`
-                        : ""}
-                    </div>
+<div style={styles.cartFooterSmall}>
+  {selectedPhotos.length} Bild
+  {selectedPhotos.length === 1 ? "" : "er"} individuell konfiguriert
+</div>
                     <div style={styles.cartFooterTotal}>
                       {totalPrice.toFixed(2)} €
                     </div>
