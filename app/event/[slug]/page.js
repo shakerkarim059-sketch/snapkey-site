@@ -672,20 +672,29 @@ async function handleToggleLike(photoId) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          eventId: eventData.id,
-          customerName,
-          customerEmail,
-          customerPhone,
-          street,
-          postalCode,
-          city,
-          country,
-          orderNote,
-          photoIds: selectedPhotos.map((photo) => photo.id),
-          printOption: selectedPrintOption,
-          frameOption: selectedFrameOption,
-        }),
+body: JSON.stringify({
+  eventId: eventData.id,
+  customerName,
+  customerEmail,
+  customerPhone,
+  street,
+  postalCode,
+  city,
+  country,
+  orderNote,
+  items: selectedPhotos.map((photo) => {
+    const options = photoOrderOptions[photo.id] || {
+      printOption: "13x18",
+      frameOption: "none",
+    };
+
+    return {
+      photoId: photo.id,
+      printOption: options.printOption,
+      frameOption: options.frameOption,
+    };
+  }),
+}),
       });
 
       const orderResult = await orderResponse.json();
