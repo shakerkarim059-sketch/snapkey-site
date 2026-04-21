@@ -756,13 +756,31 @@ async function handleToggleLike(photoId) {
     return photoComments.filter((comment) => comment.photo_id === photoId);
   }
 
-  function togglePhotoSelection(photoId) {
-    setSelectedPhotoIds((prev) =>
-      prev.includes(photoId)
-        ? prev.filter((id) => id !== photoId)
-        : [...prev, photoId]
-    );
-  }
+function togglePhotoSelection(photoId) {
+  setSelectedPhotoIds((prev) => {
+    const isSelected = prev.includes(photoId);
+
+    if (isSelected) {
+      setPhotoOrderOptions((current) => {
+        const updated = { ...current };
+        delete updated[photoId];
+        return updated;
+      });
+
+      return prev.filter((id) => id !== photoId);
+    }
+
+    setPhotoOrderOptions((current) => ({
+      ...current,
+      [photoId]: {
+        printOption: "13x18",
+        frameOption: "none",
+      },
+    }));
+
+    return [...prev, photoId];
+  });
+}
 
   function openLightbox(index) {
     setSelectedPhotoIndex(index);
