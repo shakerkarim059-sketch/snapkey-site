@@ -78,7 +78,6 @@ export default function EventPage() {
   const [orderNote, setOrderNote] = useState("");
   const [submittingOrder, setSubmittingOrder] = useState(false);
 
-  
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
@@ -287,43 +286,44 @@ export default function EventPage() {
     setLoadingComments(false);
   }
 
+  async function handleLogin() {
+    if (!eventData || !slug) return;
+    setLoginError("");
 
-async function handleLogin() {
-  if (!eventData || !slug) return;
-  setLoginError("");
+    try {
+      const response = await fetch("/api/event-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug, password: passwordInput }),
+      });
 
-  try {
-    const response = await fetch("/api/event-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ slug, password: passwordInput }),
-    });
+      const result = await response.json();
 
-    const result = await response.json();
+      if (!response.ok) {
+        setLoginError(
+          result.error || "Falsches Passwort. Bitte erneut versuchen."
+        );
+        return;
+      }
 
-    if (!response.ok) {
-      setLoginError(result.error || "Falsches Passwort. Bitte erneut versuchen.");
-      return;
+      if (result.role === "admin") {
+        setIsAuthenticated(true);
+        setIsAdmin(true);
+        return;
+      }
+
+      if (result.role === "guest") {
+        setIsAuthenticated(true);
+        setIsAdmin(false);
+        return;
+      }
+
+      setLoginError("Unbekannte Login-Antwort.");
+    } catch (error) {
+      console.error("Fehler beim Login:", error);
+      setLoginError("Login fehlgeschlagen. Bitte später erneut versuchen.");
     }
-
-    if (result.role === "admin") {
-      setIsAuthenticated(true);
-      setIsAdmin(true);
-      return;
-    }
-
-    if (result.role === "guest") {
-      setIsAuthenticated(true);
-      setIsAdmin(false);
-      return;
-    }
-
-    setLoginError("Unbekannte Login-Antwort.");
-  } catch (error) {
-    console.error("Fehler beim Login:", error);
-    setLoginError("Login fehlgeschlagen. Bitte später erneut versuchen.");
   }
-}
 
   async function handleLogout() {
     try {
@@ -362,48 +362,48 @@ async function handleLogin() {
     if (eventData) fillEditForm(eventData);
   }
 
-async function handleUpdateEvent(e) {
-  e.preventDefault();
+  async function handleUpdateEvent(e) {
+    e.preventDefault();
 
-  if (!editingEventId) return;
+    if (!editingEventId) return;
 
-  setUpdatingEvent(true);
+    setUpdatingEvent(true);
 
-  try {
-    const response = await fetch("/api/update-event", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        eventId: editingEventId,
-        title,
-        location,
-        category,
-        startDate,
-        endDate,
-        description,
-      }),
-    });
+    try {
+      const response = await fetch("/api/update-event", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: editingEventId,
+          title,
+          location,
+          category,
+          startDate,
+          endDate,
+          description,
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      alert(result.error || "Ereignis konnte nicht aktualisiert werden.");
-      setUpdatingEvent(false);
-      return;
+      if (!response.ok) {
+        alert(result.error || "Ereignis konnte nicht aktualisiert werden.");
+        setUpdatingEvent(false);
+        return;
+      }
+
+      alert("Ereignis aktualisiert.");
+      setEditingEventId(null);
+      await fetchEventBySlug();
+    } catch (error) {
+      console.error("Fehler beim Aktualisieren:", error);
+      alert("Ereignis konnte nicht aktualisiert werden.");
     }
 
-    alert("Ereignis aktualisiert.");
-    setEditingEventId(null);
-    await fetchEventBySlug();
-  } catch (error) {
-    console.error("Fehler beim Aktualisieren:", error);
-    alert("Ereignis konnte nicht aktualisiert werden.");
+    setUpdatingEvent(false);
   }
-
-  setUpdatingEvent(false);
-}
 
   function handleFileSelection(files) {
     setSelectedFiles(Array.from(files || []));
@@ -483,40 +483,40 @@ async function handleUpdateEvent(e) {
     setUploadingPhoto(false);
   }
 
-async function handleDeletePhoto(photo) {
-  if (!isAdmin) return;
+  async function handleDeletePhoto(photo) {
+    if (!isAdmin) return;
 
-  const confirmDelete = window.confirm("Foto wirklich löschen?");
-  if (!confirmDelete) return;
+    const confirmDelete = window.confirm("Foto wirklich löschen?");
+    if (!confirmDelete) return;
 
-  try {
-    const response = await fetch("/api/delete-photo", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        photoId: photo.id,
-      }),
-    });
+    try {
+      const response = await fetch("/api/delete-photo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          photoId: photo.id,
+        }),
+      });
 
-    const result = await response.json();
+      const result = await response.json();
 
-    if (!response.ok) {
-      alert(result.error || "Foto konnte nicht gelöscht werden.");
-      return;
+      if (!response.ok) {
+        alert(result.error || "Foto konnte nicht gelöscht werden.");
+        return;
+      }
+
+      await fetchPhotosForEvent(eventData.id);
+      await fetchAllLikes();
+      await fetchAllComments();
+      setSelectedPhotoIds((prev) => prev.filter((id) => id !== photo.id));
+      alert("Foto gelöscht.");
+    } catch (error) {
+      console.error("Fehler beim Löschen:", error);
+      alert("Foto konnte nicht gelöscht werden.");
     }
-
-    await fetchPhotosForEvent(eventData.id);
-    await fetchAllLikes();
-    await fetchAllComments();
-    setSelectedPhotoIds((prev) => prev.filter((id) => id !== photo.id));
-    alert("Foto gelöscht.");
-  } catch (error) {
-    console.error("Fehler beim Löschen:", error);
-    alert("Foto konnte nicht gelöscht werden.");
   }
-}
 
   function getStoredLikeMap() {
     if (typeof window === "undefined") return {};
@@ -620,114 +620,115 @@ async function handleDeletePhoto(photo) {
 
     setSubmittingCommentPhotoId(null);
   }
-function isValidEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-  
-async function handleSubmitOrder() {
-  if (!eventData?.id) {
-    alert("Event nicht gefunden.");
-    return;
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   }
 
-  if (selectedPhotos.length === 0) {
-    alert("Bitte zuerst Bilder auswählen.");
-    return;
-  }
-
-  if (!customerName.trim()) {
-    alert("Bitte deinen Namen eingeben.");
-    return;
-  }
-
-if (!customerEmail.trim()) {
-  alert("Bitte deine E-Mail eingeben.");
-  return;
-}
-
-if (!isValidEmail(customerEmail)) {
-  alert("Bitte eine gültige E-Mail-Adresse eingeben.");
-  return;
-}
-
-  if (!street.trim() || !postalCode.trim() || !city.trim()) {
-    alert("Bitte die vollständige Adresse eingeben.");
-    return;
-  }
-
-  setSubmittingOrder(true);
-
-  try {
-    const orderResponse = await fetch("/api/create-order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        eventId: eventData.id,
-        customerName,
-        customerEmail,
-        customerPhone,
-        street,
-        postalCode,
-        city,
-        country,
-        orderNote,
-        photoIds: selectedPhotos.map((photo) => photo.id),
-        printOption: selectedPrintOption,
-        frameOption: selectedFrameOption,
-      }),
-    });
-
-    const orderResult = await orderResponse.json();
-
-    if (!orderResponse.ok) {
-      alert(orderResult.error || "Bestellung konnte nicht gespeichert werden.");
-      setSubmittingOrder(false);
+  async function handleSubmitOrder() {
+    if (!eventData?.id) {
+      alert("Event nicht gefunden.");
       return;
     }
 
-    const orderId = orderResult?.order?.id;
-
-    if (!orderId) {
-      alert("Bestellung wurde gespeichert, aber keine Bestell-ID gefunden.");
-      setSubmittingOrder(false);
+    if (selectedPhotos.length === 0) {
+      alert("Bitte zuerst Bilder auswählen.");
       return;
     }
 
-    const checkoutResponse = await fetch("/api/create-checkout-session", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        orderId,
-      }),
-    });
-
-    const checkoutResult = await checkoutResponse.json();
-
-    if (!checkoutResponse.ok) {
-      alert(
-        checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden."
-      );
-      setSubmittingOrder(false);
+    if (!customerName.trim()) {
+      alert("Bitte deinen Namen eingeben.");
       return;
     }
 
-    if (!checkoutResult.url) {
-      alert("Keine Stripe-URL erhalten.");
-      setSubmittingOrder(false);
+    if (!customerEmail.trim()) {
+      alert("Bitte deine E-Mail eingeben.");
       return;
     }
 
-    window.location.href = checkoutResult.url;
-  } catch (error) {
-    console.error("Unbekannter Fehler bei der Bestellung:", error);
-    alert("Es gab ein Problem beim Starten der Zahlung.");
-    setSubmittingOrder(false);
+    if (!isValidEmail(customerEmail)) {
+      alert("Bitte eine gültige E-Mail-Adresse eingeben.");
+      return;
+    }
+
+    if (!street.trim() || !postalCode.trim() || !city.trim()) {
+      alert("Bitte die vollständige Adresse eingeben.");
+      return;
+    }
+
+    setSubmittingOrder(true);
+
+    try {
+      const orderResponse = await fetch("/api/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: eventData.id,
+          customerName,
+          customerEmail,
+          customerPhone,
+          street,
+          postalCode,
+          city,
+          country,
+          orderNote,
+          photoIds: selectedPhotos.map((photo) => photo.id),
+          printOption: selectedPrintOption,
+          frameOption: selectedFrameOption,
+        }),
+      });
+
+      const orderResult = await orderResponse.json();
+
+      if (!orderResponse.ok) {
+        alert(orderResult.error || "Bestellung konnte nicht gespeichert werden.");
+        setSubmittingOrder(false);
+        return;
+      }
+
+      const orderId = orderResult?.order?.id;
+
+      if (!orderId) {
+        alert("Bestellung wurde gespeichert, aber keine Bestell-ID gefunden.");
+        setSubmittingOrder(false);
+        return;
+      }
+
+      const checkoutResponse = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          orderId,
+        }),
+      });
+
+      const checkoutResult = await checkoutResponse.json();
+
+      if (!checkoutResponse.ok) {
+        alert(
+          checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden."
+        );
+        setSubmittingOrder(false);
+        return;
+      }
+
+      if (!checkoutResult.url) {
+        alert("Keine Stripe-URL erhalten.");
+        setSubmittingOrder(false);
+        return;
+      }
+
+      window.location.href = checkoutResult.url;
+    } catch (error) {
+      console.error("Unbekannter Fehler bei der Bestellung:", error);
+      alert("Es gab ein Problem beim Starten der Zahlung.");
+      setSubmittingOrder(false);
+    }
   }
-}
 
   function formatDate(dateString) {
     if (!dateString) return "Kein Datum";
@@ -822,13 +823,13 @@ if (!isValidEmail(customerEmail)) {
     selectedPhotoIds.includes(photo.id)
   );
 
-const selectedPrint = getBasePrintOption(selectedPrintOption);
-const selectedFrame = getFrameOption(selectedFrameOption);
+  const selectedPrint = getBasePrintOption(selectedPrintOption);
+  const selectedFrame = getFrameOption(selectedFrameOption);
 
-const pricePerPhotoInCent =
-  getProductPrice(selectedPrintOption, selectedFrameOption) || 0;
-const pricePerPhoto = pricePerPhotoInCent / 100;
-const totalPrice = pricePerPhoto * selectedPhotos.length;
+  const pricePerPhotoInCent =
+    getProductPrice(selectedPrintOption, selectedFrameOption) || 0;
+  const pricePerPhoto = pricePerPhotoInCent / 100;
+  const totalPrice = pricePerPhoto * selectedPhotos.length;
 
   const coverPhoto = photos.length > 0 ? photos[0] : null;
   const currentPhoto = filteredPhotos[selectedPhotoIndex];
@@ -926,24 +927,25 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
             "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
         </p>
 
-{filteredPhotos.length > 0 && (
-  <div style={styles.newHeroPreviewRow}>
-    {filteredPhotos.map((p, i) => (
-      <img
-        key={p.id}
-        src={p.signed_url}
-        alt={p.caption || `Vorschaubild ${i + 1}`}
-        style={styles.newHeroPreviewImg}
-        onClick={() => {
-          const el = document.getElementById(`photo-${i}`);
-          if (el) {
-            el.scrollIntoView({ behavior: "smooth", block: "start" });
-          }
-        }}
-      />
-    ))}
-  </div>
-)}
+        {filteredPhotos.length > 0 && (
+          <div style={styles.newHeroPreviewRow}>
+            {filteredPhotos.map((p, i) => (
+              <img
+                key={p.id}
+                src={p.signed_url}
+                alt={p.caption || `Vorschaubild ${i + 1}`}
+                style={styles.newHeroPreviewImg}
+                onClick={() => {
+                  const el = document.getElementById(`photo-${i}`);
+                  if (el) {
+                    el.scrollIntoView({ behavior: "smooth", block: "start" });
+                  }
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {editingEventId && isAdmin && (
         <form onSubmit={handleUpdateEvent} style={styles.formCard}>
@@ -1381,7 +1383,8 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
                     >
                       {SIZE_OPTIONS.map((option) => {
                         const price =
-                          getProductPrice(option.value, selectedFrameOption) || 0;
+                          getProductPrice(option.value, selectedFrameOption) ||
+                          0;
 
                         return (
                           <option key={option.value} value={option.value}>
@@ -1442,7 +1445,9 @@ const totalPrice = pricePerPhoto * selectedPhotos.length;
 
                       <div style={styles.cartPhotoInfo}>
                         <div style={styles.cartPhotoName}>
-                          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+                          {photo.caption ||
+                            photo.file_name ||
+                            "Ausgewähltes Foto"}
                         </div>
 
                         <button
