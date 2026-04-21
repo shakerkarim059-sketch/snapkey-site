@@ -1414,30 +1414,97 @@ const totalPrice = totalPriceInCent / 100;
                   {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
                 </div>
 
-              <div style={styles.cartGrid}>
-  {selectedPhotos.map((photo) => (
-    <div key={photo.id} style={styles.cartPhotoCard}>
-      <img
-        src={photo.signed_url || ""}
-        alt={photo.caption || photo.file_name || "Foto"}
-        style={styles.cartPhoto}
-      />
+<div style={styles.cartGrid}>
+  {selectedPhotos.map((photo) => {
+    const options = photoOrderOptions[photo.id] || {
+      printOption: "13x18",
+      frameOption: "none",
+    };
 
-      <div style={styles.cartPhotoInfo}>
-        <div style={styles.cartPhotoName}>
-          {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+    const itemPriceInCent =
+      getProductPrice(options.printOption, options.frameOption) || 0;
+
+    return (
+      <div key={photo.id} style={styles.cartPhotoCard}>
+        <img
+          src={photo.signed_url || ""}
+          alt={photo.caption || photo.file_name || "Foto"}
+          style={styles.cartPhoto}
+        />
+
+        <div style={styles.cartPhotoInfo}>
+          <div style={styles.cartPhotoName}>
+            {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+          </div>
+
+          <div style={styles.cartItemOptions}>
+            <div style={styles.cartItemOptionBlock}>
+              <label style={styles.orderLabel}>Format</label>
+              <select
+                value={options.printOption}
+                onChange={(e) =>
+                  setPhotoOrderOptions((prev) => ({
+                    ...prev,
+                    [photo.id]: {
+                      ...prev[photo.id],
+                      printOption: e.target.value,
+                    },
+                  }))
+                }
+                style={styles.orderSelect}
+              >
+                {SIZE_OPTIONS.map((option) => {
+                  const price =
+                    getProductPrice(option.value, options.frameOption) || 0;
+
+                  return (
+                    <option key={option.value} value={option.value}>
+                      {option.label} • {formatEuroFromCent(price)} €
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            <div style={styles.cartItemOptionBlock}>
+              <label style={styles.orderLabel}>Rahmen</label>
+              <select
+                value={options.frameOption}
+                onChange={(e) =>
+                  setPhotoOrderOptions((prev) => ({
+                    ...prev,
+                    [photo.id]: {
+                      ...prev[photo.id],
+                      frameOption: e.target.value,
+                    },
+                  }))
+                }
+                style={styles.orderSelect}
+              >
+                {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
+                  <option key={value} value={value}>
+                    {option.label} • {formatEuroFromCent(option.price)} €
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div style={styles.cartItemPrice}>
+            Preis für dieses Bild: {(itemPriceInCent / 100).toFixed(2)} €
+          </div>
+
+          <button
+            type="button"
+            onClick={() => togglePhotoSelection(photo.id)}
+            style={styles.removeFromCartButton}
+          >
+            Entfernen
+          </button>
         </div>
-
-        <button
-          type="button"
-          onClick={() => togglePhotoSelection(photo.id)}
-          style={styles.removeFromCartButton}
-        >
-          Entfernen
-        </button>
       </div>
-    </div>
-  ))}
+    );
+  })}
 </div>
 
                 <div style={styles.priceSummaryCard}>
