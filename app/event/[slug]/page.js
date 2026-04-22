@@ -175,21 +175,26 @@ export default function EventPage() {
       fetchAllComments(),
     ]);
 
-    setLoadingEvent(false);
+setLoadingEvent(false);
+}
+
+async function checkExistingSession() {
+  try {
+    const response = await fetch("/api/event-session");
+    const result = await response.json();
+
+    if (!response.ok || !result?.authenticated) return;
+
+    if (!result.globalAdmin && result.slug !== slug) return;
+
+    setIsAuthenticated(true);
+    setIsAdmin(result.role === "admin");
+  } catch (error) {
+    console.error("Fehler beim Prüfen der Session:", error);
   }
+}
 
-if (!response.ok || !result?.authenticated) return;
-
-if (!result.globalAdmin && result.slug !== slug) return;
-
-setIsAuthenticated(true);
-setIsAdmin(result.role === "admin");
-    } catch (error) {
-      console.error("Fehler beim Prüfen der Session:", error);
-    }
-  }
-
-  async function attachSignedUrls(photoRows) {
+async function attachSignedUrls(photoRows) {
     const mapped = await Promise.all(
       (photoRows || []).map(async (photo) => {
         if (!photo.file_path) {
