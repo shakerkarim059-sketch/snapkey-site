@@ -258,7 +258,7 @@ export default function HomePage() {
       <section style={styles.storySection}>
         <div style={styles.storyImageWrap}>
           <img
-            src="/how-it-works.jpg"
+            src="/prints-order.jpg"
             alt="Snapkey neben Smartphone mit geöffneter Eventseite"
             style={styles.storyImage}
             onClick={() =>
