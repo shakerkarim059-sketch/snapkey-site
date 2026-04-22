@@ -444,6 +444,15 @@ export default function AdminPage() {
                       </span>
                     </div>
 
+                        <button
+  onClick={async () => {
+    await fetch("/api/admin-logout", { method: "POST" });
+    window.location.href = "/admin-login";
+  }}
+>
+  Logout
+</button>
+
                     <div style={styles.metaRow}>
                       <span style={styles.metaLabel}>Slug</span>
                       <span style={styles.metaValue}>{eventItem.slug || "—"}</span>
