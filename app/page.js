@@ -218,7 +218,7 @@ export default function HomePage() {
       <section style={styles.storySection}>
         <div style={styles.storyImageWrap}>
           <img
-            src="/how-it-works.jpg"
+            src="/hero-nfc.jpg"
             alt="NFC Key neben Smartphone mit geöffnetem Album"
             style={styles.storyImage}
           />
