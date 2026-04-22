@@ -9,7 +9,7 @@ export default function HomePage() {
       subtitle: "Persönlich & hochwertig",
       description:
         "Ein individueller Holz-Schlüsselanhänger für Familienmomente, Kinderfotos, gemeinsame Erinnerungen und private Alben.",
-      image: "/family-key.jpg",
+      image: "/nfc-family.jpg",
       points: [
         "Individueller Holz Schlüsselanhänger",
         "Mit Namen oder Familienmotiv",
@@ -35,7 +35,7 @@ export default function HomePage() {
       subtitle: "Praktisch & modern",
       description:
         "Perfekt für Geburtstage, Firmenfeiern, Jubiläen oder geschlossene Veranstaltungen mit einem gemeinsamen Album.",
-      image: "/event-key.jpg",
+     image: "/nfc-event.jpg",
       points: [
         "Modernes Design",
         "Mit Eventname oder Logo",
@@ -48,7 +48,7 @@ export default function HomePage() {
       subtitle: "Leicht & flexibel",
       description:
         "Praktische NFC Karten oder Anhänger für Urlaubsalben, Reisetagebücher und gemeinsame Abenteuer.",
-      image: "/travel-key.jpg",
+      image: "/nfc-travel.jpg",
       points: [
         "Praktisches Kartenformat",
         "Leicht mitzunehmen",
@@ -152,7 +152,7 @@ export default function HomePage() {
 
         <div style={styles.heroImageCol}>
           <img
-            src="/hero-nfc-family.png"
+            src="/hero-nfc.jpg"
             alt="Individueller NFC Key mit Smartphone und Familienalbum"
             style={styles.heroImage}
           />
