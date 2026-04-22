@@ -6,8 +6,6 @@ import { supabase } from "../../../lib/supabase";
 import {
   SIZE_OPTIONS,
   FRAME_OPTIONS,
-  getBasePrintOption,
-  getFrameOption,
   getProductPrice,
   formatEuroFromCent,
 } from "../../../lib/pricing";
@@ -65,7 +63,7 @@ export default function EventPage() {
   const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
 
-const [photoOrderOptions, setPhotoOrderOptions] = useState({});
+  const [photoOrderOptions, setPhotoOrderOptions] = useState({});
 
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
@@ -537,62 +535,64 @@ const [photoOrderOptions, setPhotoOrderOptions] = useState({});
     return Boolean(likeMap[photoId]);
   }
 
-async function handleToggleLike(photoId) {
-  if (eventData?.likes_enabled === false) return;
+  async function handleToggleLike(photoId) {
+    if (eventData?.likes_enabled === false) return;
 
-  setLikingPhotoId(photoId);
+    setLikingPhotoId(photoId);
 
-  const currentScrollY =
-    typeof window !== "undefined" ? window.scrollY : 0;
+    const currentScrollY =
+      typeof window !== "undefined" ? window.scrollY : 0;
 
-  try {
-    const likeMap = getStoredLikeMap();
-    const existingLikeId = likeMap[photoId];
+    try {
+      const likeMap = getStoredLikeMap();
+      const existingLikeId = likeMap[photoId];
 
-    if (existingLikeId) {
-      const { error } = await supabase
-        .from("photo_likes")
-        .delete()
-        .eq("id", existingLikeId);
+      if (existingLikeId) {
+        const { error } = await supabase
+          .from("photo_likes")
+          .delete()
+          .eq("id", existingLikeId);
 
-      if (error) {
-        console.error("Fehler beim Entfernen des Likes:", error);
-        alert("Like konnte nicht entfernt werden: " + error.message);
-        return;
+        if (error) {
+          console.error("Fehler beim Entfernen des Likes:", error);
+          alert("Like konnte nicht entfernt werden: " + error.message);
+          return;
+        }
+
+        delete likeMap[photoId];
+        setStoredLikeMap(likeMap);
+
+        setPhotoLikes((prev) =>
+          prev.filter((like) => like.id !== existingLikeId)
+        );
+      } else {
+        const { data, error } = await supabase
+          .from("photo_likes")
+          .insert([{ photo_id: photoId }])
+          .select()
+          .single();
+
+        if (error) {
+          console.error("Fehler beim Liken:", error);
+          alert("Like konnte nicht gespeichert werden: " + error.message);
+          return;
+        }
+
+        likeMap[photoId] = data.id;
+        setStoredLikeMap(likeMap);
+
+        setPhotoLikes((prev) => [...prev, data]);
       }
+    } finally {
+      setLikingPhotoId(null);
 
-      delete likeMap[photoId];
-      setStoredLikeMap(likeMap);
-
-      setPhotoLikes((prev) => prev.filter((like) => like.id !== existingLikeId));
-    } else {
-      const { data, error } = await supabase
-        .from("photo_likes")
-        .insert([{ photo_id: photoId }])
-        .select()
-        .single();
-
-      if (error) {
-        console.error("Fehler beim Liken:", error);
-        alert("Like konnte nicht gespeichert werden: " + error.message);
-        return;
+      if (typeof window !== "undefined") {
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ top: currentScrollY, behavior: "auto" });
+        });
       }
-
-      likeMap[photoId] = data.id;
-      setStoredLikeMap(likeMap);
-
-      setPhotoLikes((prev) => [...prev, data]);
-    }
-  } finally {
-    setLikingPhotoId(null);
-
-    if (typeof window !== "undefined") {
-      window.requestAnimationFrame(() => {
-        window.scrollTo({ top: currentScrollY, behavior: "auto" });
-      });
     }
   }
-}
 
   async function handleSubmitComment(photoId) {
     if (eventData?.comments_enabled === false) return;
@@ -672,29 +672,29 @@ async function handleToggleLike(photoId) {
         headers: {
           "Content-Type": "application/json",
         },
-body: JSON.stringify({
-  eventId: eventData.id,
-  customerName,
-  customerEmail,
-  customerPhone,
-  street,
-  postalCode,
-  city,
-  country,
-  orderNote,
-  items: selectedPhotos.map((photo) => {
-    const options = photoOrderOptions[photo.id] || {
-      printOption: "13x18",
-      frameOption: "none",
-    };
+        body: JSON.stringify({
+          eventId: eventData.id,
+          customerName,
+          customerEmail,
+          customerPhone,
+          street,
+          postalCode,
+          city,
+          country,
+          orderNote,
+          items: selectedPhotos.map((photo) => {
+            const options = photoOrderOptions[photo.id] || {
+              printOption: "13x18",
+              frameOption: "none",
+            };
 
-    return {
-      photoId: photo.id,
-      printOption: options.printOption,
-      frameOption: options.frameOption,
-    };
-  }),
-}),
+            return {
+              photoId: photo.id,
+              printOption: options.printOption,
+              frameOption: options.frameOption,
+            };
+          }),
+        }),
       });
 
       const orderResult = await orderResponse.json();
@@ -765,31 +765,31 @@ body: JSON.stringify({
     return photoComments.filter((comment) => comment.photo_id === photoId);
   }
 
-function togglePhotoSelection(photoId) {
-  setSelectedPhotoIds((prev) => {
-    const isSelected = prev.includes(photoId);
+  function togglePhotoSelection(photoId) {
+    setSelectedPhotoIds((prev) => {
+      const isSelected = prev.includes(photoId);
 
-    if (isSelected) {
-      setPhotoOrderOptions((current) => {
-        const updated = { ...current };
-        delete updated[photoId];
-        return updated;
-      });
+      if (isSelected) {
+        setPhotoOrderOptions((current) => {
+          const updated = { ...current };
+          delete updated[photoId];
+          return updated;
+        });
 
-      return prev.filter((id) => id !== photoId);
-    }
+        return prev.filter((id) => id !== photoId);
+      }
 
-    setPhotoOrderOptions((current) => ({
-      ...current,
-      [photoId]: {
-        printOption: "13x18",
-        frameOption: "none",
-      },
-    }));
+      setPhotoOrderOptions((current) => ({
+        ...current,
+        [photoId]: {
+          printOption: "13x18",
+          frameOption: "none",
+        },
+      }));
 
-    return [...prev, photoId];
-  });
-}
+      return [...prev, photoId];
+    });
+  }
 
   function openLightbox(index) {
     setSelectedPhotoIndex(index);
@@ -858,16 +858,16 @@ function togglePhotoSelection(photoId) {
     selectedPhotoIds.includes(photo.id)
   );
 
-const totalPriceInCent = selectedPhotos.reduce((sum, photo) => {
-  const options = photoOrderOptions[photo.id] || {
-    printOption: "13x18",
-    frameOption: "none",
-  };
+  const totalPriceInCent = selectedPhotos.reduce((sum, photo) => {
+    const options = photoOrderOptions[photo.id] || {
+      printOption: "13x18",
+      frameOption: "none",
+    };
 
-  return sum + (getProductPrice(options.printOption, options.frameOption) || 0);
-}, 0);
+    return sum + (getProductPrice(options.printOption, options.frameOption) || 0);
+  }, 0);
 
-const totalPrice = totalPriceInCent / 100;
+  const totalPrice = totalPriceInCent / 100;
 
   const coverPhoto = photos.length > 0 ? photos[0] : null;
   const currentPhoto = filteredPhotos[selectedPhotoIndex];
@@ -1294,20 +1294,20 @@ const totalPrice = totalPriceInCent / 100;
 
                   {eventData.likes_enabled !== false && (
                     <div style={styles.likeRow}>
-                    <button
-  type="button"
-  onClick={(e) => {
-    e.stopPropagation();
-    handleToggleLike(photo.id);
-  }}
-  disabled={likingPhotoId === photo.id}
-  style={{
-    ...styles.likeButton,
-    ...(likedByThisBrowser
-      ? styles.likeButtonActive
-      : {}),
-  }}
->
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleLike(photo.id);
+                        }}
+                        disabled={likingPhotoId === photo.id}
+                        style={{
+                          ...styles.likeButton,
+                          ...(likedByThisBrowser
+                            ? styles.likeButtonActive
+                            : {}),
+                        }}
+                      >
                         {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
                       </button>
 
@@ -1414,112 +1414,116 @@ const totalPrice = totalPriceInCent / 100;
                   {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
                 </div>
 
-<div style={styles.cartGrid}>
-  {selectedPhotos.map((photo) => {
-    const options = photoOrderOptions[photo.id] || {
-      printOption: "13x18",
-      frameOption: "none",
-    };
+                <div style={styles.cartGrid}>
+                  {selectedPhotos.map((photo) => {
+                    const options = photoOrderOptions[photo.id] || {
+                      printOption: "13x18",
+                      frameOption: "none",
+                    };
 
-    const itemPriceInCent =
-      getProductPrice(options.printOption, options.frameOption) || 0;
+                    const itemPriceInCent =
+                      getProductPrice(
+                        options.printOption,
+                        options.frameOption
+                      ) || 0;
 
-    return (
-      <div key={photo.id} style={styles.cartPhotoCard}>
-        <img
-          src={photo.signed_url || ""}
-          alt={photo.caption || photo.file_name || "Foto"}
-          style={styles.cartPhoto}
-        />
+                    return (
+                      <div key={photo.id} style={styles.cartPhotoCard}>
+                        <img
+                          src={photo.signed_url || ""}
+                          alt={photo.caption || photo.file_name || "Foto"}
+                          style={styles.cartPhoto}
+                        />
 
-        <div style={styles.cartPhotoInfo}>
-          <div style={styles.cartPhotoName}>
-            {photo.caption || photo.file_name || "Ausgewähltes Foto"}
-          </div>
+                        <div style={styles.cartPhotoInfo}>
+                          <div style={styles.cartPhotoName}>
+                            {photo.caption ||
+                              photo.file_name ||
+                              "Ausgewähltes Foto"}
+                          </div>
 
-          <div style={styles.cartItemOptions}>
-            <div style={styles.cartItemOptionBlock}>
-              <label style={styles.orderLabel}>Format</label>
-              <select
-                value={options.printOption}
-                onChange={(e) =>
-                  setPhotoOrderOptions((prev) => ({
-                    ...prev,
-                    [photo.id]: {
-                      ...(prev[photo.id] || {}),
-                      printOption: e.target.value,
-                    },
-                  }))
-                }
-                style={styles.orderSelect}
-              >
-                {SIZE_OPTIONS.map((option) => {
-                  const price =
-                    getProductPrice(option.value, options.frameOption) || 0;
+                          <div style={styles.cartItemOptions}>
+                            <div style={styles.cartItemOptionBlock}>
+                              <label style={styles.orderLabel}>Format</label>
+                              <select
+                                value={options.printOption}
+                                onChange={(e) =>
+                                  setPhotoOrderOptions((prev) => ({
+                                    ...prev,
+                                    [photo.id]: {
+                                      ...(prev[photo.id] || {}),
+                                      printOption: e.target.value,
+                                    },
+                                  }))
+                                }
+                                style={styles.orderSelect}
+                              >
+                                {SIZE_OPTIONS.map((option) => {
+                                  const price =
+                                    getProductPrice(
+                                      option.value,
+                                      options.frameOption
+                                    ) || 0;
 
-                  return (
-                    <option key={option.value} value={option.value}>
-                      {option.label} • {formatEuroFromCent(price)} €
-                    </option>
-                  );
-                })}
-              </select>
-            </div>
+                                  return (
+                                    <option
+                                      key={option.value}
+                                      value={option.value}
+                                    >
+                                      {option.label} •{" "}
+                                      {formatEuroFromCent(price)} €
+                                    </option>
+                                  );
+                                })}
+                              </select>
+                            </div>
 
-            <div style={styles.cartItemOptionBlock}>
-              <label style={styles.orderLabel}>Rahmen</label>
-              <select
-                value={options.frameOption}
-                onChange={(e) =>
-                  setPhotoOrderOptions((prev) => ({
-                    ...prev,
-                    [photo.id]: {
-                      ...(prev[photo.id] || {}),
-                      frameOption: e.target.value,
-                    },
-                  }))
-                }
-                style={styles.orderSelect}
-              >
-                {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
-                  <option key={value} value={value}>
-                    {option.label} • {formatEuroFromCent(option.price)} €
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+                            <div style={styles.cartItemOptionBlock}>
+                              <label style={styles.orderLabel}>Rahmen</label>
+                              <select
+                                value={options.frameOption}
+                                onChange={(e) =>
+                                  setPhotoOrderOptions((prev) => ({
+                                    ...prev,
+                                    [photo.id]: {
+                                      ...(prev[photo.id] || {}),
+                                      frameOption: e.target.value,
+                                    },
+                                  }))
+                                }
+                                style={styles.orderSelect}
+                              >
+                                {Object.entries(FRAME_OPTIONS).map(
+                                  ([value, option]) => (
+                                    <option key={value} value={value}>
+                                      {option.label} •{" "}
+                                      {formatEuroFromCent(option.price)} €
+                                    </option>
+                                  )
+                                )}
+                              </select>
+                            </div>
+                          </div>
 
-          <div style={styles.cartItemPrice}>
-            Preis für dieses Bild: {(itemPriceInCent / 100).toFixed(2)} €
-          </div>
+                          <div style={styles.cartItemPrice}>
+                            Preis für dieses Bild:{" "}
+                            {(itemPriceInCent / 100).toFixed(2)} €
+                          </div>
 
-          <button
-            type="button"
-            onClick={() => togglePhotoSelection(photo.id)}
-            style={styles.removeFromCartButton}
-          >
-            Entfernen
-          </button>
-        </div>
-      </div>
-    );
-  })}
-</div>
+                          <button
+                            type="button"
+                            onClick={() => togglePhotoSelection(photo.id)}
+                            style={styles.removeFromCartButton}
+                          >
+                            Entfernen
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
 
                 <div style={styles.priceSummaryCard}>
-                  <div style={styles.priceRow}>
-                    <span>Format</span>
-                    <span>{selectedPrint?.label}</span>
-                  </div>
-                  <div style={styles.priceRow}>
-                    <span>Rahmen</span>
-                    <span>{selectedFrame?.label}</span>
-                  </div>
-                  <div style={styles.priceRow}>
-                    <span>Preis pro Bild</span>
-                    <span>{pricePerPhoto.toFixed(2)} €</span>
-                  </div>
                   <div style={styles.priceRow}>
                     <span>Anzahl Bilder</span>
                     <span>{selectedPhotos.length}</span>
@@ -1530,40 +1534,12 @@ const totalPrice = totalPriceInCent / 100;
                   </div>
                 </div>
 
-                <div style={styles.cartGrid}>
-                  {selectedPhotos.map((photo) => (
-                    <div key={photo.id} style={styles.cartPhotoCard}>
-                      <img
-                        src={photo.signed_url || ""}
-                        alt={photo.caption || photo.file_name || "Foto"}
-                        style={styles.cartPhoto}
-                      />
-
-                      <div style={styles.cartPhotoInfo}>
-                        <div style={styles.cartPhotoName}>
-                          {photo.caption ||
-                            photo.file_name ||
-                            "Ausgewähltes Foto"}
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={() => togglePhotoSelection(photo.id)}
-                          style={styles.removeFromCartButton}
-                        >
-                          Entfernen
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
                 <div style={styles.orderFormCard}>
                   <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
                   <p style={styles.orderFormText}>
                     Gib hier deine Kontaktdaten und Lieferadresse ein. Deine
-                    ausgewählten Bilder aus diesem Event werden zusammen mit
-                    Format und Rahmen gespeichert.
+                    ausgewählten Bilder aus diesem Event werden mit ihren
+                    individuellen Format- und Rahmenoptionen gespeichert.
                   </p>
 
                   <div style={styles.orderFormGrid}>
@@ -1633,10 +1609,13 @@ const totalPrice = totalPriceInCent / 100;
                   />
                 </div>
 
-<div style={styles.cartFooterSmall}>
-  {selectedPhotos.length} Bild
-  {selectedPhotos.length === 1 ? "" : "er"} individuell konfiguriert
-</div>
+                <div style={styles.cartFooter}>
+                  <div style={styles.cartFooterSummary}>
+                    <div style={styles.cartFooterSmall}>
+                      {selectedPhotos.length} Bild
+                      {selectedPhotos.length === 1 ? "" : "er"} individuell
+                      konfiguriert
+                    </div>
                     <div style={styles.cartFooterTotal}>
                       {totalPrice.toFixed(2)} €
                     </div>
@@ -1718,7 +1697,6 @@ const totalPrice = totalPriceInCent / 100;
     </div>
   );
 }
-
 
 const styles = {
 page: {
