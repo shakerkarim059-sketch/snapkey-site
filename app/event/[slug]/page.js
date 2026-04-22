@@ -178,16 +178,12 @@ export default function EventPage() {
     setLoadingEvent(false);
   }
 
-  async function checkExistingSession() {
-    try {
-      const response = await fetch("/api/event-session");
-      const result = await response.json();
+if (!response.ok || !result?.authenticated) return;
 
-      if (!response.ok || !result?.authenticated) return;
-      if (result.slug !== slug) return;
+if (!result.globalAdmin && result.slug !== slug) return;
 
-      setIsAuthenticated(true);
-      setIsAdmin(result.role === "admin");
+setIsAuthenticated(true);
+setIsAdmin(result.role === "admin");
     } catch (error) {
       console.error("Fehler beim Prüfen der Session:", error);
     }
