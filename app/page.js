@@ -113,60 +113,59 @@ export default function HomePage() {
   return (
     <main style={styles.page}>
       <section style={styles.heroSection}>
-        <div style={styles.heroTextCol}>
-          <div style={styles.heroBadge}>Snapkey für Erinnerungen & Events</div>
+<div style={styles.heroTextCol}>
+  <div style={styles.heroBadge}>Snapkey – mehr als nur ein NFC Tag</div>
 
-          <h1 style={styles.heroTitle}>
-            Snapkey verbindet
-            <br />
-            echte Momente mit
-            <br />
-            einer fertigen Eventseite.
-          </h1>
+  <h1 style={styles.heroTitle}>
+    Ein Snapkey.
+    <br />
+    Eine fertige Eventseite.
+    <br />
+    Alle Erinnerungen an einem Ort.
+  </h1>
 
-          <p style={styles.heroText}>
-            Du wählst einen oder mehrere Snapkeys für Familie, Hochzeit oder
-            Event – ich richte die passende Eventseite für dich ein. So erhalten
-            Gäste und Familienmitglieder direkten Zugang zu Fotos,
-            Erinnerungen und auf Wunsch auch zu bestellbaren Bildern.
-          </p>
+  <p style={styles.heroText}>
+    Du bestellst deinen Snapkey – ich erstelle die komplette Eventseite für dich.
+    Gäste öffnen sie mit einem Tap und können Fotos ansehen, teilen und direkt
+    als hochwertige Prints bestellen.
+  </p>
 
-          <div style={styles.heroActionRow}>
-            <Link href="/event" style={styles.primaryButton}>
-              Jetzt Snapkey anfragen
-            </Link>
+  <div style={styles.heroActionRow}>
+    <Link href="/event" style={styles.primaryButton}>
+      Snapkey jetzt erstellen
+    </Link>
 
-            <a href="#snapkeys" style={styles.secondaryButton}>
-              Varianten ansehen
-            </a>
-          </div>
+    <a href="#produkte" style={styles.secondaryButton}>
+      Snapkeys ansehen
+    </a>
+  </div>
 
-          <div style={styles.heroIconRow}>
-            <div style={styles.heroIconCard}>
-              <div style={styles.heroIconCircle}>1</div>
-              <div style={styles.heroIconTitle}>Snapkey wählen</div>
-              <div style={styles.heroIconText}>
-                Passend für Familie, Hochzeit, Event oder Reise
-              </div>
-            </div>
+  <div style={styles.heroIconRow}>
+    <div style={styles.heroIconCard}>
+      <div style={styles.heroIconCircle}>⌁</div>
+      <div style={styles.heroIconTitle}>Snapkey auswählen</div>
+      <div style={styles.heroIconText}>
+        Für Familie, Hochzeit oder Event
+      </div>
+    </div>
 
-            <div style={styles.heroIconCard}>
-              <div style={styles.heroIconCircle}>2</div>
-              <div style={styles.heroIconTitle}>Eventseite erhalten</div>
-              <div style={styles.heroIconText}>
-                Ich richte die passende Seite direkt für dich ein
-              </div>
-            </div>
+    <div style={styles.heroIconCard}>
+      <div style={styles.heroIconCircle}>⚙</div>
+      <div style={styles.heroIconTitle}>Alles wird eingerichtet</div>
+      <div style={styles.heroIconText}>
+        Eventseite & Zugang sind direkt fertig
+      </div>
+    </div>
 
-            <div style={styles.heroIconCard}>
-              <div style={styles.heroIconCircle}>3</div>
-              <div style={styles.heroIconTitle}>Bilder öffnen & bestellen</div>
-              <div style={styles.heroIconText}>
-                Gäste und Familie können Erinnerungen ansehen und Fotos bestellen
-              </div>
-            </div>
-          </div>
-        </div>
+    <div style={styles.heroIconCard}>
+      <div style={styles.heroIconCircle}>📸</div>
+      <div style={styles.heroIconTitle}>Fotos & Prints</div>
+      <div style={styles.heroIconText}>
+        Gäste sehen & bestellen Bilder sofort
+      </div>
+    </div>
+  </div>
+</div>
 
         <div style={styles.heroImageCol}>
           <img
