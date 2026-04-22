@@ -73,7 +73,10 @@ export default function AdminPage() {
       .order("created_at", { ascending: false });
 
     if (error) {
-      console.error("Fehler beim Laden der fehlgeschlagenen Bestellungen:", error);
+      console.error(
+        "Fehler beim Laden der fehlgeschlagenen Bestellungen:",
+        error
+      );
       setFailedOrders([]);
       setLoadingFailedOrders(false);
       return;
@@ -90,7 +93,9 @@ export default function AdminPage() {
     }
 
     const confirmed = window.confirm(
-      `Wirklich ${batchCount} Bestellung${batchCount === 1 ? "" : "en"} gesammelt an Gelato senden?`
+      `Wirklich ${batchCount} Bestellung${
+        batchCount === 1 ? "" : "en"
+      } gesammelt an Gelato senden?`
     );
 
     if (!confirmed) return;
@@ -205,6 +210,11 @@ export default function AdminPage() {
     }
   }
 
+  async function handleAdminLogout() {
+    await fetch("/api/admin-logout", { method: "POST" });
+    window.location.href = "/admin-login";
+  }
+
   function formatDate(dateString) {
     if (!dateString) return "Kein Datum";
     return new Date(dateString).toLocaleDateString("de-DE");
@@ -273,9 +283,19 @@ export default function AdminPage() {
         </div>
 
         <div style={styles.actionsCard}>
-          <Link href="/event" style={styles.primaryButton}>
-            Neues Event
-          </Link>
+          <div style={styles.actionsColumn}>
+            <Link href="/event" style={styles.primaryButton}>
+              Neues Event
+            </Link>
+
+            <button
+              type="button"
+              onClick={handleAdminLogout}
+              style={styles.logoutButton}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </section>
 
@@ -316,7 +336,9 @@ export default function AdminPage() {
         </div>
 
         {loadingFailedOrders ? (
-          <div style={styles.emptyBox}>Fehler-Bestellungen werden geladen...</div>
+          <div style={styles.emptyBox}>
+            Fehler-Bestellungen werden geladen...
+          </div>
         ) : failedOrders.length === 0 ? (
           <div style={styles.emptyBox}>
             Aktuell gibt es keine fehlgeschlagenen Bestellungen.
@@ -387,7 +409,9 @@ export default function AdminPage() {
                   disabled={retryingOrderId === order.id}
                   style={{
                     ...styles.retryButton,
-                    ...(retryingOrderId === order.id ? styles.buttonDisabled : {}),
+                    ...(retryingOrderId === order.id
+                      ? styles.buttonDisabled
+                      : {}),
                   }}
                 >
                   {retryingOrderId === order.id
@@ -446,7 +470,9 @@ export default function AdminPage() {
 
                     <div style={styles.metaRow}>
                       <span style={styles.metaLabel}>Slug</span>
-                      <span style={styles.metaValue}>{eventItem.slug || "—"}</span>
+                      <span style={styles.metaValue}>
+                        {eventItem.slug || "—"}
+                      </span>
                     </div>
                   </div>
 
@@ -603,6 +629,22 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  actionsColumn: {
+    display: "grid",
+    gap: "10px",
+    width: "100%",
+  },
+  logoutButton: {
+    backgroundColor: "#fff",
+    color: "#0f172a",
+    border: "1px solid #cbd5e1",
+    padding: "12px 14px",
+    borderRadius: "12px",
+    fontSize: "14px",
+    fontWeight: "700",
+    cursor: "pointer",
+    width: "100%",
   },
   batchSection: {
     maxWidth: "1280px",
