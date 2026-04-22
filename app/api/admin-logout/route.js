@@ -5,10 +5,10 @@ export async function POST() {
 
   response.cookies.set("admin_session", "", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: true,
+    sameSite: "strict",
+    expires: new Date(0),
     path: "/",
-    maxAge: 0,
   });
 
   return response;
