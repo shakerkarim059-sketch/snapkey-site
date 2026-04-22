@@ -1393,8 +1393,12 @@ export default function EventPage() {
 
       {cartOpen && (
         <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
-          <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
-            <div style={styles.cartHeader}>
+<div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
+  <div style={styles.cartHandleWrap}>
+    <div style={styles.cartHandle} />
+  </div>
+
+  <div style={styles.cartHeader}>
               <h3 style={styles.cartTitle}>Ausgewählte Bilder</h3>
               <button
                 type="button"
@@ -2264,59 +2268,66 @@ const styles = {
 cartBackdrop: {
   position: "fixed",
   inset: 0,
-  backgroundColor: "rgba(15, 23, 42, 0.55)",
+  backgroundColor: "rgba(15, 23, 42, 0.42)",
   zIndex: 9999,
   display: "flex",
   justifyContent: "center",
-  alignItems: "center",
-  padding: "16px",
-  paddingBottom: "env(safe-area-inset-bottom)",
-  overflowX: "hidden",
-  overflowY: "auto",
+  alignItems: "flex-end",
+  padding: "0",
+  overflow: "hidden",
 },
 
 cartPanel: {
   width: "100%",
-  maxWidth: "900px",
-  maxHeight: "90vh",
-  marginTop: "20px",
-  marginBottom: "20px",
+  maxWidth: "920px",
+  height: "min(88vh, 920px)",
   overflowY: "auto",
   overflowX: "hidden",
   background: "#ffffff",
-  borderRadius: "24px",
-  padding: "20px",
-  boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
+  borderTopLeftRadius: "28px",
+  borderTopRightRadius: "28px",
+  borderBottomLeftRadius: "0",
+  borderBottomRightRadius: "0",
+  padding: "12px 16px calc(24px + env(safe-area-inset-bottom)) 16px",
+  boxShadow: "0 -12px 40px rgba(15, 23, 42, 0.18)",
   boxSizing: "border-box",
+  overscrollBehavior: "contain",
+  touchAction: "pan-y",
 },
 
-  cartHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-    marginBottom: "16px",
-  },
+cartHeader: {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "12px",
+  marginBottom: "14px",
+  position: "sticky",
+  top: 0,
+  background: "rgba(255,255,255,0.96)",
+  backdropFilter: "blur(10px)",
+  paddingBottom: "10px",
+  zIndex: 5,
+},
 
-  cartTitle: {
-    margin: 0,
-    fontSize: "24px",
-    fontWeight: "800",
-    color: "#111827",
-  },
+cartTitle: {
+  margin: 0,
+  fontSize: "22px",
+  fontWeight: "800",
+  color: "#111827",
+  lineHeight: "1.2",
+},
 
 cartCloseButton: {
   width: "42px",
   height: "42px",
   borderRadius: "999px",
   border: "none",
-  background: "#0f172a",
+  background: "#111827",
   color: "#fff",
-  fontSize: "20px",
+  fontSize: "18px",
   cursor: "pointer",
   fontWeight: "700",
-  zIndex: 10000,
-  position: "relative",
+  flex: "0 0 auto",
 },
 
   cartInfo: {
@@ -2519,22 +2530,22 @@ orderTextarea: {
   minHeight: "110px",
 },
 
-  cartFooter: {
-    position: "sticky",
-    bottom: 0,
-    marginTop: "8px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "14px",
-    flexWrap: "wrap",
-    background: "rgba(255,255,255,0.96)",
-    borderTop: "1px solid #e8ebf2",
-    paddingTop: "16px",
-    paddingBottom: "4px",
-    backdropFilter: "blur(10px)",
-  },
-
+cartFooter: {
+  position: "sticky",
+  bottom: "calc(-12px - env(safe-area-inset-bottom))",
+  marginTop: "12px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "14px",
+  flexWrap: "wrap",
+  background: "rgba(255,255,255,0.98)",
+  borderTop: "1px solid #e8ebf2",
+  paddingTop: "14px",
+  paddingBottom: "calc(10px + env(safe-area-inset-bottom))",
+  backdropFilter: "blur(12px)",
+},
+  
   cartFooterSummary: {
     display: "grid",
     gap: "4px",
@@ -2552,18 +2563,37 @@ orderTextarea: {
     color: "#111827",
   },
 
-  checkoutButton: {
-    backgroundColor: "#111827",
-    color: "#fff",
-    border: "none",
-    padding: "14px 20px",
-    borderRadius: "14px",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "700",
-    minWidth: "220px",
-    boxShadow: "0 10px 24px rgba(17, 24, 39, 0.16)",
-  },
+checkoutButton: {
+  backgroundColor: "#111827",
+  color: "#fff",
+  border: "none",
+  padding: "14px 20px",
+  borderRadius: "16px",
+  cursor: "pointer",
+  fontSize: "15px",
+  fontWeight: "700",
+  minWidth: "220px",
+  boxShadow: "0 10px 24px rgba(17, 24, 39, 0.16)",
+},
+
+  cartHandleWrap: {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  paddingTop: "2px",
+  paddingBottom: "10px",
+  position: "sticky",
+  top: 0,
+  background: "rgba(255,255,255,0.96)",
+  zIndex: 6,
+},
+
+cartHandle: {
+  width: "44px",
+  height: "5px",
+  borderRadius: "999px",
+  background: "#d0d5dd",
+},
 
   emptyBox: {
     backgroundColor: "#fff",
