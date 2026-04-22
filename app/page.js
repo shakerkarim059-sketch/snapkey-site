@@ -256,11 +256,11 @@ export default function HomePage() {
           <h2 style={styles.sectionTitle}>
             Ein Produkt, das Erinnerungen öffnet
           </h2>
-          <p style={styles.sectionText}>
-            Dein Verkaufsargument ist nicht ein weiteres digitales Album,
-            sondern ein physischer Schlüssel zu Erinnerungen. Genau das muss man
-            auf der Startseite sofort verstehen.
-          </p>
+<p style={styles.sectionText}>
+  Mit einem NFC Key hast du deine Erinnerungen nicht nur digital gespeichert,
+  sondern immer griffbereit in der echten Welt. Ein kurzer Tap genügt und dein
+  persönliches Album öffnet sich direkt auf dem Smartphone.
+</p>
 
           <div style={styles.stepList}>
             {steps.map((step) => (
