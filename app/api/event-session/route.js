@@ -31,6 +31,18 @@ function verifySession(token) {
 }
 
 export async function GET(request) {
+  const adminSession = request.cookies.get("admin_session")?.value;
+
+  if (adminSession === "authenticated") {
+    return NextResponse.json({
+      authenticated: true,
+      role: "admin",
+      slug: null,
+      eventId: null,
+      globalAdmin: true,
+    });
+  }
+
   const token = request.cookies.get("event_session")?.value;
   const session = verifySession(token);
 
@@ -46,5 +58,6 @@ export async function GET(request) {
     role: session.role,
     slug: session.slug,
     eventId: session.eventId,
+    globalAdmin: false,
   });
 }
