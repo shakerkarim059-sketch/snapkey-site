@@ -3,7 +3,6 @@
 export default function Impressum() {
 return ( <div className="min-h-screen bg-stone-50 px-6 py-12"> <div className="mx-auto max-w-2xl"> <h1 className="text-3xl font-semibold mb-6">Impressum</h1>
 
-```
     <p className="text-zinc-700 leading-7">
       Angaben gemäß § 5 TMG
     </p>
@@ -44,7 +43,6 @@ return ( <div className="min-h-screen bg-stone-50 px-6 py-12"> <div className="m
     </div>
   </div>
 </div>
-```
 
 );
 }
