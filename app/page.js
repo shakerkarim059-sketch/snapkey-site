@@ -17,95 +17,96 @@ export default function HomePage() {
     setLightboxAlt("");
   }
 
-  const productTypes = [
+  const snapkeyTypes = [
     {
-      title: "Familien Album",
-      subtitle: "Persönlich & hochwertig",
+      title: "Snapkey Familie",
+      subtitle: "Warm, persönlich, hochwertig",
       description:
-        "Ein individueller Holz-Schlüsselanhänger für Familienmomente, Kinderfotos, gemeinsame Erinnerungen und private Alben.",
+        "Ein individueller Holz-Schlüsselanhänger für Familienalben, Kinderfotos und gemeinsame Erinnerungen. Ideal für Zuhause oder als persönliches Geschenk.",
       image: "/nfc-family.jpg",
       points: [
-        "Individueller Holz Schlüsselanhänger",
-        "Mit Namen oder Familienmotiv",
-        "Besonders emotional & langlebig",
+        "Holz-Schlüsselanhänger mit persönlichem Look",
+        "Ideal für Familienalben & Erinnerungen",
+        "Emotional, langlebig und hochwertig",
       ],
-      price: "ab 19,90 €",
     },
     {
-      title: "Hochzeiten",
-      subtitle: "Schön, schlicht & günstig",
+      title: "Snapkey Hochzeit",
+      subtitle: "Elegant, schlicht, perfekt für Gäste",
       description:
-        "Elegante NFC Tags für Hochzeiten, die sich perfekt für Gäste, Tische oder kleine Erinnerungsgeschenke eignen.",
+        "Eine schöne und einfache Lösung für Hochzeiten. Perfekt für Gäste, Tische oder kleine Erinnerungsgeschenke mit direktem Zugang zur Eventseite.",
       image: "/nfc-wedding.jpg",
       points: [
-        "Schlichtes elegantes Design",
-        "Mit Namen & Datum personalisierbar",
-        "Ideal für viele Gäste",
+        "Schlichtes und stilvolles Design",
+        "Ideal für mehrere Gäste",
+        "Direkter Zugang zu Hochzeitsfotos und Bestellungen",
       ],
-      price: "ab 9,90 €",
     },
     {
-      title: "Events & Feiern",
-      subtitle: "Praktisch & modern",
+      title: "Snapkey Event",
+      subtitle: "Modern und praktisch",
       description:
-        "Perfekt für Geburtstage, Firmenfeiern, Jubiläen oder geschlossene Veranstaltungen mit einem gemeinsamen Album.",
+        "Für Geburtstage, Firmenfeiern, Jubiläen oder geschlossene Veranstaltungen. Gäste gelangen schnell zur passenden Eventseite und zu ihren Bildern.",
       image: "/nfc-event.jpg",
       points: [
         "Modernes Design",
-        "Mit Eventname oder Logo",
-        "Ideal für Gruppen & Gäste",
+        "Ideal für Gruppen und Events",
+        "Perfekt für schnellen Zugang zu Erinnerungen",
       ],
-      price: "ab 6,90 €",
     },
     {
-      title: "Reisen & Erinnerungen",
-      subtitle: "Leicht & flexibel",
+      title: "Snapkey Reise",
+      subtitle: "Kompakt und flexibel",
       description:
-        "Praktische NFC Karten oder Anhänger für Urlaubsalben, Reisetagebücher und gemeinsame Abenteuer.",
+        "Für Reisealben, Urlaubsfotos und gemeinsame Abenteuer. Ein kompakter Snapkey für Erinnerungen, die man immer wieder öffnen möchte.",
       image: "/nfc-travel.jpg",
       points: [
-        "Praktisches Kartenformat",
         "Leicht mitzunehmen",
-        "Perfekt für Reise-Erinnerungen",
+        "Perfekt für Urlaubsalben",
+        "Praktisch und persönlich zugleich",
       ],
-      price: "ab 7,90 €",
     },
   ];
 
   const steps = [
     {
       number: "1",
-      title: "NFC Key auswählen",
-      text: "Wähle den NFC Key, der zu deinem Anlass passt – Familie, Hochzeit, Event oder Reise.",
+      title: "Snapkey auswählen",
+      text: "Du wählst den Snapkey, der zu deinem Anlass passt – Familie, Hochzeit, Event oder Reise.",
     },
     {
       number: "2",
-      title: "Individuell gestalten",
-      text: "Personalisiere deinen Key mit Namen, Datum, Motiv oder Eventbezeichnung.",
+      title: "Anlass angeben",
+      text: "Du bestellst einen oder mehrere Snapkeys und gibst an, für welchen Anlass die Seite erstellt werden soll.",
     },
     {
       number: "3",
-      title: "Mit dem Handy öffnen",
-      text: "Ein Tap genügt und dein digitales Album, Fotos oder Erinnerungsbereich öffnet sich direkt.",
+      title: "Ich richte alles ein",
+      text: "Ich erstelle die passende Eventseite für dich und verbinde sie mit deinem Snapkey.",
+    },
+    {
+      number: "4",
+      title: "Öffnen & Erinnern",
+      text: "Der Snapkey wird geliefert und eure Erinnerungen lassen sich direkt per Smartphone öffnen.",
     },
   ];
 
   const benefits = [
     {
-      title: "Ohne App",
-      text: "Funktioniert direkt mit dem Smartphone.",
+      title: "Komplettservice",
+      text: "Nicht nur ein Produkt – ich richte die passende Eventseite direkt für dich ein.",
     },
     {
       title: "Persönlich",
-      text: "Nicht nur ein Link, sondern ein echtes Erinnerungsstück.",
+      text: "Snapkeys werden passend zu eurem Anlass ausgewählt und emotional erlebbar.",
     },
     {
-      title: "Einfach",
-      text: "Tippen, öffnen, Erinnerungen ansehen.",
+      title: "Einfach für Gäste",
+      text: "Ein Tap genügt und Bilder, Alben oder die Eventseite öffnen sich sofort.",
     },
     {
-      title: "Für jeden Anlass",
-      text: "Familie, Hochzeit, Event oder Reise.",
+      title: "Fotos bestellbar",
+      text: "Lieblingsbilder können direkt einzeln oder mit Rahmen bestellt werden.",
     },
   ];
 
@@ -113,52 +114,55 @@ export default function HomePage() {
     <main style={styles.page}>
       <section style={styles.heroSection}>
         <div style={styles.heroTextCol}>
-          <div style={styles.heroBadge}>NFC Keys für deine Erinnerungen</div>
+          <div style={styles.heroBadge}>Snapkey für Erinnerungen & Events</div>
 
           <h1 style={styles.heroTitle}>
-            Deine Erinnerungen.
+            Snapkey verbindet
             <br />
-            Mit einem Tap abrufbar.
+            echte Momente mit
+            <br />
+            einer fertigen Eventseite.
           </h1>
 
           <p style={styles.heroText}>
-            Mit deinem individuellen NFC Key öffnest du Familienalben,
-            Hochzeitsmomente, Eventfotos und besondere Erinnerungen direkt auf
-            dem Smartphone.
+            Du wählst einen oder mehrere Snapkeys für Familie, Hochzeit oder
+            Event – ich richte die passende Eventseite für dich ein. So erhalten
+            Gäste und Familienmitglieder direkten Zugang zu Fotos,
+            Erinnerungen und auf Wunsch auch zu bestellbaren Bildern.
           </p>
 
           <div style={styles.heroActionRow}>
             <Link href="/event" style={styles.primaryButton}>
-              Jetzt NFC Key gestalten
+              Jetzt Snapkey anfragen
             </Link>
 
-            <a href="#produkte" style={styles.secondaryButton}>
-              Produkte ansehen
+            <a href="#snapkeys" style={styles.secondaryButton}>
+              Varianten ansehen
             </a>
           </div>
 
           <div style={styles.heroIconRow}>
             <div style={styles.heroIconCard}>
-              <div style={styles.heroIconCircle}>⌁</div>
-              <div style={styles.heroIconTitle}>NFC scannen</div>
+              <div style={styles.heroIconCircle}>1</div>
+              <div style={styles.heroIconTitle}>Snapkey wählen</div>
               <div style={styles.heroIconText}>
-                Einfach ans Handy halten
+                Passend für Familie, Hochzeit, Event oder Reise
               </div>
             </div>
 
             <div style={styles.heroIconCard}>
-              <div style={styles.heroIconCircle}>▣</div>
-              <div style={styles.heroIconTitle}>Album öffnen</div>
+              <div style={styles.heroIconCircle}>2</div>
+              <div style={styles.heroIconTitle}>Eventseite erhalten</div>
               <div style={styles.heroIconText}>
-                Fotos & Erinnerungen direkt laden
+                Ich richte die passende Seite direkt für dich ein
               </div>
             </div>
 
             <div style={styles.heroIconCard}>
-              <div style={styles.heroIconCircle}>♡</div>
-              <div style={styles.heroIconTitle}>Persönlich erleben</div>
+              <div style={styles.heroIconCircle}>3</div>
+              <div style={styles.heroIconTitle}>Bilder öffnen & bestellen</div>
               <div style={styles.heroIconText}>
-                Mehr als nur ein Fotoalbum
+                Gäste und Familie können Erinnerungen ansehen und Fotos bestellen
               </div>
             </div>
           </div>
@@ -167,12 +171,12 @@ export default function HomePage() {
         <div style={styles.heroImageCol}>
           <img
             src="/hero-nfc.jpg"
-            alt="Individueller NFC Key mit Smartphone und Erinnerungen"
+            alt="Snapkey mit Smartphone und geöffneter Erinnerungsseite"
             style={styles.heroImage}
             onClick={() =>
               openImage(
                 "/hero-nfc.jpg",
-                "Individueller NFC Key mit Smartphone und Erinnerungen"
+                "Snapkey mit Smartphone und geöffneter Erinnerungsseite"
               )
             }
           />
@@ -188,21 +192,37 @@ export default function HomePage() {
         ))}
       </section>
 
-      <section id="produkte" style={styles.productSection}>
-        <div style={styles.sectionIntro}>
-          <div style={styles.sectionEyebrow}>Für jeden Anlass</div>
+      <section style={styles.serviceSection}>
+        <div style={styles.serviceCard}>
+          <div style={styles.sectionEyebrow}>Was du bei Snapkey bekommst</div>
           <h2 style={styles.sectionTitle}>
-            Der passende NFC Key für deine Momente
+            Nicht nur ein Anhänger. Ein fertiges Erinnerungs-Erlebnis.
           </h2>
           <p style={styles.sectionText}>
-            Nicht jeder Anlass braucht denselben NFC Key. Für Familienalben
-            passt ein wertiger Holzanhänger, für Hochzeiten eher eine elegante
-            und günstigere Lösung für viele Gäste.
+            Bei Snapkey bestellst du nicht einfach nur einen NFC Anhänger. Du
+            bestellst einen personalisierten Zugang zu einer fertigen Eventseite,
+            die ich für dich einrichte. So wird aus einem schönen physischen
+            Produkt ein kompletter Erinnerungszugang für Familie, Gäste oder
+            Freunde.
+          </p>
+        </div>
+      </section>
+
+      <section id="snapkeys" style={styles.productSection}>
+        <div style={styles.sectionIntro}>
+          <div style={styles.sectionEyebrow}>Snapkey Varianten</div>
+          <h2 style={styles.sectionTitle}>
+            Der passende Snapkey für deinen Anlass
+          </h2>
+          <p style={styles.sectionText}>
+            Je nach Anlass passt eine andere Lösung. Für Familien darf es
+            hochwertig und emotional sein, für Hochzeiten schlicht, schön und
+            auch in größerer Stückzahl gut geeignet.
           </p>
         </div>
 
         <div style={styles.productGrid}>
-          {productTypes.map((item) => (
+          {snapkeyTypes.map((item) => (
             <div key={item.title} style={styles.productCard}>
               <img
                 src={item.image}
@@ -225,9 +245,8 @@ export default function HomePage() {
                 </div>
 
                 <div style={styles.productFooter}>
-                  <div style={styles.productPrice}>{item.price}</div>
                   <Link href="/event" style={styles.cardButton}>
-                    Jetzt gestalten
+                    Anfrage starten
                   </Link>
                 </div>
               </div>
@@ -240,27 +259,29 @@ export default function HomePage() {
         <div style={styles.storyImageWrap}>
           <img
             src="/how-it-works.jpg"
-            alt="NFC Key neben Smartphone mit geöffnetem Album"
+            alt="Snapkey neben Smartphone mit geöffneter Eventseite"
             style={styles.storyImage}
             onClick={() =>
               openImage(
                 "/how-it-works.jpg",
-                "NFC Key neben Smartphone mit geöffnetem Album"
+                "Snapkey neben Smartphone mit geöffneter Eventseite"
               )
             }
           />
         </div>
 
         <div style={styles.storyContent}>
-          <div style={styles.sectionEyebrow}>So funktioniert es</div>
+          <div style={styles.sectionEyebrow}>So läuft es ab</div>
           <h2 style={styles.sectionTitle}>
-            Ein Produkt, das Erinnerungen öffnet
+            Du bestellst den Snapkey – ich kümmere mich um den Rest
           </h2>
-<p style={styles.sectionText}>
-  Mit einem NFC Key hast du deine Erinnerungen nicht nur digital gespeichert,
-  sondern immer griffbereit in der echten Welt. Ein kurzer Tap genügt und dein
-  persönliches Album öffnet sich direkt auf dem Smartphone.
-</p>
+          <p style={styles.sectionText}>
+            Snapkey ist bewusst einfach aufgebaut: Du wählst das passende
+            Produkt, gibst deinen Anlass an und ich richte die dazugehörige
+            Seite ein. So ist am Ende alles fertig verbunden – physischer
+            Snapkey, digitale Eventseite und ein einfacher Zugang zu euren
+            Erinnerungen.
+          </p>
 
           <div style={styles.stepList}>
             {steps.map((step) => (
@@ -276,25 +297,74 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section style={styles.printSection}>
+        <div style={styles.printContent}>
+          <div style={styles.sectionEyebrow}>Zusätzlicher Mehrwert</div>
+          <h2 style={styles.sectionTitle}>
+            Erinnerungen nicht nur ansehen – direkt bestellen
+          </h2>
+          <p style={styles.sectionText}>
+            Gerade bei Hochzeiten und besonderen Events entstehen Bilder, die
+            sonst oft nur digital bleiben oder nur beim Brautpaar landen. Mit
+            Snapkey können Gäste ihre Lieblingsbilder direkt auswählen und
+            bestellen – einzeln oder mit Rahmen.
+          </p>
+
+          <div style={styles.printList}>
+            <div style={styles.printListItem}>
+              ✓ Gäste können ihre eigenen Erinnerungsbilder direkt auswählen
+            </div>
+            <div style={styles.printListItem}>
+              ✓ Bilder sind einzeln oder mit Rahmen bestellbar
+            </div>
+            <div style={styles.printListItem}>
+              ✓ Besonders stark für Hochzeiten und emotionale Anlässe
+            </div>
+            <div style={styles.printListItem}>
+              ✓ Aus digitalen Momenten werden echte Erinnerungsstücke
+            </div>
+          </div>
+        </div>
+
+        <div style={styles.printImageWrap}>
+          <img
+            src="/prints-order.jpg"
+            alt="Bestellbare Erinnerungsfotos mit und ohne Rahmen"
+            style={styles.printImage}
+            onClick={() =>
+              openImage(
+                "/prints-order.jpg",
+                "Bestellbare Erinnerungsfotos mit und ohne Rahmen"
+              )
+            }
+          />
+        </div>
+      </section>
+
       <section style={styles.finalSection}>
         <div style={styles.finalCard}>
-          <div style={styles.sectionEyebrow}>Mehr als ein Link</div>
+          <div style={styles.sectionEyebrow}>Snapkey für deinen Anlass</div>
           <h2 style={styles.finalTitle}>
-            Ein schöner NFC Key macht Erinnerungen greifbar
+            Ein persönlicher Snapkey.
+            <br />
+            Eine fertige Eventseite.
+            <br />
+            Erinnerungen, die bleiben.
           </h2>
           <p style={styles.finalText}>
-            Ob für Familien, Hochzeiten oder Events: Du gibst Menschen nicht
-            einfach nur Zugriff auf Fotos, sondern ein persönliches Objekt, das
-            Erinnerungen sichtbar und emotional macht.
+            Ob Familie, Hochzeit oder Event: Mit Snapkey bekommen deine Gäste
+            und Lieblingsmenschen nicht nur Zugriff auf Bilder, sondern eine
+            echte, schöne und einfache Möglichkeit, Erinnerungen wiederzufinden
+            und auf Wunsch direkt zu bestellen.
           </p>
 
           <div style={styles.finalButtons}>
             <Link href="/event" style={styles.primaryButton}>
-              Jetzt starten
+              Jetzt Snapkey anfragen
             </Link>
 
-            <a href="#produkte" style={styles.secondaryButton}>
-              NFC Varianten ansehen
+            <a href="#snapkeys" style={styles.secondaryButton}>
+              Snapkey Varianten ansehen
             </a>
           </div>
         </div>
@@ -330,32 +400,32 @@ const styles = {
   page: {
     minHeight: "100vh",
     background:
-      "linear-gradient(180deg, #f6f1ea 0%, #fcfaf7 35%, #f8f6f3 100%)",
-    padding: "16px 14px 64px",
+      "linear-gradient(180deg, #f7f2ec 0%, #fcfaf7 35%, #f8f6f3 100%)",
+    padding: "14px 12px 54px",
     overflowX: "hidden",
   },
 
   heroSection: {
-    maxWidth: "1380px",
-    margin: "0 auto 30px",
+    maxWidth: "1280px",
+    margin: "0 auto 22px",
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: "24px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "18px",
     alignItems: "center",
   },
 
   heroTextCol: {
     display: "grid",
-    gap: "18px",
+    gap: "16px",
   },
 
   heroBadge: {
     width: "fit-content",
     background: "#eaded1",
     color: "#7a5c45",
-    padding: "10px 14px",
+    padding: "9px 13px",
     borderRadius: "999px",
-    fontSize: "12px",
+    fontSize: "11px",
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: "0.05em",
@@ -363,7 +433,7 @@ const styles = {
 
   heroTitle: {
     margin: 0,
-    fontSize: "clamp(34px, 8vw, 64px)",
+    fontSize: "clamp(32px, 8vw, 60px)",
     lineHeight: "1.02",
     fontWeight: "800",
     color: "#2e241d",
@@ -371,15 +441,15 @@ const styles = {
 
   heroText: {
     margin: 0,
-    maxWidth: "620px",
-    fontSize: "clamp(16px, 3.8vw, 20px)",
+    maxWidth: "680px",
+    fontSize: "clamp(15px, 3.8vw, 19px)",
     lineHeight: "1.7",
     color: "#5b4d42",
   },
 
   heroActionRow: {
     display: "flex",
-    gap: "12px",
+    gap: "10px",
     flexWrap: "wrap",
     width: "100%",
   },
@@ -392,7 +462,7 @@ const styles = {
     backgroundColor: "#4b3a2d",
     color: "#fff",
     border: "none",
-    padding: "15px 18px",
+    padding: "14px 18px",
     borderRadius: "14px",
     fontSize: "15px",
     fontWeight: "700",
@@ -408,7 +478,7 @@ const styles = {
     backgroundColor: "#fff",
     color: "#4b3a2d",
     border: "1px solid #dbcbbd",
-    padding: "15px 18px",
+    padding: "14px 18px",
     borderRadius: "14px",
     fontSize: "15px",
     fontWeight: "700",
@@ -417,24 +487,24 @@ const styles = {
 
   heroIconRow: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "12px",
-    marginTop: "6px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+    gap: "10px",
+    marginTop: "4px",
   },
 
   heroIconCard: {
-    background: "rgba(255,255,255,0.72)",
+    background: "rgba(255,255,255,0.78)",
     border: "1px solid #eadfd4",
-    borderRadius: "20px",
-    padding: "16px",
+    borderRadius: "18px",
+    padding: "14px",
     display: "grid",
     gap: "8px",
     boxShadow: "0 8px 24px rgba(46, 36, 29, 0.04)",
   },
 
   heroIconCircle: {
-    width: "44px",
-    height: "44px",
+    width: "40px",
+    height: "40px",
     borderRadius: "999px",
     background: "#efe5db",
     color: "#4b3a2d",
@@ -442,17 +512,17 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "800",
-    fontSize: "18px",
+    fontSize: "16px",
   },
 
   heroIconTitle: {
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
     color: "#2e241d",
   },
 
   heroIconText: {
-    fontSize: "14px",
+    fontSize: "13px",
     lineHeight: "1.5",
     color: "#6c5f54",
   },
@@ -465,7 +535,7 @@ const styles = {
   heroImage: {
     width: "100%",
     maxWidth: "760px",
-    borderRadius: "30px",
+    borderRadius: "26px",
     display: "block",
     boxShadow: "0 20px 42px rgba(46, 36, 29, 0.12)",
     cursor: "pointer",
@@ -474,14 +544,14 @@ const styles = {
 
   benefitBar: {
     maxWidth: "1280px",
-    margin: "0 auto 30px",
-    background: "rgba(255,255,255,0.76)",
+    margin: "0 auto 26px",
+    background: "rgba(255,255,255,0.8)",
     border: "1px solid #eadfd4",
-    borderRadius: "24px",
-    padding: "16px",
+    borderRadius: "22px",
+    padding: "14px",
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "14px",
+    gap: "12px",
   },
 
   benefitItem: {
@@ -502,18 +572,34 @@ const styles = {
     color: "#6b5c50",
   },
 
+  serviceSection: {
+    maxWidth: "1080px",
+    margin: "0 auto 32px",
+  },
+
+  serviceCard: {
+    background: "#fff",
+    border: "1px solid #eadfd4",
+    borderRadius: "24px",
+    padding: "22px",
+    boxShadow: "0 10px 28px rgba(46, 36, 29, 0.05)",
+    display: "grid",
+    gap: "12px",
+    textAlign: "center",
+  },
+
   productSection: {
     maxWidth: "1280px",
-    margin: "0 auto 40px",
+    margin: "0 auto 36px",
     display: "grid",
-    gap: "24px",
+    gap: "22px",
   },
 
   sectionIntro: {
     textAlign: "center",
     display: "grid",
-    gap: "12px",
-    maxWidth: "880px",
+    gap: "10px",
+    maxWidth: "900px",
     margin: "0 auto",
   },
 
@@ -542,14 +628,14 @@ const styles = {
 
   productGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "18px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "16px",
   },
 
   productCard: {
     background: "#fff",
     border: "1px solid #eadfd4",
-    borderRadius: "24px",
+    borderRadius: "22px",
     overflow: "hidden",
     boxShadow: "0 10px 28px rgba(46, 36, 29, 0.05)",
     display: "grid",
@@ -557,16 +643,16 @@ const styles = {
 
   productImage: {
     width: "100%",
-    height: "320px",
+    height: "280px",
     objectFit: "cover",
     display: "block",
     cursor: "pointer",
   },
 
   productBody: {
-    padding: "18px",
+    padding: "16px",
     display: "grid",
-    gap: "12px",
+    gap: "10px",
   },
 
   productSubtitle: {
@@ -579,7 +665,7 @@ const styles = {
 
   productTitle: {
     margin: 0,
-    fontSize: "26px",
+    fontSize: "24px",
     lineHeight: "1.2",
     fontWeight: "800",
     color: "#2e241d",
@@ -609,12 +695,6 @@ const styles = {
     marginTop: "6px",
   },
 
-  productPrice: {
-    fontSize: "18px",
-    fontWeight: "800",
-    color: "#2e241d",
-  },
-
   cardButton: {
     display: "inline-flex",
     alignItems: "center",
@@ -631,15 +711,15 @@ const styles = {
 
   storySection: {
     maxWidth: "1280px",
-    margin: "0 auto 40px",
+    margin: "0 auto 36px",
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: "28px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "22px",
     alignItems: "center",
-    background: "rgba(255,255,255,0.72)",
+    background: "rgba(255,255,255,0.8)",
     border: "1px solid #eadfd4",
-    borderRadius: "28px",
-    padding: "26px",
+    borderRadius: "26px",
+    padding: "18px",
   },
 
   storyImageWrap: {
@@ -648,11 +728,11 @@ const styles = {
 
   storyImage: {
     width: "100%",
-    borderRadius: "22px",
+    borderRadius: "20px",
     display: "block",
     cursor: "pointer",
     objectFit: "cover",
-    maxHeight: "560px",
+    maxHeight: "540px",
   },
 
   storyContent: {
@@ -662,20 +742,20 @@ const styles = {
 
   stepList: {
     display: "grid",
-    gap: "16px",
+    gap: "14px",
     marginTop: "6px",
   },
 
   stepItem: {
     display: "grid",
-    gridTemplateColumns: "56px 1fr",
-    gap: "14px",
+    gridTemplateColumns: "50px 1fr",
+    gap: "12px",
     alignItems: "start",
   },
 
   stepNumber: {
-    width: "48px",
-    height: "48px",
+    width: "44px",
+    height: "44px",
     borderRadius: "999px",
     background: "#efe1d2",
     color: "#4b3a2d",
@@ -683,20 +763,64 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     fontWeight: "800",
-    fontSize: "18px",
+    fontSize: "16px",
   },
 
   stepTitle: {
-    fontSize: "18px",
+    fontSize: "17px",
     fontWeight: "700",
     color: "#2e241d",
     marginBottom: "4px",
   },
 
   stepText: {
-    fontSize: "15px",
-    lineHeight: "1.7",
+    fontSize: "14px",
+    lineHeight: "1.65",
     color: "#5e5147",
+  },
+
+  printSection: {
+    maxWidth: "1280px",
+    margin: "0 auto 36px",
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+    gap: "22px",
+    alignItems: "center",
+    background: "#fff",
+    border: "1px solid #eadfd4",
+    borderRadius: "26px",
+    padding: "18px",
+    boxShadow: "0 10px 28px rgba(46, 36, 29, 0.05)",
+  },
+
+  printContent: {
+    display: "grid",
+    gap: "12px",
+  },
+
+  printList: {
+    display: "grid",
+    gap: "8px",
+    marginTop: "4px",
+  },
+
+  printListItem: {
+    fontSize: "14px",
+    lineHeight: "1.6",
+    color: "#4f4339",
+  },
+
+  printImageWrap: {
+    width: "100%",
+  },
+
+  printImage: {
+    width: "100%",
+    borderRadius: "20px",
+    display: "block",
+    cursor: "pointer",
+    objectFit: "cover",
+    maxHeight: "520px",
   },
 
   finalSection: {
@@ -708,10 +832,10 @@ const styles = {
     background:
       "linear-gradient(135deg, #4b3a2d 0%, #5b4637 50%, #715948 100%)",
     color: "#fff",
-    borderRadius: "30px",
-    padding: "34px 28px",
+    borderRadius: "28px",
+    padding: "28px 20px",
     display: "grid",
-    gap: "16px",
+    gap: "14px",
     textAlign: "center",
     boxShadow: "0 18px 42px rgba(46, 36, 29, 0.12)",
   },
