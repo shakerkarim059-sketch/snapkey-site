@@ -1,8 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [lightboxImage, setLightboxImage] = useState(null);
+  const [lightboxAlt, setLightboxAlt] = useState("");
+
+  function openImage(src, alt = "Bildvorschau") {
+    setLightboxImage(src);
+    setLightboxAlt(alt);
+  }
+
+  function closeImage() {
+    setLightboxImage(null);
+    setLightboxAlt("");
+  }
+
   const productTypes = [
     {
       title: "Familien Album",
@@ -35,7 +49,7 @@ export default function HomePage() {
       subtitle: "Praktisch & modern",
       description:
         "Perfekt für Geburtstage, Firmenfeiern, Jubiläen oder geschlossene Veranstaltungen mit einem gemeinsamen Album.",
-     image: "/nfc-event.jpg",
+      image: "/nfc-event.jpg",
       points: [
         "Modernes Design",
         "Mit Eventname oder Logo",
@@ -153,8 +167,14 @@ export default function HomePage() {
         <div style={styles.heroImageCol}>
           <img
             src="/hero-nfc.jpg"
-            alt="Individueller NFC Key mit Smartphone und Familienalbum"
+            alt="Individueller NFC Key mit Smartphone und Erinnerungen"
             style={styles.heroImage}
+            onClick={() =>
+              openImage(
+                "/hero-nfc.jpg",
+                "Individueller NFC Key mit Smartphone und Erinnerungen"
+              )
+            }
           />
         </div>
       </section>
@@ -188,6 +208,7 @@ export default function HomePage() {
                 src={item.image}
                 alt={item.title}
                 style={styles.productImage}
+                onClick={() => openImage(item.image, item.title)}
               />
 
               <div style={styles.productBody}>
@@ -221,12 +242,20 @@ export default function HomePage() {
             src="/how-it-works.jpg"
             alt="NFC Key neben Smartphone mit geöffnetem Album"
             style={styles.storyImage}
+            onClick={() =>
+              openImage(
+                "/how-it-works.jpg",
+                "NFC Key neben Smartphone mit geöffnetem Album"
+              )
+            }
           />
         </div>
 
         <div style={styles.storyContent}>
           <div style={styles.sectionEyebrow}>So funktioniert es</div>
-          <h2 style={styles.sectionTitle}>Ein Produkt, das Erinnerungen öffnet</h2>
+          <h2 style={styles.sectionTitle}>
+            Ein Produkt, das Erinnerungen öffnet
+          </h2>
           <p style={styles.sectionText}>
             Dein Verkaufsargument ist nicht ein weiteres digitales Album,
             sondern ein physischer Schlüssel zu Erinnerungen. Genau das muss man
@@ -270,6 +299,29 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {lightboxImage && (
+        <div style={styles.lightbox} onClick={closeImage}>
+          <div
+            style={styles.lightboxContent}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              style={styles.lightboxClose}
+              onClick={closeImage}
+            >
+              ✕
+            </button>
+
+            <img
+              src={lightboxImage}
+              alt={lightboxAlt || "Bildvorschau"}
+              style={styles.lightboxImage}
+            />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
@@ -279,16 +331,16 @@ const styles = {
     minHeight: "100vh",
     background:
       "linear-gradient(180deg, #f6f1ea 0%, #fcfaf7 35%, #f8f6f3 100%)",
-    padding: "24px 18px 80px",
+    padding: "16px 14px 64px",
     overflowX: "hidden",
   },
 
   heroSection: {
-    maxWidth: "1280px",
-    margin: "0 auto 26px",
+    maxWidth: "1380px",
+    margin: "0 auto 30px",
     display: "grid",
-    gridTemplateColumns: "1.05fr 0.95fr",
-    gap: "28px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "24px",
     alignItems: "center",
   },
 
@@ -311,7 +363,7 @@ const styles = {
 
   heroTitle: {
     margin: 0,
-    fontSize: "64px",
+    fontSize: "clamp(34px, 8vw, 64px)",
     lineHeight: "1.02",
     fontWeight: "800",
     color: "#2e241d",
@@ -320,8 +372,8 @@ const styles = {
   heroText: {
     margin: 0,
     maxWidth: "620px",
-    fontSize: "20px",
-    lineHeight: "1.8",
+    fontSize: "clamp(16px, 3.8vw, 20px)",
+    lineHeight: "1.7",
     color: "#5b4d42",
   },
 
@@ -329,6 +381,7 @@ const styles = {
     display: "flex",
     gap: "12px",
     flexWrap: "wrap",
+    width: "100%",
   },
 
   primaryButton: {
@@ -339,11 +392,11 @@ const styles = {
     backgroundColor: "#4b3a2d",
     color: "#fff",
     border: "none",
-    padding: "15px 20px",
+    padding: "15px 18px",
     borderRadius: "14px",
     fontSize: "15px",
     fontWeight: "700",
-    minWidth: "190px",
+    minWidth: "170px",
     boxShadow: "0 10px 24px rgba(75, 58, 45, 0.18)",
   },
 
@@ -355,17 +408,17 @@ const styles = {
     backgroundColor: "#fff",
     color: "#4b3a2d",
     border: "1px solid #dbcbbd",
-    padding: "15px 20px",
+    padding: "15px 18px",
     borderRadius: "14px",
     fontSize: "15px",
     fontWeight: "700",
-    minWidth: "190px",
+    minWidth: "170px",
   },
 
   heroIconRow: {
     display: "grid",
-    gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    gap: "14px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+    gap: "12px",
     marginTop: "6px",
   },
 
@@ -411,21 +464,23 @@ const styles = {
 
   heroImage: {
     width: "100%",
-    maxWidth: "580px",
+    maxWidth: "760px",
     borderRadius: "30px",
     display: "block",
     boxShadow: "0 20px 42px rgba(46, 36, 29, 0.12)",
+    cursor: "pointer",
+    objectFit: "cover",
   },
 
   benefitBar: {
     maxWidth: "1280px",
-    margin: "0 auto 34px",
+    margin: "0 auto 30px",
     background: "rgba(255,255,255,0.76)",
     border: "1px solid #eadfd4",
     borderRadius: "24px",
-    padding: "18px",
+    padding: "16px",
     display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
     gap: "14px",
   },
 
@@ -472,7 +527,7 @@ const styles = {
 
   sectionTitle: {
     margin: 0,
-    fontSize: "42px",
+    fontSize: "clamp(28px, 6vw, 42px)",
     lineHeight: "1.12",
     fontWeight: "800",
     color: "#2e241d",
@@ -480,14 +535,14 @@ const styles = {
 
   sectionText: {
     margin: 0,
-    fontSize: "18px",
-    lineHeight: "1.8",
+    fontSize: "clamp(15px, 3.4vw, 18px)",
+    lineHeight: "1.75",
     color: "#5f5349",
   },
 
   productGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
     gap: "18px",
   },
 
@@ -502,9 +557,10 @@ const styles = {
 
   productImage: {
     width: "100%",
-    height: "260px",
+    height: "320px",
     objectFit: "cover",
     display: "block",
+    cursor: "pointer",
   },
 
   productBody: {
@@ -577,13 +633,13 @@ const styles = {
     maxWidth: "1280px",
     margin: "0 auto 40px",
     display: "grid",
-    gridTemplateColumns: "0.95fr 1.05fr",
-    gap: "24px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "28px",
     alignItems: "center",
     background: "rgba(255,255,255,0.72)",
     border: "1px solid #eadfd4",
     borderRadius: "28px",
-    padding: "22px",
+    padding: "26px",
   },
 
   storyImageWrap: {
@@ -594,6 +650,9 @@ const styles = {
     width: "100%",
     borderRadius: "22px",
     display: "block",
+    cursor: "pointer",
+    objectFit: "cover",
+    maxHeight: "560px",
   },
 
   storyContent: {
@@ -659,14 +718,14 @@ const styles = {
 
   finalTitle: {
     margin: 0,
-    fontSize: "42px",
+    fontSize: "clamp(28px, 6vw, 42px)",
     lineHeight: "1.14",
     fontWeight: "800",
   },
 
   finalText: {
     margin: 0,
-    fontSize: "18px",
+    fontSize: "clamp(15px, 3.4vw, 18px)",
     lineHeight: "1.8",
     opacity: 0.92,
     maxWidth: "880px",
@@ -679,5 +738,53 @@ const styles = {
     gap: "12px",
     flexWrap: "wrap",
     marginTop: "4px",
+  },
+
+  lightbox: {
+    position: "fixed",
+    inset: 0,
+    background: "rgba(22, 18, 14, 0.72)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 9999,
+    padding: "16px",
+  },
+
+  lightboxContent: {
+    position: "relative",
+    maxWidth: "92vw",
+    maxHeight: "92vh",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  lightboxImage: {
+    maxWidth: "92vw",
+    maxHeight: "88vh",
+    width: "auto",
+    height: "auto",
+    display: "block",
+    borderRadius: "18px",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+  },
+
+  lightboxClose: {
+    position: "absolute",
+    top: "-18px",
+    right: "-6px",
+    background: "#fff",
+    color: "#2e241d",
+    border: "none",
+    borderRadius: "999px",
+    width: "40px",
+    height: "40px",
+    cursor: "pointer",
+    fontSize: "20px",
+    fontWeight: "800",
+    boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
   },
 };
