@@ -397,518 +397,282 @@ export default function HomePage() {
 }
 
 const styles = {
-  page: {
-    minHeight: "100vh",
-    background:
-      "linear-gradient(180deg, #f7f2ec 0%, #fcfaf7 35%, #f8f6f3 100%)",
-    padding: "14px 12px 54px",
-    overflowX: "hidden",
-  },
+page: {
+minHeight: "100vh",
+background:
+"linear-gradient(180deg, #f7f2ec 0%, #fcfaf7 35%, #f8f6f3 100%)",
+padding: "12px 12px 48px",
+overflowX: "hidden",
+},
 
-  heroSection: {
-    maxWidth: "1280px",
-    margin: "0 auto 22px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "18px",
-    alignItems: "center",
-  },
+heroSection: {
+maxWidth: "1280px",
+margin: "0 auto 20px",
+display: "grid",
+gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+gap: "16px",
+alignItems: "center",
+},
 
-  heroTextCol: {
-    display: "grid",
-    gap: "16px",
-  },
+heroTextCol: {
+display: "grid",
+gap: "14px",
+},
 
-  heroBadge: {
-    width: "fit-content",
-    background: "#eaded1",
-    color: "#7a5c45",
-    padding: "9px 13px",
-    borderRadius: "999px",
-    fontSize: "11px",
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: "0.05em",
-  },
+heroBadge: {
+width: "fit-content",
+background: "#eaded1",
+color: "#7a5c45",
+padding: "8px 12px",
+borderRadius: "999px",
+fontSize: "11px",
+fontWeight: "700",
+textTransform: "uppercase",
+letterSpacing: "0.05em",
+},
 
-  heroTitle: {
-    margin: 0,
-    fontSize: "clamp(32px, 8vw, 60px)",
-    lineHeight: "1.02",
-    fontWeight: "800",
-    color: "#2e241d",
-  },
+heroTitle: {
+margin: 0,
+fontSize: "clamp(30px, 9vw, 60px)",
+lineHeight: "1.02",
+fontWeight: "800",
+color: "#2e241d",
+},
 
-  heroText: {
-    margin: 0,
-    maxWidth: "680px",
-    fontSize: "clamp(15px, 3.8vw, 19px)",
-    lineHeight: "1.7",
-    color: "#5b4d42",
-  },
+heroText: {
+margin: 0,
+maxWidth: "680px",
+fontSize: "clamp(15px, 4vw, 19px)",
+lineHeight: "1.65",
+color: "#5b4d42",
+},
 
-  heroActionRow: {
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-    width: "100%",
-  },
+heroActionRow: {
+display: "grid",
+gridTemplateColumns: "1fr",
+gap: "10px",
+width: "100%",
+},
 
-  primaryButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textDecoration: "none",
-    backgroundColor: "#4b3a2d",
-    color: "#fff",
-    border: "none",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    fontSize: "15px",
-    fontWeight: "700",
-    minWidth: "170px",
-    boxShadow: "0 10px 24px rgba(75, 58, 45, 0.18)",
-  },
+primaryButton: {
+display: "inline-flex",
+alignItems: "center",
+justifyContent: "center",
+textDecoration: "none",
+backgroundColor: "#4b3a2d",
+color: "#fff",
+border: "none",
+padding: "14px 16px",
+borderRadius: "14px",
+fontSize: "15px",
+fontWeight: "700",
+width: "100%",
+boxShadow: "0 10px 24px rgba(75, 58, 45, 0.18)",
+},
 
-  secondaryButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textDecoration: "none",
-    backgroundColor: "#fff",
-    color: "#4b3a2d",
-    border: "1px solid #dbcbbd",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    fontSize: "15px",
-    fontWeight: "700",
-    minWidth: "170px",
-  },
+secondaryButton: {
+display: "inline-flex",
+alignItems: "center",
+justifyContent: "center",
+textDecoration: "none",
+backgroundColor: "#fff",
+color: "#4b3a2d",
+border: "1px solid #dbcbbd",
+padding: "14px 16px",
+borderRadius: "14px",
+fontSize: "15px",
+fontWeight: "700",
+width: "100%",
+},
 
-  heroIconRow: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-    gap: "10px",
-    marginTop: "4px",
-  },
+heroIconRow: {
+display: "grid",
+gridTemplateColumns: "1fr",
+gap: "10px",
+},
 
-  heroIconCard: {
-    background: "rgba(255,255,255,0.78)",
-    border: "1px solid #eadfd4",
-    borderRadius: "18px",
-    padding: "14px",
-    display: "grid",
-    gap: "8px",
-    boxShadow: "0 8px 24px rgba(46, 36, 29, 0.04)",
-  },
+heroIconCard: {
+background: "rgba(255,255,255,0.8)",
+border: "1px solid #eadfd4",
+borderRadius: "16px",
+padding: "12px",
+display: "grid",
+gap: "6px",
+},
 
-  heroIconCircle: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "999px",
-    background: "#efe5db",
-    color: "#4b3a2d",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: "800",
-    fontSize: "16px",
-  },
+heroIconCircle: {
+width: "38px",
+height: "38px",
+borderRadius: "999px",
+background: "#efe5db",
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+},
 
-  heroIconTitle: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#2e241d",
-  },
+heroImage: {
+width: "100%",
+maxWidth: "600px",
+borderRadius: "20px",
+display: "block",
+boxShadow: "0 20px 42px rgba(46, 36, 29, 0.12)",
+cursor: "pointer",
+},
 
-  heroIconText: {
-    fontSize: "13px",
-    lineHeight: "1.5",
-    color: "#6c5f54",
-  },
+benefitBar: {
+maxWidth: "1280px",
+margin: "0 auto 22px",
+background: "#fff",
+border: "1px solid #eadfd4",
+borderRadius: "18px",
+padding: "12px",
+display: "grid",
+gridTemplateColumns: "1fr",
+gap: "8px",
+},
 
-  heroImageCol: {
-    display: "flex",
-    justifyContent: "center",
-  },
+benefitItem: {
+padding: "6px",
+},
 
-  heroImage: {
-    width: "100%",
-    maxWidth: "760px",
-    borderRadius: "26px",
-    display: "block",
-    boxShadow: "0 20px 42px rgba(46, 36, 29, 0.12)",
-    cursor: "pointer",
-    objectFit: "cover",
-  },
+benefitTitle: {
+fontSize: "14px",
+fontWeight: "700",
+color: "#2e241d",
+},
 
-  benefitBar: {
-    maxWidth: "1280px",
-    margin: "0 auto 26px",
-    background: "rgba(255,255,255,0.8)",
-    border: "1px solid #eadfd4",
-    borderRadius: "22px",
-    padding: "14px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-    gap: "12px",
-  },
+benefitText: {
+fontSize: "13px",
+color: "#6b5c50",
+},
 
-  benefitItem: {
-    display: "grid",
-    gap: "4px",
-    padding: "8px",
-  },
+productSection: {
+maxWidth: "1280px",
+margin: "0 auto 30px",
+},
 
-  benefitTitle: {
-    fontSize: "15px",
-    fontWeight: "700",
-    color: "#2e241d",
-  },
+sectionIntro: {
+textAlign: "center",
+marginBottom: "16px",
+},
 
-  benefitText: {
-    fontSize: "14px",
-    lineHeight: "1.55",
-    color: "#6b5c50",
-  },
+sectionTitle: {
+fontSize: "clamp(24px, 6vw, 42px)",
+fontWeight: "800",
+color: "#2e241d",
+},
 
-  serviceSection: {
-    maxWidth: "1080px",
-    margin: "0 auto 32px",
-  },
+sectionText: {
+fontSize: "15px",
+color: "#5f5349",
+},
 
-  serviceCard: {
-    background: "#fff",
-    border: "1px solid #eadfd4",
-    borderRadius: "24px",
-    padding: "22px",
-    boxShadow: "0 10px 28px rgba(46, 36, 29, 0.05)",
-    display: "grid",
-    gap: "12px",
-    textAlign: "center",
-  },
+productGrid: {
+display: "grid",
+gridTemplateColumns: "1fr",
+gap: "16px",
+},
 
-  productSection: {
-    maxWidth: "1280px",
-    margin: "0 auto 36px",
-    display: "grid",
-    gap: "22px",
-  },
+productCard: {
+background: "#fff",
+borderRadius: "18px",
+overflow: "hidden",
+border: "1px solid #eadfd4",
+},
 
-  sectionIntro: {
-    textAlign: "center",
-    display: "grid",
-    gap: "10px",
-    maxWidth: "900px",
-    margin: "0 auto",
-  },
+productImage: {
+width: "100%",
+height: "240px",
+objectFit: "cover",
+cursor: "pointer",
+},
 
-  sectionEyebrow: {
-    fontSize: "12px",
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: "0.08em",
-    color: "#9a7b61",
-  },
+productBody: {
+padding: "14px",
+},
 
-  sectionTitle: {
-    margin: 0,
-    fontSize: "clamp(28px, 6vw, 42px)",
-    lineHeight: "1.12",
-    fontWeight: "800",
-    color: "#2e241d",
-  },
+productTitle: {
+fontSize: "20px",
+fontWeight: "700",
+color: "#2e241d",
+},
 
-  sectionText: {
-    margin: 0,
-    fontSize: "clamp(15px, 3.4vw, 18px)",
-    lineHeight: "1.75",
-    color: "#5f5349",
-  },
+productDescription: {
+fontSize: "14px",
+color: "#63564b",
+},
 
-  productGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-    gap: "16px",
-  },
+productFooter: {
+marginTop: "10px",
+},
 
-  productCard: {
-    background: "#fff",
-    border: "1px solid #eadfd4",
-    borderRadius: "22px",
-    overflow: "hidden",
-    boxShadow: "0 10px 28px rgba(46, 36, 29, 0.05)",
-    display: "grid",
-  },
+cardButton: {
+background: "#d8bea5",
+padding: "10px",
+borderRadius: "10px",
+display: "inline-block",
+textAlign: "center",
+fontWeight: "700",
+},
 
-  productImage: {
-    width: "100%",
-    height: "280px",
-    objectFit: "cover",
-    display: "block",
-    cursor: "pointer",
-  },
+storySection: {
+maxWidth: "1280px",
+margin: "0 auto 30px",
+display: "grid",
+gridTemplateColumns: "1fr",
+gap: "18px",
+background: "#fff",
+borderRadius: "18px",
+padding: "14px",
+},
 
-  productBody: {
-    padding: "16px",
-    display: "grid",
-    gap: "10px",
-  },
+storyImage: {
+width: "100%",
+borderRadius: "16px",
+cursor: "pointer",
+},
 
-  productSubtitle: {
-    fontSize: "12px",
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-    color: "#a28064",
-  },
+stepList: {
+marginTop: "10px",
+},
 
-  productTitle: {
-    margin: 0,
-    fontSize: "24px",
-    lineHeight: "1.2",
-    fontWeight: "800",
-    color: "#2e241d",
-  },
+stepItem: {
+display: "flex",
+gap: "10px",
+marginBottom: "12px",
+},
 
-  productDescription: {
-    margin: 0,
-    fontSize: "14px",
-    lineHeight: "1.7",
-    color: "#63564b",
-  },
+stepNumber: {
+width: "32px",
+height: "32px",
+borderRadius: "999px",
+background: "#efe1d2",
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+fontWeight: "700",
+},
 
-  productList: {
-    display: "grid",
-    gap: "8px",
-  },
+finalSection: {
+marginTop: "20px",
+},
 
-  productListItem: {
-    fontSize: "14px",
-    lineHeight: "1.5",
-    color: "#4f4339",
-  },
+finalCard: {
+background: "#4b3a2d",
+color: "#fff",
+borderRadius: "20px",
+padding: "18px",
+textAlign: "center",
+},
 
-  productFooter: {
-    display: "grid",
-    gap: "12px",
-    marginTop: "6px",
-  },
+finalTitle: {
+fontSize: "22px",
+fontWeight: "800",
+},
 
-  cardButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textDecoration: "none",
-    backgroundColor: "#d8bea5",
-    color: "#3c2f25",
-    border: "none",
-    padding: "13px 16px",
-    borderRadius: "12px",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
+finalText: {
+fontSize: "14px",
+},
+};
 
-  storySection: {
-    maxWidth: "1280px",
-    margin: "0 auto 36px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "22px",
-    alignItems: "center",
-    background: "rgba(255,255,255,0.8)",
-    border: "1px solid #eadfd4",
-    borderRadius: "26px",
-    padding: "18px",
-  },
-
-  storyImageWrap: {
-    width: "100%",
-  },
-
-  storyImage: {
-    width: "100%",
-    borderRadius: "20px",
-    display: "block",
-    cursor: "pointer",
-    objectFit: "cover",
-    maxHeight: "540px",
-  },
-
-  storyContent: {
-    display: "grid",
-    gap: "14px",
-  },
-
-  stepList: {
-    display: "grid",
-    gap: "14px",
-    marginTop: "6px",
-  },
-
-  stepItem: {
-    display: "grid",
-    gridTemplateColumns: "50px 1fr",
-    gap: "12px",
-    alignItems: "start",
-  },
-
-  stepNumber: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "999px",
-    background: "#efe1d2",
-    color: "#4b3a2d",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: "800",
-    fontSize: "16px",
-  },
-
-  stepTitle: {
-    fontSize: "17px",
-    fontWeight: "700",
-    color: "#2e241d",
-    marginBottom: "4px",
-  },
-
-  stepText: {
-    fontSize: "14px",
-    lineHeight: "1.65",
-    color: "#5e5147",
-  },
-
-  printSection: {
-    maxWidth: "1280px",
-    margin: "0 auto 36px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "22px",
-    alignItems: "center",
-    background: "#fff",
-    border: "1px solid #eadfd4",
-    borderRadius: "26px",
-    padding: "18px",
-    boxShadow: "0 10px 28px rgba(46, 36, 29, 0.05)",
-  },
-
-  printContent: {
-    display: "grid",
-    gap: "12px",
-  },
-
-  printList: {
-    display: "grid",
-    gap: "8px",
-    marginTop: "4px",
-  },
-
-  printListItem: {
-    fontSize: "14px",
-    lineHeight: "1.6",
-    color: "#4f4339",
-  },
-
-  printImageWrap: {
-    width: "100%",
-  },
-
-  printImage: {
-    width: "100%",
-    borderRadius: "20px",
-    display: "block",
-    cursor: "pointer",
-    objectFit: "cover",
-    maxHeight: "520px",
-  },
-
-  finalSection: {
-    maxWidth: "1280px",
-    margin: "0 auto",
-  },
-
-  finalCard: {
-    background:
-      "linear-gradient(135deg, #4b3a2d 0%, #5b4637 50%, #715948 100%)",
-    color: "#fff",
-    borderRadius: "28px",
-    padding: "28px 20px",
-    display: "grid",
-    gap: "14px",
-    textAlign: "center",
-    boxShadow: "0 18px 42px rgba(46, 36, 29, 0.12)",
-  },
-
-  finalTitle: {
-    margin: 0,
-    fontSize: "clamp(28px, 6vw, 42px)",
-    lineHeight: "1.14",
-    fontWeight: "800",
-  },
-
-  finalText: {
-    margin: 0,
-    fontSize: "clamp(15px, 3.4vw, 18px)",
-    lineHeight: "1.8",
-    opacity: 0.92,
-    maxWidth: "880px",
-    marginInline: "auto",
-  },
-
-  finalButtons: {
-    display: "flex",
-    justifyContent: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-    marginTop: "4px",
-  },
-
-  lightbox: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(22, 18, 14, 0.72)",
-    backdropFilter: "blur(8px)",
-    WebkitBackdropFilter: "blur(8px)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-    padding: "16px",
-  },
-
-  lightboxContent: {
-    position: "relative",
-    maxWidth: "92vw",
-    maxHeight: "92vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  lightboxImage: {
-    maxWidth: "92vw",
-    maxHeight: "88vh",
-    width: "auto",
-    height: "auto",
-    display: "block",
-    borderRadius: "18px",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
-  },
-
-  lightboxClose: {
-    position: "absolute",
-    top: "-18px",
-    right: "-6px",
-    background: "#fff",
-    color: "#2e241d",
-    border: "none",
-    borderRadius: "999px",
-    width: "40px",
-    height: "40px",
-    cursor: "pointer",
-    fontSize: "20px",
-    fontWeight: "800",
-    boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
-  },
 };
