@@ -391,11 +391,48 @@ export default function HomePage() {
           </div>
         </div>
       )}
+       <footer style={styles.footer}>
+  <div style={styles.footerInner}>
+    <a href="/impressum" style={styles.footerLink}>
+      Impressum
+    </a>
+
+    <span style={styles.footerDivider}>|</span>
+
+    <a href="/datenschutz" style={styles.footerLink}>
+      Datenschutz
+    </a>
+  </div>
+</footer> 
     </main>
   );
 }
 
 const styles = {
+footer: {
+  marginTop: "60px",
+  padding: "20px 0",
+  borderTop: "1px solid #eadfd4",
+  display: "flex",
+  justifyContent: "center",
+},
+
+footerInner: {
+  display: "flex",
+  gap: "12px",
+  alignItems: "center",
+  fontSize: "14px",
+},
+
+footerLink: {
+  color: "#5b4d42",
+  textDecoration: "none",
+  fontWeight: "600",
+},
+
+footerDivider: {
+  color: "#cbb9a8",
+},
 page: {
 minHeight: "100vh",
 background:
