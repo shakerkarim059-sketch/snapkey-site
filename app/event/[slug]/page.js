@@ -2261,19 +2261,19 @@ const styles = {
     whiteSpace: "pre-wrap",
   },
 
-  cartBackdrop: {
-    position: "fixed",
-    inset: 0,
-    backgroundColor: "rgba(15, 23, 42, 0.52)",
-    zIndex: 1200,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    padding: "12px",
-    overflowX: "hidden",
-    overflowY: "auto",
-    overscrollBehavior: "contain",
-  },
+cartBackdrop: {
+  position: "fixed",
+  inset: 0,
+  backgroundColor: "rgba(15, 23, 42, 0.55)",
+  zIndex: 9999,
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "16px",
+  paddingBottom: "env(safe-area-inset-bottom)",
+  overflowX: "hidden",
+  overflowY: "auto",
+},
 
   cartPanel: {
     width: "100%",
