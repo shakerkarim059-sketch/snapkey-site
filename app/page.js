@@ -256,17 +256,17 @@ export default function HomePage() {
 
       <section style={styles.storySection}>
         <div style={styles.storyImageWrap}>
-          <img
-            src="/prints-order.jpg"
-            alt="Snapkey neben Smartphone mit geöffneter Eventseite"
-            style={styles.storyImage}
-            onClick={() =>
-              openImage(
-                "/how-it-works.jpg",
-                "Snapkey neben Smartphone mit geöffneter Eventseite"
-              )
-            }
-          />
+<img
+  src="/how-it-works.jpg"
+  alt="Snapkey neben Smartphone mit geöffneter Eventseite"
+  style={styles.storyImage}
+  onClick={() =>
+    openImage(
+      "/how-it-works.jpg",
+      "Snapkey neben Smartphone mit geöffneter Eventseite"
+    )
+  }
+/>
         </div>
 
         <div style={styles.storyContent}>
