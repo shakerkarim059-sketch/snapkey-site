@@ -135,9 +135,9 @@ export default function HomePage() {
       Snapkey jetzt erstellen
     </Link>
 
-    <a href="#produkte" style={styles.secondaryButton}>
-      Snapkeys ansehen
-    </a>
+<a href="#snapkeys" style={styles.secondaryButton}>
+  Snapkeys ansehen
+</a>
   </div>
 
   <div style={styles.heroIconRow}>
