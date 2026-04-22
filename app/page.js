@@ -401,29 +401,29 @@ page: {
 minHeight: "100vh",
 background:
 "linear-gradient(180deg, #f7f2ec 0%, #fcfaf7 35%, #f8f6f3 100%)",
-padding: "12px 12px 48px",
+padding: "14px 12px 56px",
 overflowX: "hidden",
 },
 
 heroSection: {
-maxWidth: "1280px",
-margin: "0 auto 20px",
+maxWidth: "1320px",
+margin: "0 auto 28px",
 display: "grid",
-gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-gap: "16px",
+gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+gap: "22px",
 alignItems: "center",
 },
 
 heroTextCol: {
 display: "grid",
-gap: "14px",
+gap: "16px",
 },
 
 heroBadge: {
 width: "fit-content",
 background: "#eaded1",
 color: "#7a5c45",
-padding: "8px 12px",
+padding: "9px 13px",
 borderRadius: "999px",
 fontSize: "11px",
 fontWeight: "700",
@@ -433,23 +433,24 @@ letterSpacing: "0.05em",
 
 heroTitle: {
 margin: 0,
-fontSize: "clamp(30px, 9vw, 60px)",
-lineHeight: "1.02",
+fontSize: "clamp(34px, 8vw, 68px)",
+lineHeight: "0.98",
 fontWeight: "800",
 color: "#2e241d",
+letterSpacing: "-0.03em",
 },
 
 heroText: {
 margin: 0,
-maxWidth: "680px",
-fontSize: "clamp(15px, 4vw, 19px)",
-lineHeight: "1.65",
+maxWidth: "720px",
+fontSize: "clamp(15px, 3.2vw, 20px)",
+lineHeight: "1.72",
 color: "#5b4d42",
 },
 
 heroActionRow: {
-display: "grid",
-gridTemplateColumns: "1fr",
+display: "flex",
+flexWrap: "wrap",
 gap: "10px",
 width: "100%",
 },
@@ -462,12 +463,13 @@ textDecoration: "none",
 backgroundColor: "#4b3a2d",
 color: "#fff",
 border: "none",
-padding: "14px 16px",
+padding: "14px 18px",
 borderRadius: "14px",
 fontSize: "15px",
 fontWeight: "700",
-width: "100%",
-boxShadow: "0 10px 24px rgba(75, 58, 45, 0.18)",
+minHeight: "50px",
+minWidth: "190px",
+boxShadow: "0 12px 26px rgba(75, 58, 45, 0.18)",
 },
 
 secondaryButton: {
@@ -478,201 +480,448 @@ textDecoration: "none",
 backgroundColor: "#fff",
 color: "#4b3a2d",
 border: "1px solid #dbcbbd",
-padding: "14px 16px",
+padding: "14px 18px",
 borderRadius: "14px",
 fontSize: "15px",
 fontWeight: "700",
-width: "100%",
+minHeight: "50px",
+minWidth: "190px",
+boxShadow: "0 6px 18px rgba(46, 36, 29, 0.05)",
 },
 
 heroIconRow: {
 display: "grid",
-gridTemplateColumns: "1fr",
-gap: "10px",
+gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+gap: "12px",
+marginTop: "2px",
 },
 
 heroIconCard: {
-background: "rgba(255,255,255,0.8)",
+background: "rgba(255,255,255,0.82)",
 border: "1px solid #eadfd4",
-borderRadius: "16px",
-padding: "12px",
+borderRadius: "18px",
+padding: "14px",
 display: "grid",
-gap: "6px",
+gap: "7px",
+boxShadow: "0 10px 24px rgba(46, 36, 29, 0.04)",
 },
 
 heroIconCircle: {
-width: "38px",
-height: "38px",
+width: "40px",
+height: "40px",
 borderRadius: "999px",
 background: "#efe5db",
+color: "#4b3a2d",
 display: "flex",
 alignItems: "center",
 justifyContent: "center",
+fontWeight: "800",
+fontSize: "16px",
+},
+
+heroIconTitle: {
+fontSize: "15px",
+fontWeight: "700",
+color: "#2e241d",
+},
+
+heroIconText: {
+fontSize: "13px",
+lineHeight: "1.55",
+color: "#6c5f54",
+},
+
+heroImageCol: {
+display: "flex",
+justifyContent: "center",
+alignItems: "center",
 },
 
 heroImage: {
 width: "100%",
-maxWidth: "600px",
-borderRadius: "20px",
+maxWidth: "760px",
+borderRadius: "28px",
 display: "block",
-boxShadow: "0 20px 42px rgba(46, 36, 29, 0.12)",
+boxShadow: "0 24px 48px rgba(46, 36, 29, 0.14)",
 cursor: "pointer",
+objectFit: "cover",
 },
 
 benefitBar: {
-maxWidth: "1280px",
-margin: "0 auto 22px",
-background: "#fff",
+maxWidth: "1320px",
+margin: "0 auto 28px",
+background: "rgba(255,255,255,0.82)",
 border: "1px solid #eadfd4",
-borderRadius: "18px",
-padding: "12px",
+borderRadius: "24px",
+padding: "14px",
 display: "grid",
-gridTemplateColumns: "1fr",
-gap: "8px",
+gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+gap: "12px",
+boxShadow: "0 10px 24px rgba(46, 36, 29, 0.04)",
 },
 
 benefitItem: {
-padding: "6px",
+display: "grid",
+gap: "4px",
+padding: "8px",
 },
 
 benefitTitle: {
-fontSize: "14px",
+fontSize: "15px",
 fontWeight: "700",
 color: "#2e241d",
 },
 
 benefitText: {
-fontSize: "13px",
+fontSize: "14px",
+lineHeight: "1.55",
 color: "#6b5c50",
 },
 
+serviceSection: {
+maxWidth: "1080px",
+margin: "0 auto 34px",
+},
+
+serviceCard: {
+background: "#fff",
+border: "1px solid #eadfd4",
+borderRadius: "26px",
+padding: "24px 20px",
+boxShadow: "0 14px 30px rgba(46, 36, 29, 0.05)",
+display: "grid",
+gap: "12px",
+textAlign: "center",
+},
+
 productSection: {
-maxWidth: "1280px",
-margin: "0 auto 30px",
+maxWidth: "1320px",
+margin: "0 auto 40px",
+display: "grid",
+gap: "24px",
 },
 
 sectionIntro: {
 textAlign: "center",
-marginBottom: "16px",
+display: "grid",
+gap: "10px",
+maxWidth: "920px",
+margin: "0 auto",
+},
+
+sectionEyebrow: {
+fontSize: "12px",
+fontWeight: "700",
+textTransform: "uppercase",
+letterSpacing: "0.08em",
+color: "#9a7b61",
 },
 
 sectionTitle: {
-fontSize: "clamp(24px, 6vw, 42px)",
+margin: 0,
+fontSize: "clamp(28px, 6vw, 44px)",
+lineHeight: "1.08",
 fontWeight: "800",
 color: "#2e241d",
+letterSpacing: "-0.02em",
 },
 
 sectionText: {
-fontSize: "15px",
+margin: 0,
+fontSize: "clamp(15px, 3.2vw, 18px)",
+lineHeight: "1.75",
 color: "#5f5349",
 },
 
 productGrid: {
 display: "grid",
-gridTemplateColumns: "1fr",
-gap: "16px",
+gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+gap: "18px",
 },
 
 productCard: {
 background: "#fff",
-borderRadius: "18px",
-overflow: "hidden",
 border: "1px solid #eadfd4",
+borderRadius: "24px",
+overflow: "hidden",
+boxShadow: "0 14px 28px rgba(46, 36, 29, 0.05)",
+display: "grid",
+transition: "transform 0.18s ease",
 },
 
 productImage: {
 width: "100%",
-height: "240px",
+height: "280px",
 objectFit: "cover",
+display: "block",
 cursor: "pointer",
 },
 
 productBody: {
-padding: "14px",
+padding: "18px",
+display: "grid",
+gap: "10px",
+},
+
+productSubtitle: {
+fontSize: "12px",
+fontWeight: "700",
+textTransform: "uppercase",
+letterSpacing: "0.06em",
+color: "#a28064",
 },
 
 productTitle: {
-fontSize: "20px",
-fontWeight: "700",
+margin: 0,
+fontSize: "26px",
+lineHeight: "1.15",
+fontWeight: "800",
 color: "#2e241d",
 },
 
 productDescription: {
+margin: 0,
 fontSize: "14px",
+lineHeight: "1.72",
 color: "#63564b",
 },
 
+productList: {
+display: "grid",
+gap: "8px",
+marginTop: "2px",
+},
+
+productListItem: {
+fontSize: "14px",
+lineHeight: "1.5",
+color: "#4f4339",
+},
+
 productFooter: {
-marginTop: "10px",
+display: "grid",
+gap: "10px",
+marginTop: "8px",
 },
 
 cardButton: {
-background: "#d8bea5",
-padding: "10px",
-borderRadius: "10px",
-display: "inline-block",
-textAlign: "center",
+display: "inline-flex",
+alignItems: "center",
+justifyContent: "center",
+textDecoration: "none",
+backgroundColor: "#d8bea5",
+color: "#3c2f25",
+border: "none",
+padding: "13px 16px",
+borderRadius: "12px",
+fontSize: "14px",
 fontWeight: "700",
+minHeight: "46px",
 },
 
 storySection: {
-maxWidth: "1280px",
-margin: "0 auto 30px",
+maxWidth: "1320px",
+margin: "0 auto 38px",
 display: "grid",
-gridTemplateColumns: "1fr",
-gap: "18px",
-background: "#fff",
-borderRadius: "18px",
-padding: "14px",
+gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+gap: "22px",
+alignItems: "center",
+background: "rgba(255,255,255,0.82)",
+border: "1px solid #eadfd4",
+borderRadius: "26px",
+padding: "18px",
+boxShadow: "0 12px 26px rgba(46, 36, 29, 0.04)",
+},
+
+storyImageWrap: {
+width: "100%",
 },
 
 storyImage: {
 width: "100%",
-borderRadius: "16px",
+borderRadius: "22px",
+display: "block",
 cursor: "pointer",
+objectFit: "cover",
+maxHeight: "560px",
+},
+
+storyContent: {
+display: "grid",
+gap: "14px",
 },
 
 stepList: {
-marginTop: "10px",
+display: "grid",
+gap: "14px",
+marginTop: "4px",
 },
 
 stepItem: {
-display: "flex",
-gap: "10px",
-marginBottom: "12px",
+display: "grid",
+gridTemplateColumns: "48px 1fr",
+gap: "12px",
+alignItems: "start",
 },
 
 stepNumber: {
-width: "32px",
-height: "32px",
+width: "42px",
+height: "42px",
 borderRadius: "999px",
 background: "#efe1d2",
+color: "#4b3a2d",
 display: "flex",
 alignItems: "center",
 justifyContent: "center",
+fontWeight: "800",
+fontSize: "16px",
+},
+
+stepTitle: {
+fontSize: "17px",
 fontWeight: "700",
+color: "#2e241d",
+marginBottom: "4px",
+},
+
+stepText: {
+fontSize: "14px",
+lineHeight: "1.65",
+color: "#5e5147",
+},
+
+printSection: {
+maxWidth: "1320px",
+margin: "0 auto 38px",
+display: "grid",
+gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+gap: "22px",
+alignItems: "center",
+background: "#fff",
+border: "1px solid #eadfd4",
+borderRadius: "26px",
+padding: "18px",
+boxShadow: "0 14px 30px rgba(46, 36, 29, 0.05)",
+},
+
+printContent: {
+display: "grid",
+gap: "12px",
+},
+
+printList: {
+display: "grid",
+gap: "8px",
+marginTop: "4px",
+},
+
+printListItem: {
+fontSize: "14px",
+lineHeight: "1.6",
+color: "#4f4339",
+},
+
+printImageWrap: {
+width: "100%",
+},
+
+printImage: {
+width: "100%",
+borderRadius: "22px",
+display: "block",
+cursor: "pointer",
+objectFit: "cover",
+maxHeight: "540px",
 },
 
 finalSection: {
-marginTop: "20px",
+maxWidth: "1320px",
+margin: "0 auto",
 },
 
 finalCard: {
-background: "#4b3a2d",
+background:
+"linear-gradient(135deg, #4b3a2d 0%, #5b4637 50%, #715948 100%)",
 color: "#fff",
-borderRadius: "20px",
-padding: "18px",
+borderRadius: "30px",
+padding: "30px 20px",
+display: "grid",
+gap: "14px",
 textAlign: "center",
+boxShadow: "0 18px 42px rgba(46, 36, 29, 0.12)",
 },
 
 finalTitle: {
-fontSize: "22px",
+margin: 0,
+fontSize: "clamp(30px, 6vw, 44px)",
+lineHeight: "1.1",
 fontWeight: "800",
+letterSpacing: "-0.02em",
 },
 
 finalText: {
-fontSize: "14px",
+margin: 0,
+fontSize: "clamp(15px, 3.2vw, 18px)",
+lineHeight: "1.78",
+opacity: 0.94,
+maxWidth: "900px",
+marginInline: "auto",
+},
+
+finalButtons: {
+display: "flex",
+justifyContent: "center",
+gap: "12px",
+flexWrap: "wrap",
+marginTop: "4px",
+},
+
+lightbox: {
+position: "fixed",
+inset: 0,
+background: "rgba(22, 18, 14, 0.72)",
+backdropFilter: "blur(8px)",
+WebkitBackdropFilter: "blur(8px)",
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+zIndex: 9999,
+padding: "16px",
+},
+
+lightboxContent: {
+position: "relative",
+maxWidth: "92vw",
+maxHeight: "92vh",
+display: "flex",
+alignItems: "center",
+justifyContent: "center",
+},
+
+lightboxImage: {
+maxWidth: "92vw",
+maxHeight: "88vh",
+width: "auto",
+height: "auto",
+display: "block",
+borderRadius: "18px",
+boxShadow: "0 20px 60px rgba(0,0,0,0.35)",
+},
+
+lightboxClose: {
+position: "absolute",
+top: "-18px",
+right: "-6px",
+background: "#fff",
+color: "#2e241d",
+border: "none",
+borderRadius: "999px",
+width: "40px",
+height: "40px",
+cursor: "pointer",
+fontSize: "20px",
+fontWeight: "800",
+boxShadow: "0 8px 20px rgba(0,0,0,0.18)",
 },
 };
 
-};
