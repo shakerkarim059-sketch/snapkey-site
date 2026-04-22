@@ -1699,113 +1699,71 @@ export default function EventPage() {
 }
 
 const styles = {
-page: {
-  position: "relative",
-  width: "100%",
-  maxWidth: "1280px",
-  margin: "0 auto",
-  padding: "16px",
-  paddingBottom: "140px",
-  backgroundColor: "#f8fafc",
-  minHeight: "100vh",
-  boxSizing: "border-box",
-  overflowX: "clip",
-  touchAction: "pan-y",
-},
+  page: {
+    position: "relative",
+    width: "100%",
+    maxWidth: "1180px",
+    margin: "0 auto",
+    padding: "14px",
+    paddingBottom: "120px",
+    backgroundColor: "#f6f7fb",
+    minHeight: "100vh",
+    boxSizing: "border-box",
+    overflowX: "hidden",
+    touchAction: "pan-y",
+  },
+
   loginBox: {
     maxWidth: "420px",
     margin: "120px auto",
     display: "grid",
     gap: "14px",
-    background: "#fff",
+    background: "#ffffff",
     padding: "24px",
-    borderRadius: "20px",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)",
+    borderRadius: "24px",
+    border: "1px solid #e8ebf2",
+    boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
   },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "16px",
-    flexWrap: "wrap",
-    marginBottom: "28px",
-  },
-  headerButtons: {
-    display: "flex",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
+
   title: {
-    fontSize: "34px",
+    fontSize: "32px",
     fontWeight: "800",
     margin: 0,
-    color: "#0f172a",
+    color: "#111827",
+    lineHeight: "1.15",
   },
+
   subtitle: {
     marginTop: "8px",
     marginBottom: 0,
-    color: "#475569",
+    color: "#667085",
     fontSize: "15px",
+    lineHeight: "1.5",
   },
+
   accessInfo: {
     marginTop: "10px",
     marginBottom: 0,
-    color: "#0f172a",
+    color: "#111827",
     fontSize: "14px",
     fontWeight: "700",
   },
-  heroCard: {
-    minHeight: "240px",
-    borderRadius: "24px",
-    overflow: "hidden",
-    position: "relative",
-    marginBottom: "28px",
-    background:
-      "linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #334155 100%)",
-  },
-  heroShade: {
-    position: "absolute",
-    inset: 0,
-    background: "rgba(15, 23, 42, 0.35)",
-  },
-  heroContent: {
-    position: "relative",
-    zIndex: 1,
-    padding: "24px",
-    color: "#fff",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-end",
-    minHeight: "240px",
-  },
-  heroTitle: {
-    fontSize: "32px",
-    fontWeight: "800",
-    margin: "14px 0 8px 0",
-  },
-  heroMeta: {
-    margin: 0,
-    fontSize: "15px",
-    color: "rgba(255,255,255,0.92)",
-  },
-  eventChip: {
-    backgroundColor: "rgba(255,255,255,0.15)",
-    color: "#fff",
-    padding: "8px 12px",
-    borderRadius: "999px",
-    fontSize: "13px",
-    fontWeight: "700",
-    backdropFilter: "blur(4px)",
-    width: "fit-content",
-  },
+
   formTitle: {
     margin: 0,
-    marginBottom: "6px",
-    fontSize: "20px",
-    fontWeight: "700",
-    color: "#0f172a",
+    marginBottom: "4px",
+    fontSize: "19px",
+    fontWeight: "800",
+    color: "#111827",
+    lineHeight: "1.2",
   },
+
+  label: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#111827",
+  },
+
   editHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -1813,46 +1771,55 @@ page: {
     gap: "12px",
     flexWrap: "wrap",
   },
+
   formCard: {
     display: "grid",
     gap: "12px",
     background: "#ffffff",
-    padding: "22px",
-    borderRadius: "20px",
-    marginBottom: "32px",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+    padding: "18px",
+    borderRadius: "22px",
+    marginBottom: "24px",
+    border: "1px solid #e8ebf2",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
+    width: "100%",
+    boxSizing: "border-box",
   },
+
   filterCard: {
     display: "grid",
     gap: "14px",
     background: "#ffffff",
-    padding: "22px",
-    borderRadius: "20px",
-    marginBottom: "28px",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+    padding: "18px",
+    borderRadius: "22px",
+    marginBottom: "24px",
+    border: "1px solid #e8ebf2",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
   },
+
   filterGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
     gap: "12px",
+    width: "100%",
   },
+
   filterInfo: {
-    color: "#475569",
+    color: "#667085",
     fontSize: "14px",
     fontWeight: "600",
   },
+
   uploadCard: {
     display: "grid",
     gap: "16px",
     background: "#ffffff",
-    padding: "22px",
+    padding: "18px",
     borderRadius: "24px",
-    marginBottom: "28px",
-    border: "1px solid #e2e8f0",
-    boxShadow: "0 10px 30px rgba(15, 23, 42, 0.05)",
+    marginBottom: "24px",
+    border: "1px solid #e8ebf2",
+    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
   },
+
   uploadTopRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -1860,87 +1827,96 @@ page: {
     alignItems: "flex-start",
     flexWrap: "wrap",
   },
+
   uploadSubtitle: {
     margin: 0,
-    color: "#64748b",
+    color: "#667085",
     fontSize: "14px",
     lineHeight: "1.5",
   },
+
   uploadBadge: {
-    background: "#e2e8f0",
-    color: "#0f172a",
+    background: "#eef2f7",
+    color: "#111827",
     borderRadius: "999px",
     padding: "10px 14px",
     fontSize: "13px",
     fontWeight: "700",
     whiteSpace: "nowrap",
   },
+
   uploadPickerBox: {
-    border: "1.5px dashed #94a3b8",
+    border: "1.5px dashed #cdd5df",
     borderRadius: "22px",
-    padding: "28px 20px",
-    background:
-      "linear-gradient(180deg, rgba(15,23,42,0.03) 0%, rgba(15,23,42,0.01) 100%)",
+    padding: "24px 18px",
+    background: "#fafbfc",
     display: "grid",
     justifyItems: "center",
     textAlign: "center",
     gap: "10px",
     cursor: "pointer",
   },
+
   uploadIcon: {
-    width: "56px",
-    height: "56px",
-    borderRadius: "18px",
-    background: "#0f172a",
+    width: "52px",
+    height: "52px",
+    borderRadius: "16px",
+    background: "#111827",
     color: "#fff",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    fontSize: "26px",
+    fontSize: "24px",
     fontWeight: "800",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
+    boxShadow: "0 10px 20px rgba(17, 24, 39, 0.16)",
   },
+
   uploadPickerTitle: {
-    fontSize: "20px",
+    fontSize: "19px",
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#111827",
   },
+
   uploadPickerText: {
-    color: "#64748b",
+    color: "#667085",
     fontSize: "14px",
     lineHeight: "1.5",
     maxWidth: "460px",
   },
+
   uploadPickerButton: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "#111827",
     color: "#fff",
     border: "none",
-    padding: "14px 18px",
+    padding: "13px 18px",
     borderRadius: "14px",
     cursor: "pointer",
-    fontSize: "15px",
+    fontSize: "14px",
     fontWeight: "700",
-    minWidth: "180px",
-    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.14)",
+    minWidth: "170px",
+    boxShadow: "0 8px 18px rgba(17, 24, 39, 0.14)",
     marginTop: "6px",
   },
+
   selectedFilesWrap: {
     display: "flex",
     flexWrap: "wrap",
     gap: "10px",
   },
+
   fileChip: {
     display: "flex",
     alignItems: "center",
     gap: "10px",
     padding: "10px 12px",
     borderRadius: "14px",
-    background: "#f1f5f9",
-    border: "1px solid #e2e8f0",
+    background: "#f4f6fa",
+    border: "1px solid #e8ebf2",
     maxWidth: "100%",
   },
+
   fileChipName: {
-    color: "#0f172a",
+    color: "#111827",
     fontSize: "13px",
     fontWeight: "700",
     overflow: "hidden",
@@ -1948,29 +1924,35 @@ page: {
     whiteSpace: "nowrap",
     maxWidth: "220px",
   },
+
   fileChipSize: {
-    color: "#64748b",
+    color: "#667085",
     fontSize: "12px",
     fontWeight: "600",
     whiteSpace: "nowrap",
   },
+
   twoCol: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
     gap: "12px",
+    width: "100%",
   },
+
   input: {
     width: "100%",
-    padding: "14px 16px",
+    padding: "14px 15px",
     borderRadius: "14px",
-    border: "1px solid #cbd5e1",
+    border: "1px solid #d7deea",
     fontSize: "15px",
     outline: "none",
     backgroundColor: "#fff",
     boxSizing: "border-box",
+    color: "#111827",
   },
+
   primaryButton: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "#111827",
     color: "white",
     border: "none",
     padding: "14px 18px",
@@ -1978,10 +1960,11 @@ page: {
     cursor: "pointer",
     fontSize: "15px",
     fontWeight: "700",
-    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.18)",
+    boxShadow: "0 10px 22px rgba(17, 24, 39, 0.16)",
   },
+
   secondaryButton: {
-    backgroundColor: "#1e293b",
+    backgroundColor: "#1f2937",
     color: "#fff",
     border: "none",
     padding: "14px 18px",
@@ -1990,27 +1973,30 @@ page: {
     fontSize: "15px",
     fontWeight: "700",
     minWidth: "170px",
-    boxShadow: "0 8px 20px rgba(15, 23, 42, 0.12)",
+    boxShadow: "0 8px 18px rgba(17, 24, 39, 0.12)",
   },
+
   buttonDisabled: {
-    opacity: 0.72,
+    opacity: 0.7,
     cursor: "not-allowed",
   },
+
   cancelButton: {
-    backgroundColor: "#e2e8f0",
-    color: "#0f172a",
+    backgroundColor: "#eef2f7",
+    color: "#111827",
     border: "none",
-    padding: "12px 16px",
+    padding: "11px 15px",
     borderRadius: "12px",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "700",
   },
+
   deleteButton: {
     position: "absolute",
     top: "10px",
     right: "10px",
-    background: "rgba(220, 38, 38, 0.92)",
+    background: "rgba(220, 38, 38, 0.95)",
     color: "#fff",
     border: "none",
     borderRadius: "10px",
@@ -2020,33 +2006,35 @@ page: {
     fontWeight: "700",
     zIndex: 3,
   },
+
   selectionBar: {
     position: "fixed",
-    left: "50%",
-    bottom: "16px",
-    transform: "translateX(-50%)",
+    left: "12px",
+    right: "12px",
+    bottom: "12px",
     zIndex: 999,
-    width: "calc(100% - 32px)",
-    maxWidth: "1232px",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     gap: "12px",
     flexWrap: "wrap",
-    background: "rgba(255,255,255,0.96)",
-    border: "1px solid #e2e8f0",
+    background: "rgba(255,255,255,0.94)",
+    border: "1px solid #e8ebf2",
     borderRadius: "20px",
-    padding: "18px 20px",
-    boxShadow: "0 12px 32px rgba(15, 23, 42, 0.12)",
-    backdropFilter: "blur(10px)",
+    padding: "14px 16px",
+    boxShadow: "0 16px 38px rgba(15, 23, 42, 0.12)",
+    backdropFilter: "blur(12px)",
+    boxSizing: "border-box",
   },
+
   selectionInfo: {
     fontSize: "15px",
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#111827",
   },
+
   orderButton: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "#111827",
     color: "#fff",
     border: "none",
     padding: "12px 16px",
@@ -2056,74 +2044,85 @@ page: {
     fontWeight: "700",
     minWidth: "220px",
   },
+
   orderButtonDisabled: {
-    backgroundColor: "#94a3b8",
+    backgroundColor: "#98a2b3",
   },
+
   photoGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "18px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "16px",
     alignItems: "start",
   },
+
   photoCard: {
     position: "relative",
-    borderRadius: "22px",
+    borderRadius: "24px",
     overflow: "hidden",
-    boxShadow: "0 10px 25px rgba(15, 23, 42, 0.10)",
+    boxShadow: "0 8px 22px rgba(15, 23, 42, 0.06)",
     background: "#fff",
     cursor: "pointer",
-    border: "1px solid #e2e8f0",
+    border: "1px solid #e8ebf2",
   },
+
   photoMediaWrap: {
     position: "relative",
     width: "100%",
-    background: "#e2e8f0",
+    background: "#e5e7eb",
     overflow: "hidden",
   },
+
   photo: {
     width: "100%",
     height: "100%",
     objectFit: "cover",
     display: "block",
   },
+
   photoOverlay: {
     position: "absolute",
     inset: 0,
     background:
-      "linear-gradient(to top, rgba(15,23,42,0.26), rgba(15,23,42,0.05))",
+      "linear-gradient(to top, rgba(15,23,42,0.22), rgba(15,23,42,0.04))",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
     pointerEvents: "none",
   },
+
   photoOverlayText: {
     color: "#fff",
     fontWeight: "700",
-    fontSize: "15px",
+    fontSize: "14px",
     padding: "8px 12px",
     borderRadius: "999px",
-    background: "rgba(15,23,42,0.45)",
+    background: "rgba(15,23,42,0.38)",
     backdropFilter: "blur(4px)",
   },
+
   photoInfoArea: {
     padding: "14px",
     display: "grid",
-    gap: "14px",
+    gap: "12px",
     background: "#fff",
   },
+
   photoCaption: {
     fontSize: "14px",
-    color: "#334155",
+    color: "#475467",
     lineHeight: "1.5",
   },
+
   photoActionRow: {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
     gap: "10px",
   },
+
   selectPhotoButton: {
-    backgroundColor: "#e2e8f0",
-    color: "#0f172a",
+    backgroundColor: "#eef2f7",
+    color: "#111827",
     border: "none",
     padding: "10px 14px",
     borderRadius: "12px",
@@ -2131,20 +2130,23 @@ page: {
     fontSize: "14px",
     fontWeight: "700",
   },
+
   selectPhotoButtonActive: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "#111827",
     color: "#ffffff",
   },
+
   previewButton: {
-    backgroundColor: "#f8fafc",
-    color: "#0f172a",
-    border: "1px solid #cbd5e1",
+    backgroundColor: "#ffffff",
+    color: "#111827",
+    border: "1px solid #d7deea",
     padding: "10px 14px",
     borderRadius: "12px",
     cursor: "pointer",
     fontSize: "14px",
     fontWeight: "700",
   },
+
   likeRow: {
     display: "flex",
     alignItems: "center",
@@ -2152,9 +2154,10 @@ page: {
     gap: "12px",
     flexWrap: "wrap",
   },
+
   likeButton: {
-    backgroundColor: "#e2e8f0",
-    color: "#0f172a",
+    backgroundColor: "#eef2f7",
+    color: "#111827",
     border: "none",
     padding: "10px 14px",
     borderRadius: "12px",
@@ -2162,34 +2165,39 @@ page: {
     fontSize: "14px",
     fontWeight: "700",
   },
+
   likeButtonActive: {
-    backgroundColor: "#fee2e2",
-    color: "#b91c1c",
+    backgroundColor: "#fee4e2",
+    color: "#b42318",
   },
+
   likeCount: {
-    color: "#475569",
+    color: "#667085",
     fontSize: "14px",
     fontWeight: "600",
   },
+
   commentForm: {
     display: "grid",
     gap: "10px",
   },
+
   commentInput: {
     width: "100%",
     padding: "12px 14px",
     borderRadius: "12px",
-    border: "1px solid #cbd5e1",
+    border: "1px solid #d7deea",
     fontSize: "14px",
     outline: "none",
     backgroundColor: "#fff",
     boxSizing: "border-box",
   },
+
   commentTextarea: {
     width: "100%",
     padding: "12px 14px",
     borderRadius: "12px",
-    border: "1px solid #cbd5e1",
+    border: "1px solid #d7deea",
     fontSize: "14px",
     outline: "none",
     backgroundColor: "#fff",
@@ -2197,8 +2205,9 @@ page: {
     resize: "vertical",
     fontFamily: "inherit",
   },
+
   commentButton: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "#111827",
     color: "#fff",
     border: "none",
     padding: "12px 14px",
@@ -2207,20 +2216,24 @@ page: {
     fontSize: "14px",
     fontWeight: "700",
   },
+
   commentList: {
     display: "grid",
     gap: "10px",
   },
+
   noCommentsText: {
-    color: "#64748b",
+    color: "#667085",
     fontSize: "14px",
   },
+
   commentItem: {
     backgroundColor: "#f8fafc",
-    border: "1px solid #e2e8f0",
+    border: "1px solid #e8ebf2",
     borderRadius: "14px",
     padding: "12px",
   },
+
   commentAuthorRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -2229,48 +2242,54 @@ page: {
     marginBottom: "6px",
     flexWrap: "wrap",
   },
+
   commentAuthor: {
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#111827",
     fontSize: "14px",
   },
+
   commentDate: {
-    color: "#64748b",
+    color: "#667085",
     fontSize: "12px",
   },
+
   commentText: {
-    color: "#334155",
+    color: "#475467",
     fontSize: "14px",
     lineHeight: "1.5",
     whiteSpace: "pre-wrap",
   },
+
   cartBackdrop: {
     position: "fixed",
     inset: 0,
-    backgroundColor: "rgba(15, 23, 42, 0.55)",
+    backgroundColor: "rgba(15, 23, 42, 0.52)",
     zIndex: 1200,
     display: "flex",
     justifyContent: "center",
     alignItems: "flex-end",
-    padding: "16px",
+    padding: "12px",
     overflowX: "hidden",
     overflowY: "auto",
     overscrollBehavior: "contain",
   },
+
   cartPanel: {
     width: "100%",
-    maxWidth: "900px",
-    maxHeight: "85vh",
+    maxWidth: "920px",
+    maxHeight: "88vh",
     overflowY: "auto",
     overflowX: "hidden",
     background: "#ffffff",
-    borderRadius: "24px",
-    padding: "20px",
-    boxShadow: "0 20px 60px rgba(15, 23, 42, 0.25)",
+    borderRadius: "28px",
+    padding: "18px",
+    boxShadow: "0 24px 70px rgba(15, 23, 42, 0.22)",
     boxSizing: "border-box",
     overscrollBehavior: "contain",
     touchAction: "pan-y",
   },
+
   cartHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -2278,29 +2297,33 @@ page: {
     gap: "12px",
     marginBottom: "16px",
   },
+
   cartTitle: {
     margin: 0,
     fontSize: "24px",
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#111827",
   },
+
   cartCloseButton: {
     width: "40px",
     height: "40px",
     borderRadius: "999px",
     border: "none",
-    background: "#e2e8f0",
-    color: "#0f172a",
+    background: "#eef2f7",
+    color: "#111827",
     fontSize: "18px",
     cursor: "pointer",
     fontWeight: "700",
   },
+
   cartInfo: {
     marginBottom: "16px",
     fontSize: "15px",
     fontWeight: "700",
-    color: "#334155",
+    color: "#475467",
   },
+
   orderOptionsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
@@ -2308,154 +2331,189 @@ page: {
     marginBottom: "18px",
     width: "100%",
   },
+
   orderOptionCard: {
     background: "#f8fafc",
-    border: "1px solid #e2e8f0",
+    border: "1px solid #e8ebf2",
     borderRadius: "18px",
     padding: "14px",
   },
+
   orderLabel: {
     display: "block",
     marginBottom: "8px",
     fontSize: "14px",
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#111827",
   },
+
   orderSelect: {
     width: "100%",
     padding: "12px 14px",
     borderRadius: "12px",
-    border: "1px solid #cbd5e1",
+    border: "1px solid #d7deea",
     fontSize: "14px",
     backgroundColor: "#fff",
     boxSizing: "border-box",
   },
+
   priceSummaryCard: {
     background: "#ffffff",
-    border: "1px solid #e2e8f0",
-    borderRadius: "18px",
+    border: "1px solid #e8ebf2",
+    borderRadius: "20px",
     padding: "16px",
     marginBottom: "18px",
-    boxShadow: "0 6px 20px rgba(15, 23, 42, 0.04)",
+    boxShadow: "0 6px 18px rgba(15, 23, 42, 0.04)",
   },
+
   priceRow: {
     display: "flex",
     justifyContent: "space-between",
     gap: "12px",
     padding: "6px 0",
-    color: "#334155",
+    color: "#475467",
     fontSize: "14px",
   },
+
   totalRow: {
     display: "flex",
     justifyContent: "space-between",
     gap: "12px",
     paddingTop: "12px",
     marginTop: "8px",
-    borderTop: "1px solid #e2e8f0",
-    color: "#0f172a",
+    borderTop: "1px solid #e8ebf2",
+    color: "#111827",
     fontSize: "18px",
     fontWeight: "800",
   },
+
   cartGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "16px",
     width: "100%",
     overflowX: "hidden",
     marginBottom: "18px",
   },
+
   cartPhotoCard: {
     background: "#fff",
-    border: "1px solid #e2e8f0",
-    borderRadius: "18px",
+    border: "1px solid #e8ebf2",
+    borderRadius: "20px",
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    boxShadow: "0 6px 18px rgba(15, 23, 42, 0.05)",
+    boxShadow: "0 8px 18px rgba(15, 23, 42, 0.04)",
   },
+
   cartPhoto: {
     width: "100%",
     height: "180px",
     objectFit: "cover",
     display: "block",
-    backgroundColor: "#e2e8f0",
+    backgroundColor: "#e5e7eb",
   },
+
   cartPhotoInfo: {
     display: "grid",
-    gap: "10px",
-    padding: "12px",
+    gap: "12px",
+    padding: "14px",
   },
+
   cartPhotoName: {
-    fontSize: "13px",
+    fontSize: "14px",
     fontWeight: "700",
-    color: "#0f172a",
+    color: "#111827",
     lineHeight: "1.4",
     overflow: "hidden",
     display: "-webkit-box",
     WebkitLineClamp: 2,
     WebkitBoxOrient: "vertical",
   },
+
+  cartItemOptions: {
+    display: "grid",
+    gap: "10px",
+  },
+
+  cartItemOptionBlock: {
+    display: "grid",
+    gap: "6px",
+  },
+
+  cartItemPrice: {
+    fontSize: "14px",
+    fontWeight: "700",
+    color: "#111827",
+  },
+
   removeFromCartButton: {
     width: "100%",
     border: "none",
-    background: "#fee2e2",
-    color: "#b91c1c",
+    background: "#fee4e2",
+    color: "#b42318",
     padding: "10px 12px",
     fontWeight: "700",
     cursor: "pointer",
     borderRadius: "12px",
     fontSize: "13px",
   },
+
   orderFormCard: {
     background: "#f8fafc",
-    border: "1px solid #e2e8f0",
-    borderRadius: "18px",
+    border: "1px solid #e8ebf2",
+    borderRadius: "20px",
     padding: "18px",
     marginTop: "18px",
     marginBottom: "18px",
     display: "grid",
     gap: "14px",
   },
+
   orderFormTitle: {
     margin: 0,
     fontSize: "22px",
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#111827",
   },
+
   orderFormText: {
     margin: 0,
     fontSize: "14px",
     lineHeight: "1.7",
-    color: "#475569",
+    color: "#667085",
   },
+
   orderFormGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
     gap: "12px",
   },
+
   orderInput: {
     width: "100%",
     boxSizing: "border-box",
     padding: "12px 14px",
     borderRadius: "12px",
-    border: "1px solid #cbd5e1",
+    border: "1px solid #d7deea",
     fontSize: "14px",
     backgroundColor: "#fff",
     outline: "none",
   },
+
   orderTextarea: {
     width: "100%",
     boxSizing: "border-box",
     padding: "12px 14px",
     borderRadius: "12px",
-    border: "1px solid #cbd5e1",
+    border: "1px solid #d7deea",
     fontSize: "14px",
     backgroundColor: "#fff",
     outline: "none",
     resize: "vertical",
     fontFamily: "inherit",
   },
+
   cartFooter: {
     position: "sticky",
     bottom: 0,
@@ -2466,27 +2524,31 @@ page: {
     gap: "14px",
     flexWrap: "wrap",
     background: "rgba(255,255,255,0.96)",
-    borderTop: "1px solid #e2e8f0",
+    borderTop: "1px solid #e8ebf2",
     paddingTop: "16px",
     paddingBottom: "4px",
     backdropFilter: "blur(10px)",
   },
+
   cartFooterSummary: {
     display: "grid",
     gap: "4px",
   },
+
   cartFooterSmall: {
     fontSize: "13px",
-    color: "#64748b",
+    color: "#667085",
     fontWeight: "600",
   },
+
   cartFooterTotal: {
     fontSize: "26px",
     fontWeight: "800",
-    color: "#0f172a",
+    color: "#111827",
   },
+
   checkoutButton: {
-    backgroundColor: "#0f172a",
+    backgroundColor: "#111827",
     color: "#fff",
     border: "none",
     padding: "14px 20px",
@@ -2495,15 +2557,17 @@ page: {
     fontSize: "15px",
     fontWeight: "700",
     minWidth: "220px",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.18)",
+    boxShadow: "0 10px 24px rgba(17, 24, 39, 0.16)",
   },
+
   emptyBox: {
     backgroundColor: "#fff",
-    border: "1px solid #e2e8f0",
-    borderRadius: "18px",
+    border: "1px solid #e8ebf2",
+    borderRadius: "20px",
     padding: "22px",
-    color: "#64748b",
+    color: "#667085",
   },
+
   lightboxBackdrop: {
     position: "fixed",
     inset: 0,
@@ -2515,6 +2579,7 @@ page: {
     padding: "20px",
     touchAction: "none",
   },
+
   lightboxContent: {
     position: "relative",
     width: "100%",
@@ -2526,17 +2591,19 @@ page: {
     justifyContent: "center",
     overflow: "hidden",
   },
+
   lightboxImage: {
     maxWidth: "100%",
     maxHeight: "75vh",
     objectFit: "contain",
     borderRadius: "18px",
   },
+
   closeButton: {
     position: "absolute",
     top: "-8px",
     right: "0",
-    backgroundColor: "rgba(255,255,255,0.12)",
+    backgroundColor: "rgba(255,255,255,0.14)",
     color: "#fff",
     border: "none",
     width: "44px",
@@ -2545,6 +2612,7 @@ page: {
     fontSize: "22px",
     cursor: "pointer",
   },
+
   navButton: {
     position: "absolute",
     top: "50%",
@@ -2561,16 +2629,19 @@ page: {
     alignItems: "center",
     justifyContent: "center",
   },
+
   lightboxFooter: {
     marginTop: "14px",
     textAlign: "center",
     color: "#fff",
   },
+
   lightboxCounter: {
     fontSize: "13px",
     opacity: 0.8,
     marginBottom: "6px",
   },
+
   lightboxCaption: {
     fontSize: "15px",
     lineHeight: "1.5",
@@ -2578,16 +2649,19 @@ page: {
 
   newHeroCard: {
     width: "100%",
-    maxWidth: "640px",
-    margin: "0 auto 32px auto",
-    background: "#0f172a",
+    maxWidth: "680px",
+    margin: "0 auto 28px auto",
+    background:
+      "linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%)",
     color: "#fff",
-    padding: "26px",
-    borderRadius: "26px",
-    boxShadow: "0 10px 40px rgba(0,0,0,0.35)",
+    padding: "22px",
+    borderRadius: "28px",
+    boxShadow: "0 18px 42px rgba(17, 24, 39, 0.22)",
     position: "relative",
     boxSizing: "border-box",
+    overflow: "hidden",
   },
+
   newHeroTop: {
     display: "flex",
     justifyContent: "space-between",
@@ -2595,69 +2669,84 @@ page: {
     marginBottom: "10px",
     gap: "10px",
   },
+
   newHeroBrand: {
     fontSize: "12px",
     textTransform: "uppercase",
-    letterSpacing: "1px",
-    opacity: "0.8",
+    letterSpacing: "1.2px",
+    opacity: 0.78,
   },
+
   newHeroBadge: {
-    background: "rgba(255,255,255,0.15)",
+    background: "rgba(255,255,255,0.14)",
     padding: "6px 12px",
     borderRadius: "10px",
     fontSize: "12px",
     fontWeight: "700",
     whiteSpace: "nowrap",
   },
+
   newHeroTitle: {
-    fontSize: "26px",
+    fontSize: "28px",
     fontWeight: "800",
     margin: "10px 0 4px 0",
+    lineHeight: "1.15",
   },
+
   newHeroSubtitle: {
     fontSize: "14px",
-    opacity: 0.85,
+    opacity: 0.86,
     marginBottom: "16px",
+    lineHeight: "1.5",
   },
+
   newHeroImage: {
     width: "100%",
     borderRadius: "20px",
     overflow: "hidden",
     marginBottom: "16px",
   },
+
   newHeroImageTag: {
     width: "100%",
-    height: "220px",
+    height: "230px",
     objectFit: "cover",
     display: "block",
   },
+
   newHeroDescription: {
-    margin: "0 0 18px 0",
+    margin: "0 0 16px 0",
     fontSize: "14px",
     opacity: 0.9,
+    lineHeight: "1.6",
   },
+
   newHeroPreviewRow: {
     display: "flex",
     gap: "10px",
     marginTop: "10px",
     overflowX: "auto",
+    overflowY: "hidden",
     paddingBottom: "4px",
-    scrollSnapType: "x mandatory",
     WebkitOverflowScrolling: "touch",
+    scrollSnapType: "x proximity",
   },
+
   newHeroPreviewImg: {
-    width: "70px",
-    height: "70px",
-    borderRadius: "12px",
+    width: "72px",
+    height: "72px",
+    borderRadius: "14px",
     objectFit: "cover",
     flex: "0 0 auto",
     scrollSnapAlign: "center",
     cursor: "pointer",
+    border: "1px solid rgba(255,255,255,0.12)",
   },
+
   newHeroMoreBox: {
-    width: "70px",
-    height: "70px",
-    borderRadius: "12px",
+    width: "72px",
+    height: "72px",
+    borderRadius: "14px",
     background: "rgba(255,255,255,0.1)",
     display: "flex",
     alignItems: "center",
