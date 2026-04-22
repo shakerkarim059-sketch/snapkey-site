@@ -81,8 +81,8 @@ export default function HomePage() {
     },
     {
       number: "3",
-      title: "Ich richte alles ein",
-      text: "Ich erstelle die passende Eventseite für dich und verbinde sie mit deinem Snapkey.",
+      title: "Wir richten alles ein",
+      text: "Wir erstellen die passende Eventseite für dich und verbinde sie mit deinem Snapkey.",
     },
     {
       number: "4",
@@ -94,7 +94,7 @@ export default function HomePage() {
   const benefits = [
     {
       title: "Komplettservice",
-      text: "Nicht nur ein Produkt – ich richte die passende Eventseite direkt für dich ein.",
+      text: "Nicht nur ein Produkt – wir richten die passende Eventseite direkt für dich ein.",
     },
     {
       title: "Persönlich",
@@ -125,7 +125,7 @@ export default function HomePage() {
   </h1>
 
   <p style={styles.heroText}>
-    Du bestellst deinen Snapkey – ich erstelle die komplette Eventseite für dich.
+    Du bestellst deinen Snapkey – wir erstellen die komplette Eventseite für dich.
     Gäste öffnen sie mit einem Tap und können Fotos ansehen, teilen und direkt
     als hochwertige Prints bestellen.
   </p>
@@ -200,7 +200,7 @@ export default function HomePage() {
           <p style={styles.sectionText}>
             Bei Snapkey bestellst du nicht einfach nur einen NFC Anhänger. Du
             bestellst einen personalisierten Zugang zu einer fertigen Eventseite,
-            die ich für dich einrichte. So wird aus einem schönen physischen
+            die wir für dich einrichten. So wird aus einem schönen physischen
             Produkt ein kompletter Erinnerungszugang für Familie, Gäste oder
             Freunde.
           </p>
@@ -272,11 +272,11 @@ export default function HomePage() {
         <div style={styles.storyContent}>
           <div style={styles.sectionEyebrow}>So läuft es ab</div>
           <h2 style={styles.sectionTitle}>
-            Du bestellst den Snapkey – ich kümmere mich um den Rest
+            Du bestellst den Snapkey – wir kümmeren uns um den Rest
           </h2>
           <p style={styles.sectionText}>
             Snapkey ist bewusst einfach aufgebaut: Du wählst das passende
-            Produkt, gibst deinen Anlass an und ich richte die dazugehörige
+            Produkt, gibst deinen Anlass an und wir richten die dazugehörige
             Seite ein. So ist am Ende alles fertig verbunden – physischer
             Snapkey, digitale Eventseite und ein einfacher Zugang zu euren
             Erinnerungen.
