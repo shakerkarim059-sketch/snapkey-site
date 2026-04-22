@@ -22,7 +22,7 @@ export default function HomePage() {
       subtitle: "Schön, schlicht & günstig",
       description:
         "Elegante NFC Tags für Hochzeiten, die sich perfekt für Gäste, Tische oder kleine Erinnerungsgeschenke eignen.",
-      image: "/wedding-key.jpg",
+      image: "/nfc-wedding.jpg",
       points: [
         "Schlichtes elegantes Design",
         "Mit Namen & Datum personalisierbar",
