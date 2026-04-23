@@ -85,7 +85,7 @@ export async function POST(req) {
       metadata: {
         order_id: String(order.id),
         event_id: String(order.event_id),
-        order_type: "snapkey",
+        
       },
     });
 
