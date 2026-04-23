@@ -37,7 +37,7 @@ const PACKAGE_OPTIONS = [10, 25, 50, 100];
 export default function EventPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-const isSetupMode = searchParams.get("setup") === "true";
+  const isSetupMode = searchParams.get("setup") === "true";
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
 
   const [eventData, setEventData] = useState(null);
@@ -65,9 +65,10 @@ const isSetupMode = searchParams.get("setup") === "true";
   const [likingPhotoId, setLikingPhotoId] = useState(null);
   const [submittingCommentPhotoId, setSubmittingCommentPhotoId] =
     useState(null);
+
   const [selectedKeyType, setSelectedKeyType] = useState("standard");
-const [selectedQuantity, setSelectedQuantity] = useState(25);
-const [customQuantity, setCustomQuantity] = useState("");
+  const [selectedQuantity, setSelectedQuantity] = useState(25);
+  const [customQuantity, setCustomQuantity] = useState("");
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -202,26 +203,26 @@ const [customQuantity, setCustomQuantity] = useState("");
       fetchAllComments(),
     ]);
 
-setLoadingEvent(false);
-}
-
-async function checkExistingSession() {
-  try {
-    const response = await fetch("/api/event-session");
-    const result = await response.json();
-
-    if (!response.ok || !result?.authenticated) return;
-
-    if (!result.globalAdmin && result.slug !== slug) return;
-
-    setIsAuthenticated(true);
-    setIsAdmin(result.role === "admin");
-  } catch (error) {
-    console.error("Fehler beim Prüfen der Session:", error);
+    setLoadingEvent(false);
   }
-}
 
-async function attachSignedUrls(photoRows) {
+  async function checkExistingSession() {
+    try {
+      const response = await fetch("/api/event-session");
+      const result = await response.json();
+
+      if (!response.ok || !result?.authenticated) return;
+
+      if (!result.globalAdmin && result.slug !== slug) return;
+
+      setIsAuthenticated(true);
+      setIsAdmin(result.role === "admin");
+    } catch (error) {
+      console.error("Fehler beim Prüfen der Session:", error);
+    }
+  }
+
+  async function attachSignedUrls(photoRows) {
     const mapped = await Promise.all(
       (photoRows || []).map(async (photo) => {
         if (!photo.file_path) {
@@ -430,35 +431,37 @@ async function attachSignedUrls(photoRows) {
     setUpdatingEvent(false);
   }
 
- function handleFileSelection(files) {
-  const newFiles = Array.from(files || []);
+  function handleFileSelection(files) {
+    const newFiles = Array.from(files || []);
 
-  setSelectedFiles((prev) => {
-    const merged = [...prev, ...newFiles];
+    setSelectedFiles((prev) => {
+      const merged = [...prev, ...newFiles];
 
-    const uniqueFiles = merged.filter(
-      (file, index, self) =>
-        index ===
-        self.findIndex(
-          (f) =>
-            f.name === file.name &&
-            f.size === file.size &&
-            f.lastModified === file.lastModified
-        )
-    );
+      const uniqueFiles = merged.filter(
+        (file, index, self) =>
+          index ===
+          self.findIndex(
+            (f) =>
+              f.name === file.name &&
+              f.size === file.size &&
+              f.lastModified === file.lastModified
+          )
+      );
 
-    return uniqueFiles;
-  });
+      return uniqueFiles;
+    });
 
-  if (fileInputRef.current) {
-    fileInputRef.current.value = "";
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }
-}
+
   function removeSelectedFile(indexToRemove) {
-  setSelectedFiles((prev) =>
-    prev.filter((_, index) => index !== indexToRemove)
-  );
-}
+    setSelectedFiles((prev) =>
+      prev.filter((_, index) => index !== indexToRemove)
+    );
+  }
+
   async function handlePhotoUpload(e) {
     e.preventDefault();
 
@@ -593,8 +596,7 @@ async function attachSignedUrls(photoRows) {
 
     setLikingPhotoId(photoId);
 
-    const currentScrollY =
-      typeof window !== "undefined" ? window.scrollY : 0;
+    const currentScrollY = typeof window !== "undefined" ? window.scrollY : 0;
 
     try {
       const likeMap = getStoredLikeMap();
@@ -897,15 +899,6 @@ async function attachSignedUrls(photoRows) {
       const photoYear = photoDate ? String(photoDate.getFullYear()) : "";
       const photoMonth = photoDate ? String(photoDate.getMonth() + 1) : "";
 
-      const finalQuantity = customQuantity
-  ? Number(customQuantity)
-  : selectedQuantity;
-
-const selectedKey = KEY_TYPES[selectedKeyType];
-
-const setupTotalPrice =
-  EVENT_BASE_PRICE + finalQuantity * selectedKey.price;
-
       const matchesYear =
         selectedYearFilter === "all" || photoYear === selectedYearFilter;
 
@@ -915,6 +908,14 @@ const setupTotalPrice =
       return matchesYear && matchesMonth;
     });
   }, [photos, selectedYearFilter, selectedMonthFilter]);
+
+  const finalQuantity = customQuantity
+    ? Number(customQuantity)
+    : selectedQuantity;
+
+  const selectedKey = KEY_TYPES[selectedKeyType];
+
+  const setupTotalPrice = EVENT_BASE_PRICE + finalQuantity * selectedKey.price;
 
   const selectedPhotos = filteredPhotos.filter((photo) =>
     selectedPhotoIds.includes(photo.id)
@@ -926,7 +927,9 @@ const setupTotalPrice =
       frameOption: "none",
     };
 
-    return sum + (getProductPrice(options.printOption, options.frameOption) || 0);
+    return (
+      sum + (getProductPrice(options.printOption, options.frameOption) || 0)
+    );
   }, 0);
 
   const totalPrice = totalPriceInCent / 100;
@@ -1008,81 +1011,6 @@ const setupTotalPrice =
             {isAdmin ? "Event geöffnet" : "Gastansicht"}
           </div>
         </div>
-            {isSetupMode && (
-  <div style={styles.setupCard}>
-    <h2 style={styles.setupTitle}>Dein Event aktivieren</h2>
-
-    <div style={styles.setupSection}>
-      <div style={styles.setupLabel}>Snapkey auswählen</div>
-
-      <div style={styles.keyGrid}>
-        {Object.entries(KEY_TYPES).map(([key, item]) => (
-          <div
-            key={key}
-            onClick={() => setSelectedKeyType(key)}
-            style={{
-              ...styles.keyCard,
-              ...(selectedKeyType === key ? styles.keyCardActive : {}),
-            }}
-          >
-            <div style={styles.keyName}>{item.name}</div>
-            <div style={styles.keyDesc}>{item.description}</div>
-            <div style={styles.keyPrice}>
-              {item.price.toFixed(2)}€ / Stück
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-
-    <div style={styles.setupSection}>
-      <div style={styles.setupLabel}>Menge wählen</div>
-
-      <div style={styles.quantityRow}>
-        {PACKAGE_OPTIONS.map((qty) => (
-          <button
-            key={qty}
-            type="button"
-            onClick={() => {
-              setSelectedQuantity(qty);
-              setCustomQuantity("");
-            }}
-            style={{
-              ...styles.qtyButton,
-              ...(selectedQuantity === qty && !customQuantity
-                ? styles.qtyButtonActive
-                : {}),
-            }}
-          >
-            {qty}
-          </button>
-        ))}
-      </div>
-
-      <input
-        type="number"
-        placeholder="Eigene Menge"
-        value={customQuantity}
-        onChange={(e) => setCustomQuantity(e.target.value)}
-        style={styles.input}
-      />
-    </div>
-
-    <div style={styles.priceBox}>
-      <div>Eventseite: {EVENT_BASE_PRICE.toFixed(2)}€</div>
-      <div>
-        {finalQuantity} × {selectedKey.price.toFixed(2)}€
-      </div>
-      <div style={styles.totalPrice}>
-        Gesamt: {setupTotalPrice.toFixed(2)}€
-      </div>
-    </div>
-
-    <button type="button" style={styles.primaryButton}>
-      Event aktivieren & Snapkeys bestellen
-    </button>
-  </div>
-)}
 
         <h1 style={styles.newHeroTitle}>{eventData.title}</h1>
         <p style={styles.newHeroSubtitle}>
@@ -1121,6 +1049,82 @@ const setupTotalPrice =
           </div>
         )}
       </div>
+
+      {isSetupMode && (
+        <div style={styles.setupCard}>
+          <h2 style={styles.setupTitle}>Dein Event aktivieren</h2>
+
+          <div style={styles.setupSection}>
+            <div style={styles.setupLabel}>Snapkey auswählen</div>
+
+            <div style={styles.keyGrid}>
+              {Object.entries(KEY_TYPES).map(([key, item]) => (
+                <div
+                  key={key}
+                  onClick={() => setSelectedKeyType(key)}
+                  style={{
+                    ...styles.keyCard,
+                    ...(selectedKeyType === key ? styles.keyCardActive : {}),
+                  }}
+                >
+                  <div style={styles.keyName}>{item.name}</div>
+                  <div style={styles.keyDesc}>{item.description}</div>
+                  <div style={styles.keyPrice}>
+                    {item.price.toFixed(2)}€ / Stück
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={styles.setupSection}>
+            <div style={styles.setupLabel}>Menge wählen</div>
+
+            <div style={styles.quantityRow}>
+              {PACKAGE_OPTIONS.map((qty) => (
+                <button
+                  key={qty}
+                  type="button"
+                  onClick={() => {
+                    setSelectedQuantity(qty);
+                    setCustomQuantity("");
+                  }}
+                  style={{
+                    ...styles.qtyButton,
+                    ...(selectedQuantity === qty && !customQuantity
+                      ? styles.qtyButtonActive
+                      : {}),
+                  }}
+                >
+                  {qty}
+                </button>
+              ))}
+            </div>
+
+            <input
+              type="number"
+              placeholder="Eigene Menge"
+              value={customQuantity}
+              onChange={(e) => setCustomQuantity(e.target.value)}
+              style={styles.input}
+            />
+          </div>
+
+          <div style={styles.priceBox}>
+            <div>Eventseite: {EVENT_BASE_PRICE.toFixed(2)}€</div>
+            <div>
+              {finalQuantity} × {selectedKey.price.toFixed(2)}€
+            </div>
+            <div style={styles.setupTotalPrice}>
+              Gesamt: {setupTotalPrice.toFixed(2)}€
+            </div>
+          </div>
+
+          <button type="button" style={styles.primaryButton}>
+            Event aktivieren & Snapkeys bestellen
+          </button>
+        </div>
+      )}
 
       {editingEventId && isAdmin && (
         <form onSubmit={handleUpdateEvent} style={styles.formCard}>
@@ -1298,37 +1302,37 @@ const setupTotalPrice =
           </button>
         </div>
 
-{selectedFiles.length > 0 && (
-  <div style={styles.selectedFilesWrap}>
-    {selectedFiles.map((file, index) => (
-      <div
-        key={`${file.name}-${file.lastModified}-${index}`}
-        style={styles.fileChip}
-      >
-        <img
-          src={URL.createObjectURL(file)}
-          alt={file.name}
-          style={styles.fileChipPreview}
-        />
+        {selectedFiles.length > 0 && (
+          <div style={styles.selectedFilesWrap}>
+            {selectedFiles.map((file, index) => (
+              <div
+                key={`${file.name}-${file.lastModified}-${index}`}
+                style={styles.fileChip}
+              >
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={file.name}
+                  style={styles.fileChipPreview}
+                />
 
-        <div style={styles.fileChipInfo}>
-          <span style={styles.fileChipName}>{file.name}</span>
-          <span style={styles.fileChipSize}>
-            {(file.size / 1024 / 1024).toFixed(1)} MB
-          </span>
-        </div>
+                <div style={styles.fileChipInfo}>
+                  <span style={styles.fileChipName}>{file.name}</span>
+                  <span style={styles.fileChipSize}>
+                    {(file.size / 1024 / 1024).toFixed(1)} MB
+                  </span>
+                </div>
 
-        <button
-          type="button"
-          onClick={() => removeSelectedFile(index)}
-          style={styles.fileChipRemove}
-        >
-          ✕
-        </button>
-      </div>
-    ))}
-  </div>
-)}
+                <button
+                  type="button"
+                  onClick={() => removeSelectedFile(index)}
+                  style={styles.fileChipRemove}
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
 
         <input
           type="text"
@@ -1549,12 +1553,12 @@ const setupTotalPrice =
 
       {cartOpen && (
         <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
-<div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
-  <div style={styles.cartHandleWrap}>
-    <div style={styles.cartHandle} />
-  </div>
+          <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.cartHandleWrap}>
+              <div style={styles.cartHandle} />
+            </div>
 
-  <div style={styles.cartHeader}>
+            <div style={styles.cartHeader}>
               <h3 style={styles.cartTitle}>Ausgewählte Bilder</h3>
               <button
                 type="button"
