@@ -42,18 +42,19 @@ if (!adminPassword.trim()) return alert("Bitte Admin Passwort eingeben");
 
     const slug = `${generateSlug(title)}-${Date.now()}`;
 
-    const { error } = await supabase.from("events").insert([
-      {
-        title,
-        location,
-        category,
-        start_date: date || null,
-        description,
-        access_password: password,
-        admin_password: adminPassword,
-        slug,
-      },
-    ]);
+const { error } = await supabase.from("events").insert([
+  {
+    title,
+    location,
+    category,
+    start_date: date || null,
+    description,
+    creator_email: creatorEmail,
+    access_password: password,
+    admin_password: adminPassword,
+    slug,
+  },
+]);
 
     if (error) {
       alert(error.message);
