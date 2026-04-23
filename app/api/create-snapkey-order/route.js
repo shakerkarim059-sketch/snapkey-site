@@ -159,13 +159,16 @@ if (!admin && String(session.eventId) !== String(eventId)) {
       .select()
       .single();
 
-    if (orderError) {
-      console.error("Fehler beim Speichern der Snapkey-Bestellung:", orderError);
-      return NextResponse.json(
-        { error: "Snapkey-Bestellung konnte nicht gespeichert werden." },
-        { status: 500 }
-      );
-    }
+  if (orderError) {
+  console.error("Fehler beim Speichern der Snapkey-Bestellung:", orderError);
+  return NextResponse.json(
+    {
+      error: "Snapkey-Bestellung konnte nicht gespeichert werden.",
+      details: orderError.message,
+    },
+    { status: 500 }
+  );
+}
 
     const orderItemsPayload = [
       {
@@ -207,19 +210,22 @@ if (!admin && String(session.eventId) !== String(eventId)) {
       .from("order_items")
       .insert(orderItemsPayload);
 
-    if (itemsError) {
-      console.error(
-        "Fehler beim Speichern der Snapkey-Bestellpositionen:",
-        itemsError
-      );
+if (itemsError) {
+  console.error(
+    "Fehler beim Speichern der Snapkey-Bestellpositionen:",
+    itemsError
+  );
 
-      await supabase.from("orders").delete().eq("id", createdOrder.id);
+  await supabase.from("orders").delete().eq("id", createdOrder.id);
 
-      return NextResponse.json(
-        { error: "Bestellpositionen konnten nicht gespeichert werden." },
-        { status: 500 }
-      );
-    }
+  return NextResponse.json(
+    {
+      error: "Bestellpositionen konnten nicht gespeichert werden.",
+      details: itemsError.message,
+    },
+    { status: 500 }
+  );
+}
 
     return NextResponse.json({
       success: true,
