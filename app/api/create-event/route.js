@@ -1,3 +1,6 @@
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
@@ -83,6 +86,25 @@ export async function POST(request) {
       .single();
 
     if (error) {
+      const eventUrl = `https://getsnapkey.de/event/${data.slug}`;
+
+await resend.emails.send({
+  from: "Snapkey <onboarding@resend.dev>",
+  to: data.creator_email,
+  subject: "Dein Snapkey Event wurde erstellt",
+  html: `
+    <h2>Dein Event wurde erstellt 🎉</h2>
+    <p>Du kannst dein Event jederzeit über diesen Link öffnen:</p>
+    <p><a href="${eventUrl}">${eventUrl}</a></p>
+
+    <p><strong>Wichtig:</strong> Speichere diesen Link gut ab.</p>
+
+    <p>Mit deinem Admin-Passwort kannst du dein Event verwalten.</p>
+
+    <br/>
+    <p>Viele Grüße<br/>Snapkey</p>
+  `,
+});
       console.error("Fehler beim Erstellen des Events:", error);
       return NextResponse.json(
         { error: error.message || "Event konnte nicht erstellt werden." },
