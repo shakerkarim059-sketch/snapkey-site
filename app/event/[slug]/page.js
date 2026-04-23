@@ -103,6 +103,16 @@ export default function EventPage() {
   const [orderNote, setOrderNote] = useState("");
   const [submittingOrder, setSubmittingOrder] = useState(false);
 
+  const [snapkeyCustomerName, setSnapkeyCustomerName] = useState("");
+const [snapkeyCustomerEmail, setSnapkeyCustomerEmail] = useState("");
+const [snapkeyCustomerPhone, setSnapkeyCustomerPhone] = useState("");
+const [snapkeyStreet, setSnapkeyStreet] = useState("");
+const [snapkeyPostalCode, setSnapkeyPostalCode] = useState("");
+const [snapkeyCity, setSnapkeyCity] = useState("");
+const [snapkeyCountry, setSnapkeyCountry] = useState("Deutschland");
+const [snapkeyOrderNote, setSnapkeyOrderNote] = useState("");
+const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
+
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
