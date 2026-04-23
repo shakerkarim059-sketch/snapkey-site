@@ -12,8 +12,32 @@ import {
 
 const LOCAL_LIKE_STORAGE_KEY = "family-photo-liked-map";
 
+const EVENT_BASE_PRICE = 29;
+
+const KEY_TYPES = {
+  basic: {
+    name: "Karte / NFC Key",
+    description: "Günstiger Einstieg für viele Gäste",
+    price: 2.5,
+  },
+  standard: {
+    name: "Snapkey Anhänger",
+    description: "Beliebte Wahl für Events und Hochzeiten",
+    price: 4,
+  },
+  premium: {
+    name: "Premium Holz-Snapkey",
+    description: "Hochwertiges Erinnerungsstück",
+    price: 6,
+  },
+};
+
+const PACKAGE_OPTIONS = [10, 25, 50, 100];
+
 export default function EventPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
+const isSetupMode = searchParams.get("setup") === "true";
   const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
 
   const [eventData, setEventData] = useState(null);
@@ -41,6 +65,9 @@ export default function EventPage() {
   const [likingPhotoId, setLikingPhotoId] = useState(null);
   const [submittingCommentPhotoId, setSubmittingCommentPhotoId] =
     useState(null);
+  const [selectedKeyType, setSelectedKeyType] = useState("standard");
+const [selectedQuantity, setSelectedQuantity] = useState(25);
+const [customQuantity, setCustomQuantity] = useState("");
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -870,6 +897,15 @@ async function attachSignedUrls(photoRows) {
       const photoYear = photoDate ? String(photoDate.getFullYear()) : "";
       const photoMonth = photoDate ? String(photoDate.getMonth() + 1) : "";
 
+      const finalQuantity = customQuantity
+  ? Number(customQuantity)
+  : selectedQuantity;
+
+const selectedKey = KEY_TYPES[selectedKeyType];
+
+const setupTotalPrice =
+  EVENT_BASE_PRICE + finalQuantity * selectedKey.price;
+
       const matchesYear =
         selectedYearFilter === "all" || photoYear === selectedYearFilter;
 
@@ -972,6 +1008,81 @@ async function attachSignedUrls(photoRows) {
             {isAdmin ? "Event geöffnet" : "Gastansicht"}
           </div>
         </div>
+            {isSetupMode && (
+  <div style={styles.setupCard}>
+    <h2 style={styles.setupTitle}>Dein Event aktivieren</h2>
+
+    <div style={styles.setupSection}>
+      <div style={styles.setupLabel}>Snapkey auswählen</div>
+
+      <div style={styles.keyGrid}>
+        {Object.entries(KEY_TYPES).map(([key, item]) => (
+          <div
+            key={key}
+            onClick={() => setSelectedKeyType(key)}
+            style={{
+              ...styles.keyCard,
+              ...(selectedKeyType === key ? styles.keyCardActive : {}),
+            }}
+          >
+            <div style={styles.keyName}>{item.name}</div>
+            <div style={styles.keyDesc}>{item.description}</div>
+            <div style={styles.keyPrice}>
+              {item.price.toFixed(2)}€ / Stück
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div style={styles.setupSection}>
+      <div style={styles.setupLabel}>Menge wählen</div>
+
+      <div style={styles.quantityRow}>
+        {PACKAGE_OPTIONS.map((qty) => (
+          <button
+            key={qty}
+            type="button"
+            onClick={() => {
+              setSelectedQuantity(qty);
+              setCustomQuantity("");
+            }}
+            style={{
+              ...styles.qtyButton,
+              ...(selectedQuantity === qty && !customQuantity
+                ? styles.qtyButtonActive
+                : {}),
+            }}
+          >
+            {qty}
+          </button>
+        ))}
+      </div>
+
+      <input
+        type="number"
+        placeholder="Eigene Menge"
+        value={customQuantity}
+        onChange={(e) => setCustomQuantity(e.target.value)}
+        style={styles.input}
+      />
+    </div>
+
+    <div style={styles.priceBox}>
+      <div>Eventseite: {EVENT_BASE_PRICE.toFixed(2)}€</div>
+      <div>
+        {finalQuantity} × {selectedKey.price.toFixed(2)}€
+      </div>
+      <div style={styles.totalPrice}>
+        Gesamt: {setupTotalPrice.toFixed(2)}€
+      </div>
+    </div>
+
+    <button type="button" style={styles.primaryButton}>
+      Event aktivieren & Snapkeys bestellen
+    </button>
+  </div>
+)}
 
         <h1 style={styles.newHeroTitle}>{eventData.title}</h1>
         <p style={styles.newHeroSubtitle}>
@@ -1748,6 +1859,104 @@ async function attachSignedUrls(photoRows) {
 }
 
 const styles = {
+  setupCard: {
+  background: "#fff",
+  borderRadius: "24px",
+  padding: "20px",
+  marginBottom: "24px",
+  border: "1px solid #e8ebf2",
+  display: "grid",
+  gap: "16px",
+},
+
+setupTitle: {
+  margin: 0,
+  fontSize: "22px",
+  fontWeight: "800",
+  color: "#111827",
+},
+
+setupSection: {
+  display: "grid",
+  gap: "10px",
+},
+
+setupLabel: {
+  fontWeight: "700",
+  color: "#111827",
+  fontSize: "15px",
+},
+
+keyGrid: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+  gap: "10px",
+},
+
+keyCard: {
+  border: "1px solid #d7deea",
+  borderRadius: "14px",
+  padding: "12px",
+  cursor: "pointer",
+  background: "#fff",
+  display: "grid",
+  gap: "6px",
+},
+
+keyCardActive: {
+  border: "2px solid #111827",
+  boxShadow: "0 8px 18px rgba(17, 24, 39, 0.08)",
+},
+
+keyName: {
+  fontWeight: "700",
+  color: "#111827",
+  fontSize: "15px",
+},
+
+keyDesc: {
+  fontSize: "13px",
+  color: "#667085",
+  lineHeight: "1.5",
+},
+
+keyPrice: {
+  marginTop: "4px",
+  fontWeight: "700",
+  color: "#111827",
+  fontSize: "14px",
+},
+
+quantityRow: {
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap",
+},
+
+qtyButton: {
+  padding: "10px 14px",
+  borderRadius: "10px",
+  border: "1px solid #d7deea",
+  cursor: "pointer",
+  background: "#fff",
+  color: "#111827",
+  fontWeight: "700",
+},
+
+qtyButtonActive: {
+  background: "#111827",
+  color: "#fff",
+  border: "1px solid #111827",
+},
+
+priceBox: {
+  background: "#f8fafc",
+  padding: "14px",
+  borderRadius: "14px",
+  display: "grid",
+  gap: "6px",
+  border: "1px solid #e8ebf2",
+},
   page: {
     position: "relative",
     width: "100%",
