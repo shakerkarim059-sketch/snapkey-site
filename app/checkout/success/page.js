@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function SuccessPage() {
   return (
     <div style={{ padding: "24px", maxWidth: "520px", margin: "0 auto" }}>
@@ -9,13 +11,15 @@ export default function SuccessPage() {
         Vielen Dank! Deine Bestellung wurde erfolgreich bezahlt.
       </p>
 
-      <div style={{
-        background: "#f8fafc",
-        padding: "16px",
-        borderRadius: "14px",
-        border: "1px solid #e8ebf2",
-        marginBottom: "20px"
-      }}>
+      <div
+        style={{
+          background: "#f8fafc",
+          padding: "16px",
+          borderRadius: "14px",
+          border: "1px solid #e8ebf2",
+          marginBottom: "20px",
+        }}
+      >
         <p style={{ margin: 0, fontWeight: "600" }}>
           Wie geht es jetzt weiter?
         </p>
@@ -27,22 +31,24 @@ export default function SuccessPage() {
         </ul>
       </div>
 
-      <button
-        onClick={() => window.location.href = "/"}
+      <Link
+        href="/"
         style={{
+          display: "block",
           width: "100%",
           padding: "14px",
           borderRadius: "12px",
           background: "#111827",
           color: "#fff",
-          border: "none",
+          textDecoration: "none",
           fontWeight: "700",
           fontSize: "15px",
-          cursor: "pointer"
+          textAlign: "center",
+          boxSizing: "border-box",
         }}
       >
-        Zurück zur Eventseite
-      </button>
+        Zurück zur Startseite
+      </Link>
     </div>
   );
 }
