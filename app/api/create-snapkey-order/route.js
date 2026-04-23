@@ -48,23 +48,25 @@ function verifySession(token) {
     return null;
   }
 }
+
 function isGlobalAdmin(request) {
   const adminSession = request.cookies.get("admin_session")?.value;
   return adminSession === "authenticated";
 }
+
 export async function POST(request) {
   try {
     const admin = isGlobalAdmin(request);
 
-const token = request.cookies.get("event_session")?.value;
-const session = verifySession(token);
+    const token = request.cookies.get("event_session")?.value;
+    const session = verifySession(token);
 
-if (!admin && !session) {
-  return NextResponse.json(
-    { error: "Nicht autorisiert." },
-    { status: 401 }
-  );
-}
+    if (!admin && !session) {
+      return NextResponse.json(
+        { error: "Nicht autorisiert." },
+        { status: 401 }
+      );
+    }
 
     const body = await request.json();
 
@@ -87,12 +89,12 @@ if (!admin && !session) {
       return NextResponse.json({ error: "Event fehlt." }, { status: 400 });
     }
 
-if (!admin && String(session.eventId) !== String(eventId)) {
-  return NextResponse.json(
-    { error: "Session passt nicht zu diesem Event." },
-    { status: 403 }
-  );
-}
+    if (!admin && String(session.eventId) !== String(eventId)) {
+      return NextResponse.json(
+        { error: "Session passt nicht zu diesem Event." },
+        { status: 403 }
+      );
+    }
 
     if (!keyType || !KEY_TYPES[keyType]) {
       return NextResponse.json(
@@ -136,86 +138,41 @@ if (!admin && String(session.eventId) !== String(eventId)) {
     const totalPrice = EVENT_BASE_PRICE * 100 + unitPrice * parsedQuantity;
 
     const { data: createdOrder, error: orderError } = await supabase
-      .from("orders")
+      .from("snapkey_orders")
       .insert([
-{
-  event_id: eventId,
-  customer_name: customerName.trim(),
-  customer_email: customerEmail.trim(),
-  customer_phone: customerPhone?.trim() || null,
-  street: street.trim(),
-  postal_code: postalCode.trim(),
-  city: city.trim(),
-  country: country?.trim() || "Deutschland",
-  note: orderNote?.trim() || null,
-  print_option: "snapkey",
-  frame_option: "none",
-  item_count: parsedQuantity,
-  total_price: totalPrice,
-  payment_status: "pending",
-  status: "neu",
-  fulfillment_status: "not_started",
-},
+        {
+          event_id: eventId,
+          customer_name: customerName.trim(),
+          customer_email: customerEmail.trim(),
+          customer_phone: customerPhone?.trim() || null,
+          street: street.trim(),
+          postal_code: postalCode.trim(),
+          city: city.trim(),
+          country: country?.trim() || "Deutschland",
+          note: orderNote?.trim() || null,
+          key_type: keyType,
+          design_variant: designVariant || null,
+          quantity: parsedQuantity,
+          unit_price: unitPrice,
+          total_price: totalPrice,
+          payment_status: "pending",
+          status: "neu",
+          fulfillment_status: "not_started",
+        },
       ])
       .select()
       .single();
 
-  if (orderError) {
-  console.error("Fehler beim Speichern der Snapkey-Bestellung:", orderError);
-  return NextResponse.json(
-    {
-      error: "Snapkey-Bestellung konnte nicht gespeichert werden.",
-      details: orderError.message,
-    },
-    { status: 500 }
-  );
-}
-
-    const orderItemsPayload = [
-      {
-        order_id: createdOrder.id,
-        photo_id: null,
-        photo_url: null,
-        photo_path: null,
-        photo_caption: `Eventseite Aktivierung`,
-        print_option: null,
-        frame_option: null,
-        unit_price: EVENT_BASE_PRICE * 100,
-        quantity: 1,
-      },
-      {
-        order_id: createdOrder.id,
-        photo_id: null,
-        photo_url: null,
-        photo_path: null,
-        photo_caption: `${keyConfig.name}`,
-        print_option: null,
-        frame_option: null,
-        unit_price: unitPrice,
-        quantity: parsedQuantity,
-      },
-    ];
-
-    const { error: itemsError } = await supabase
-      .from("order_items")
-      .insert(orderItemsPayload);
-
-if (itemsError) {
-  console.error(
-    "Fehler beim Speichern der Snapkey-Bestellpositionen:",
-    itemsError
-  );
-
-  await supabase.from("orders").delete().eq("id", createdOrder.id);
-
-  return NextResponse.json(
-    {
-      error: "Bestellpositionen konnten nicht gespeichert werden.",
-      details: itemsError.message,
-    },
-    { status: 500 }
-  );
-}
+    if (orderError) {
+      console.error("Fehler beim Speichern der Snapkey-Bestellung:", orderError);
+      return NextResponse.json(
+        {
+          error: "Snapkey-Bestellung konnte nicht gespeichert werden.",
+          details: orderError.message,
+        },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       success: true,
