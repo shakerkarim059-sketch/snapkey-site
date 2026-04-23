@@ -1,50 +1,48 @@
-export default function CheckoutSuccessPage() {
+export default function SuccessPage() {
   return (
-    <main
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px",
+    <div style={{ padding: "24px", maxWidth: "520px", margin: "0 auto" }}>
+      <h1 style={{ fontSize: "28px", fontWeight: "800", marginBottom: "12px" }}>
+        🎉 Zahlung erfolgreich
+      </h1>
+
+      <p style={{ marginBottom: "16px", fontSize: "15px", lineHeight: "1.6" }}>
+        Vielen Dank! Deine Bestellung wurde erfolgreich bezahlt.
+      </p>
+
+      <div style={{
         background: "#f8fafc",
-      }}
-    >
-      <div
+        padding: "16px",
+        borderRadius: "14px",
+        border: "1px solid #e8ebf2",
+        marginBottom: "20px"
+      }}>
+        <p style={{ margin: 0, fontWeight: "600" }}>
+          Wie geht es jetzt weiter?
+        </p>
+
+        <ul style={{ marginTop: "10px", paddingLeft: "18px", lineHeight: "1.6" }}>
+          <li>Dein Event ist jetzt aktiviert</li>
+          <li>Deine Snapkeys werden vorbereitet</li>
+          <li>Du erhältst Updates per E-Mail</li>
+        </ul>
+      </div>
+
+      <button
+        onClick={() => window.location.href = "/"}
         style={{
           width: "100%",
-          maxWidth: "520px",
-          background: "#ffffff",
-          border: "1px solid #e2e8f0",
-          borderRadius: "24px",
-          padding: "32px",
-          textAlign: "center",
-          boxShadow: "0 16px 40px rgba(15, 23, 42, 0.08)",
+          padding: "14px",
+          borderRadius: "12px",
+          background: "#111827",
+          color: "#fff",
+          border: "none",
+          fontWeight: "700",
+          fontSize: "15px",
+          cursor: "pointer"
         }}
       >
-        <h1
-          style={{
-            margin: "0 0 12px 0",
-            fontSize: "32px",
-            fontWeight: "800",
-            color: "#0f172a",
-          }}
-        >
-          Zahlung erfolgreich
-        </h1>
-
-        <p
-          style={{
-            margin: 0,
-            fontSize: "16px",
-            lineHeight: "1.7",
-            color: "#475569",
-          }}
-        >
-          Vielen Dank. Deine Bestellung wurde erfolgreich bezahlt und wird jetzt
-          bearbeitet.
-        </p>
-      </div>
-    </main>
+        Zurück zur Eventseite
+      </button>
+    </div>
   );
 }
