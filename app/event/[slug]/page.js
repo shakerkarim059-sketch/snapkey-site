@@ -1187,10 +1187,19 @@ async function attachSignedUrls(photoRows) {
           </button>
         </div>
 
- {selectedFiles.length > 0 && (
+{selectedFiles.length > 0 && (
   <div style={styles.selectedFilesWrap}>
     {selectedFiles.map((file, index) => (
-      <div key={`${file.name}-${file.lastModified}-${index}`} style={styles.fileChip}>
+      <div
+        key={`${file.name}-${file.lastModified}-${index}`}
+        style={styles.fileChip}
+      >
+        <img
+          src={URL.createObjectURL(file)}
+          alt={file.name}
+          style={styles.fileChipPreview}
+        />
+
         <div style={styles.fileChipInfo}>
           <span style={styles.fileChipName}>{file.name}</span>
           <span style={styles.fileChipSize}>
@@ -1955,6 +1964,16 @@ fileChip: {
   border: "1px solid #e8ebf2",
   maxWidth: "100%",
 },
+fileChipPreview: {
+  width: "52px",
+  height: "52px",
+  borderRadius: "12px",
+  objectFit: "cover",
+  flex: "0 0 auto",
+  border: "1px solid #e8ebf2",
+  backgroundColor: "#e5e7eb",
+},
+
 fileChipInfo: {
   display: "grid",
   gap: "2px",
