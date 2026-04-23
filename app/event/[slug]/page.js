@@ -1120,19 +1120,97 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
             />
           </div>
 
-          <div style={styles.priceBox}>
-            <div>Eventseite: {EVENT_BASE_PRICE.toFixed(2)}€</div>
-            <div>
-              {finalQuantity} × {selectedKey.price.toFixed(2)}€
-            </div>
-            <div style={styles.setupTotalPrice}>
-              Gesamt: {setupTotalPrice.toFixed(2)}€
-            </div>
-          </div>
+<div style={styles.priceBox}>
+  <div>Eventseite: {EVENT_BASE_PRICE.toFixed(2)}€</div>
+  <div>
+    {finalQuantity} × {selectedKey.price.toFixed(2)}€
+  </div>
+  <div style={styles.setupTotalPrice}>
+    Gesamt: {setupTotalPrice.toFixed(2)}€
+  </div>
+</div>
 
-          <button
+<div style={styles.orderFormCard}>
+  <h4 style={styles.orderFormTitle}>Snapkeys bestellen</h4>
+  <p style={styles.orderFormText}>
+    Gib hier deine Kontaktdaten und Lieferadresse ein. Danach wirst du direkt
+    zur Zahlung weitergeleitet.
+  </p>
+
+  <div style={styles.orderFormGrid}>
+    <input
+      type="text"
+      placeholder="Vor- und Nachname"
+      value={snapkeyCustomerName}
+      onChange={(e) => setSnapkeyCustomerName(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="email"
+      placeholder="E-Mail"
+      value={snapkeyCustomerEmail}
+      onChange={(e) => setSnapkeyCustomerEmail(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Telefon (optional)"
+      value={snapkeyCustomerPhone}
+      onChange={(e) => setSnapkeyCustomerPhone(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Straße und Hausnummer"
+      value={snapkeyStreet}
+      onChange={(e) => setSnapkeyStreet(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="PLZ"
+      value={snapkeyPostalCode}
+      onChange={(e) => setSnapkeyPostalCode(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Ort"
+      value={snapkeyCity}
+      onChange={(e) => setSnapkeyCity(e.target.value)}
+      style={styles.orderInput}
+    />
+
+    <input
+      type="text"
+      placeholder="Land"
+      value={snapkeyCountry}
+      onChange={(e) => setSnapkeyCountry(e.target.value)}
+      style={styles.orderInput}
+    />
+  </div>
+
+  <textarea
+    placeholder="Notiz zur Bestellung (optional)"
+    value={snapkeyOrderNote}
+    onChange={(e) => setSnapkeyOrderNote(e.target.value)}
+    rows={4}
+    style={styles.orderTextarea}
+  />
+</div>
+
+<button
   type="button"
-  style={styles.primaryButton}
+  style={{
+    ...styles.primaryButton,
+    ...(submittingSnapkeyOrder ? styles.buttonDisabled : {}),
+  }}
+  disabled={submittingSnapkeyOrder}
   onClick={async () => {
     try {
       if (!eventData?.id) {
@@ -1149,35 +1227,22 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
         return;
       }
 
-      const customerName = window.prompt("Vor- und Nachname");
-      if (!customerName?.trim()) {
+      if (!snapkeyCustomerName.trim()) {
         alert("Bitte deinen Namen eingeben.");
         return;
       }
 
-      const customerEmail = window.prompt("E-Mail-Adresse");
-      if (!customerEmail?.trim()) {
+      if (!snapkeyCustomerEmail.trim()) {
         alert("Bitte deine E-Mail eingeben.");
         return;
       }
 
-      const street = window.prompt("Straße und Hausnummer");
-      if (!street?.trim()) {
-        alert("Bitte Straße und Hausnummer eingeben.");
+      if (!snapkeyStreet.trim() || !snapkeyPostalCode.trim() || !snapkeyCity.trim()) {
+        alert("Bitte die vollständige Adresse eingeben.");
         return;
       }
 
-      const postalCode = window.prompt("PLZ");
-      if (!postalCode?.trim()) {
-        alert("Bitte die PLZ eingeben.");
-        return;
-      }
-
-      const city = window.prompt("Ort");
-      if (!city?.trim()) {
-        alert("Bitte den Ort eingeben.");
-        return;
-      }
+      setSubmittingSnapkeyOrder(true);
 
       const createOrderResponse = await fetch("/api/create-snapkey-order", {
         method: "POST",
@@ -1189,14 +1254,14 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
           keyType: selectedKeyType,
           quantity: parsedQuantity,
           designVariant: eventData.category || null,
-          customerName,
-          customerEmail,
-          customerPhone: "",
-          street,
-          postalCode,
-          city,
-          country: "Deutschland",
-          orderNote: "",
+          customerName: snapkeyCustomerName,
+          customerEmail: snapkeyCustomerEmail,
+          customerPhone: snapkeyCustomerPhone,
+          street: snapkeyStreet,
+          postalCode: snapkeyPostalCode,
+          city: snapkeyCity,
+          country: snapkeyCountry,
+          orderNote: snapkeyOrderNote,
         }),
       });
 
@@ -1207,6 +1272,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
           createOrderResult.error ||
             "Snapkey-Bestellung konnte nicht gespeichert werden."
         );
+        setSubmittingSnapkeyOrder(false);
         return;
       }
 
@@ -1214,6 +1280,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       if (!orderId) {
         alert("Keine Bestell-ID erhalten.");
+        setSubmittingSnapkeyOrder(false);
         return;
       }
 
@@ -1235,11 +1302,13 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
           checkoutResult.error ||
             "Stripe Checkout konnte nicht gestartet werden."
         );
+        setSubmittingSnapkeyOrder(false);
         return;
       }
 
       if (!checkoutResult.url) {
         alert("Keine Checkout-URL erhalten.");
+        setSubmittingSnapkeyOrder(false);
         return;
       }
 
@@ -1247,10 +1316,13 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     } catch (error) {
       console.error("Fehler beim Starten der Snapkey-Bestellung:", error);
       alert("Es gab ein Problem beim Starten der Zahlung.");
+      setSubmittingSnapkeyOrder(false);
     }
   }}
 >
-  Event aktivieren & Snapkeys bestellen
+  {submittingSnapkeyOrder
+    ? "Snapkey-Bestellung wird vorbereitet..."
+    : "Event aktivieren & Snapkeys bestellen"}
 </button>
         </div>
       )}
