@@ -36,15 +36,22 @@ export default function SuccessPage() {
           {eventUrl}
         </div>
 
-        <div style={styles.buttons}>
-          <button onClick={copyLink} style={styles.button}>
-            Link kopieren
-          </button>
+<div style={styles.buttons}>
+  <button onClick={copyLink} style={styles.button}>
+    Link kopieren
+  </button>
 
-          <button onClick={shareWhatsApp} style={styles.buttonSecondary}>
-            WhatsApp teilen
-          </button>
-        </div>
+  <button onClick={shareWhatsApp} style={styles.buttonSecondary}>
+    WhatsApp teilen
+  </button>
+
+  <button
+    onClick={() => window.open(eventUrl, "_blank")}
+    style={styles.button}
+  >
+    Event öffnen
+  </button>
+</div>
 
         <p style={styles.hint}>
           Du hast den Link zusätzlich per E-Mail erhalten.
