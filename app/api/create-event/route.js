@@ -100,7 +100,7 @@ export async function POST(request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Snapkey <mail@mail.getsnapkey.de>",
+          from: "Snapkey <info@mail.getsnapkey.de>",
           to: data.creator_email,
           subject: "Dein Snapkey Event wurde erstellt",
           html: `
