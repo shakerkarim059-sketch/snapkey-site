@@ -2830,27 +2830,27 @@ cartHandle: {
     lineHeight: "1.6",
   },
 
-  newHeroPreviewRow: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "10px",
-    overflowX: "auto",
-    overflowY: "hidden",
-    paddingBottom: "4px",
-    WebkitOverflowScrolling: "touch",
-    scrollSnapType: "x proximity",
-  },
+newHeroPreviewRow: {
+  display: "grid",
+  gridTemplateColumns: "repeat(4, 1fr)",
+  gap: "10px",
+  marginTop: "10px",
+  maxHeight: "256px",
+  overflowY: "auto",
+  overflowX: "hidden",
+  paddingRight: "4px",
+  alignContent: "start",
+},
 
-  newHeroPreviewImg: {
-    width: "72px",
-    height: "72px",
-    borderRadius: "14px",
-    objectFit: "cover",
-    flex: "0 0 auto",
-    scrollSnapAlign: "center",
-    cursor: "pointer",
-    border: "1px solid rgba(255,255,255,0.12)",
-  },
+newHeroPreviewImg: {
+  width: "100%",
+  aspectRatio: "1 / 1",
+  borderRadius: "14px",
+  objectFit: "cover",
+  cursor: "pointer",
+  border: "1px solid rgba(255,255,255,0.12)",
+  display: "block",
+},
 
   newHeroMoreBox: {
     width: "72px",
