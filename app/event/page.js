@@ -33,9 +33,10 @@ const [creating, setCreating] = useState(false);
   async function handleCreateEvent(e) {
     e.preventDefault();
 
-    if (!title.trim()) return alert("Bitte Titel eingeben");
-    if (!password.trim()) return alert("Bitte Zugangspasswort eingeben");
-    if (!adminPassword.trim()) return alert("Bitte Admin Passwort eingeben");
+if (!title.trim()) return alert("Bitte Titel eingeben");
+if (!creatorEmail.trim()) return alert("Bitte E-Mail eingeben");
+if (!password.trim()) return alert("Bitte Zugangspasswort eingeben");
+if (!adminPassword.trim()) return alert("Bitte Admin Passwort eingeben");
 
     setCreating(true);
 
@@ -139,7 +140,20 @@ const [creating, setCreating] = useState(false);
               style={styles.textarea}
             />
           </div>
-
+<div style={styles.field}>
+  <label style={styles.label}>Deine E-Mail *</label>
+  <input
+    type="email"
+    placeholder="deine@email.de"
+    value={creatorEmail}
+    onChange={(e) => setCreatorEmail(e.target.value)}
+    style={styles.input}
+  />
+  <div style={styles.helper}>
+    An diese E-Mail senden wir dir später deinen Event-Link.
+  </div>
+</div>
+              
           <div style={styles.field}>
             <label style={styles.label}>Zugang für Gäste *</label>
             <input
