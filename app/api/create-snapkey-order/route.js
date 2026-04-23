@@ -138,22 +138,24 @@ if (!admin && String(session.eventId) !== String(eventId)) {
     const { data: createdOrder, error: orderError } = await supabase
       .from("orders")
       .insert([
-        {
-          event_id: eventId,
-          customer_name: customerName.trim(),
-          customer_email: customerEmail.trim(),
-          customer_phone: customerPhone?.trim() || null,
-          street: street.trim(),
-          postal_code: postalCode.trim(),
-          city: city.trim(),
-          country: country?.trim() || "Deutschland",
-          note: orderNote?.trim() || null,
-          item_count: parsedQuantity,
-          total_price: totalPrice,
-          payment_status: "pending",
-          status: "neu",
-          fulfillment_status: "not_started",
-        },
+{
+  event_id: eventId,
+  customer_name: customerName.trim(),
+  customer_email: customerEmail.trim(),
+  customer_phone: customerPhone?.trim() || null,
+  street: street.trim(),
+  postal_code: postalCode.trim(),
+  city: city.trim(),
+  country: country?.trim() || "Deutschland",
+  note: orderNote?.trim() || null,
+  print_option: "snapkey",
+  frame_option: "none",
+  item_count: parsedQuantity,
+  total_price: totalPrice,
+  payment_status: "pending",
+  status: "neu",
+  fulfillment_status: "not_started",
+},
       ])
       .select()
       .single();
