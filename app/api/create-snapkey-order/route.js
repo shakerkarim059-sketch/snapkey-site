@@ -153,7 +153,6 @@ if (!admin && String(session.eventId) !== String(eventId)) {
           payment_status: "pending",
           status: "neu",
           fulfillment_status: "not_started",
-          order_type: "snapkey",
         },
       ])
       .select()
