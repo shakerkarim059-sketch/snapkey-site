@@ -53,6 +53,7 @@ if (!response.ok) {
 }
 
 router.push(`/event/${result.event.slug}`);
+  }
 
   return (
     <main style={styles.page}>
