@@ -182,9 +182,6 @@ if (!admin && String(session.eventId) !== String(eventId)) {
         frame_option: null,
         unit_price: EVENT_BASE_PRICE * 100,
         quantity: 1,
-        meta: {
-          eventId,
-        },
       },
       {
         order_id: createdOrder.id,
@@ -196,10 +193,6 @@ if (!admin && String(session.eventId) !== String(eventId)) {
         frame_option: null,
         unit_price: unitPrice,
         quantity: parsedQuantity,
-        meta: {
-          keyType,
-          designVariant: designVariant || null,
-        },
       },
     ];
 
