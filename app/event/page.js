@@ -7,14 +7,15 @@ import { supabase } from "../../lib/supabase";
 export default function CreateEventPage() {
   const router = useRouter();
 
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [category, setCategory] = useState("");
-  const [date, setDate] = useState("");
-  const [description, setDescription] = useState("");
-  const [password, setPassword] = useState("");
-  const [adminPassword, setAdminPassword] = useState("");
-  const [creating, setCreating] = useState(false);
+const [title, setTitle] = useState("");
+const [location, setLocation] = useState("");
+const [category, setCategory] = useState("");
+const [date, setDate] = useState("");
+const [description, setDescription] = useState("");
+const [creatorEmail, setCreatorEmail] = useState("");
+const [password, setPassword] = useState("");
+const [adminPassword, setAdminPassword] = useState("");
+const [creating, setCreating] = useState(false);
 
   function generateSlug(text) {
     return text
