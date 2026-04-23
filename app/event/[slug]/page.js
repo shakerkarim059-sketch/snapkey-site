@@ -1267,14 +1267,15 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       const createOrderResult = await createOrderResponse.json();
 
-      if (!createOrderResponse.ok) {
-        alert(
-          createOrderResult.error ||
-            "Snapkey-Bestellung konnte nicht gespeichert werden."
-        );
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
+if (!createOrderResponse.ok) {
+  alert(
+    createOrderResult.details ||
+      createOrderResult.error ||
+      "Snapkey-Bestellung konnte nicht gespeichert werden."
+  );
+  setSubmittingSnapkeyOrder(false);
+  return;
+}
 
       const orderId = createOrderResult?.order?.id;
 
