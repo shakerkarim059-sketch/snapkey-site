@@ -1120,9 +1120,128 @@ export default function EventPage() {
             </div>
           </div>
 
-          <button type="button" style={styles.primaryButton}>
-            Event aktivieren & Snapkeys bestellen
-          </button>
+          <button
+  type="button"
+  style={styles.primaryButton}
+  onClick={async () => {
+    try {
+      if (!eventData?.id) {
+        alert("Event nicht gefunden.");
+        return;
+      }
+
+      const parsedQuantity = customQuantity
+        ? Number(customQuantity)
+        : selectedQuantity;
+
+      if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
+        alert("Bitte eine gültige Menge wählen.");
+        return;
+      }
+
+      const customerName = window.prompt("Vor- und Nachname");
+      if (!customerName?.trim()) {
+        alert("Bitte deinen Namen eingeben.");
+        return;
+      }
+
+      const customerEmail = window.prompt("E-Mail-Adresse");
+      if (!customerEmail?.trim()) {
+        alert("Bitte deine E-Mail eingeben.");
+        return;
+      }
+
+      const street = window.prompt("Straße und Hausnummer");
+      if (!street?.trim()) {
+        alert("Bitte Straße und Hausnummer eingeben.");
+        return;
+      }
+
+      const postalCode = window.prompt("PLZ");
+      if (!postalCode?.trim()) {
+        alert("Bitte die PLZ eingeben.");
+        return;
+      }
+
+      const city = window.prompt("Ort");
+      if (!city?.trim()) {
+        alert("Bitte den Ort eingeben.");
+        return;
+      }
+
+      const createOrderResponse = await fetch("/api/create-snapkey-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: eventData.id,
+          keyType: selectedKeyType,
+          quantity: parsedQuantity,
+          designVariant: eventData.category || null,
+          customerName,
+          customerEmail,
+          customerPhone: "",
+          street,
+          postalCode,
+          city,
+          country: "Deutschland",
+          orderNote: "",
+        }),
+      });
+
+      const createOrderResult = await createOrderResponse.json();
+
+      if (!createOrderResponse.ok) {
+        alert(
+          createOrderResult.error ||
+            "Snapkey-Bestellung konnte nicht gespeichert werden."
+        );
+        return;
+      }
+
+      const orderId = createOrderResult?.order?.id;
+
+      if (!orderId) {
+        alert("Keine Bestell-ID erhalten.");
+        return;
+      }
+
+      const checkoutResponse = await fetch(
+        "/api/create-snapkey-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId }),
+        }
+      );
+
+      const checkoutResult = await checkoutResponse.json();
+
+      if (!checkoutResponse.ok) {
+        alert(
+          checkoutResult.error ||
+            "Stripe Checkout konnte nicht gestartet werden."
+        );
+        return;
+      }
+
+      if (!checkoutResult.url) {
+        alert("Keine Checkout-URL erhalten.");
+        return;
+      }
+
+      window.location.href = checkoutResult.url;
+    } catch (error) {
+      console.error("Fehler beim Starten der Snapkey-Bestellung:", error);
+      alert("Es gab ein Problem beim Starten der Zahlung.");
+    }
+  }}
+>
+  Event aktivieren & Snapkeys bestellen
+</button>
         </div>
       )}
 
