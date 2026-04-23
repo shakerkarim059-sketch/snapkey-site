@@ -403,10 +403,35 @@ async function attachSignedUrls(photoRows) {
     setUpdatingEvent(false);
   }
 
-  function handleFileSelection(files) {
-    setSelectedFiles(Array.from(files || []));
-  }
+ function handleFileSelection(files) {
+  const newFiles = Array.from(files || []);
 
+  setSelectedFiles((prev) => {
+    const merged = [...prev, ...newFiles];
+
+    const uniqueFiles = merged.filter(
+      (file, index, self) =>
+        index ===
+        self.findIndex(
+          (f) =>
+            f.name === file.name &&
+            f.size === file.size &&
+            f.lastModified === file.lastModified
+        )
+    );
+
+    return uniqueFiles;
+  });
+
+  if (fileInputRef.current) {
+    fileInputRef.current.value = "";
+  }
+}
+  function removeSelectedFile(indexToRemove) {
+  setSelectedFiles((prev) =>
+    prev.filter((_, index) => index !== indexToRemove)
+  );
+}
   async function handlePhotoUpload(e) {
     e.preventDefault();
 
@@ -1162,18 +1187,28 @@ async function attachSignedUrls(photoRows) {
           </button>
         </div>
 
-        {selectedFiles.length > 0 && (
-          <div style={styles.selectedFilesWrap}>
-            {selectedFiles.map((file, index) => (
-              <div key={`${file.name}-${index}`} style={styles.fileChip}>
-                <span style={styles.fileChipName}>{file.name}</span>
-                <span style={styles.fileChipSize}>
-                  {(file.size / 1024 / 1024).toFixed(1)} MB
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+ {selectedFiles.length > 0 && (
+  <div style={styles.selectedFilesWrap}>
+    {selectedFiles.map((file, index) => (
+      <div key={`${file.name}-${file.lastModified}-${index}`} style={styles.fileChip}>
+        <div style={styles.fileChipInfo}>
+          <span style={styles.fileChipName}>{file.name}</span>
+          <span style={styles.fileChipSize}>
+            {(file.size / 1024 / 1024).toFixed(1)} MB
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => removeSelectedFile(index)}
+          style={styles.fileChipRemove}
+        >
+          ✕
+        </button>
+      </div>
+    ))}
+  </div>
+)}
 
         <input
           type="text"
@@ -1909,16 +1944,35 @@ const styles = {
     gap: "10px",
   },
 
-  fileChip: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    padding: "10px 12px",
-    borderRadius: "14px",
-    background: "#f4f6fa",
-    border: "1px solid #e8ebf2",
-    maxWidth: "100%",
-  },
+fileChip: {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "10px",
+  padding: "10px 12px",
+  borderRadius: "14px",
+  background: "#f4f6fa",
+  border: "1px solid #e8ebf2",
+  maxWidth: "100%",
+},
+fileChipInfo: {
+  display: "grid",
+  gap: "2px",
+  minWidth: 0,
+},
+
+fileChipRemove: {
+  width: "28px",
+  height: "28px",
+  borderRadius: "999px",
+  border: "none",
+  background: "#111827",
+  color: "#fff",
+  cursor: "pointer",
+  fontSize: "14px",
+  fontWeight: "700",
+  flex: "0 0 auto",
+},
 
   fileChipName: {
     color: "#111827",
