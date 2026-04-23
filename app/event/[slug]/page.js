@@ -1961,6 +1961,11 @@ priceBox: {
   gap: "6px",
   border: "1px solid #e8ebf2",
 },
+  setupTotalPrice: {
+  fontWeight: "800",
+  fontSize: "18px",
+  color: "#111827",
+},
   page: {
     position: "relative",
     width: "100%",
