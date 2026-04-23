@@ -82,12 +82,15 @@ export async function POST(request) {
       return NextResponse.json({ error: "Event fehlt." }, { status: 400 });
     }
 
-    if (String(session.eventId) !== String(eventId)) {
-      return NextResponse.json(
-        { error: "Session passt nicht zu diesem Event." },
-        { status: 403 }
-      );
-    }
+if (
+  session.role !== "admin" &&
+  String(session.eventId) !== String(eventId)
+) {
+  return NextResponse.json(
+    { error: "Session passt nicht zu diesem Event." },
+    { status: 403 }
+  );
+}
 
     if (!keyType || !KEY_TYPES[keyType]) {
       return NextResponse.json(
