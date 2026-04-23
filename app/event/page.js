@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "../../lib/supabase";
 
 export default function CreateEventPage() {
   const router = useRouter();
@@ -17,18 +16,6 @@ const [password, setPassword] = useState("");
 const [adminPassword, setAdminPassword] = useState("");
 const [creating, setCreating] = useState(false);
 
-  function generateSlug(text) {
-    return text
-      .toLowerCase()
-      .trim()
-      .replace(/ä/g, "ae")
-      .replace(/ö/g, "oe")
-      .replace(/ü/g, "ue")
-      .replace(/ß/g, "ss")
-      .replace(/\s+/g, "-")
-      .replace(/[^a-z0-9-]/g, "")
-      .replace(/-+/g, "-");
-  }
 
   async function handleCreateEvent(e) {
     e.preventDefault();
@@ -40,30 +27,32 @@ if (!adminPassword.trim()) return alert("Bitte Admin Passwort eingeben");
 
     setCreating(true);
 
-    const slug = `${generateSlug(title)}-${Date.now()}`;
-
-const { error } = await supabase.from("events").insert([
-  {
+const response = await fetch("/api/create-event", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
     title,
     location,
     category,
-    start_date: date || null,
+    date,
     description,
-    creator_email: creatorEmail,
-    access_password: password,
-    admin_password: adminPassword,
-    slug,
-  },
-]);
+    creatorEmail,
+    password,
+    adminPassword,
+  }),
+});
 
-    if (error) {
-      alert(error.message);
-      setCreating(false);
-      return;
-    }
+const result = await response.json();
 
-    router.push(`/event/${slug}`);
-  }
+if (!response.ok) {
+  alert(result.error || "Event konnte nicht erstellt werden.");
+  setCreating(false);
+  return;
+}
+
+router.push(`/event/${result.event.slug}`);
 
   return (
     <main style={styles.page}>
