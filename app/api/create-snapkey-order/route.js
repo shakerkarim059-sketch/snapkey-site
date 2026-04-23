@@ -48,18 +48,23 @@ function verifySession(token) {
     return null;
   }
 }
-
+function isGlobalAdmin(request) {
+  const adminSession = request.cookies.get("admin_session")?.value;
+  return adminSession === "authenticated";
+}
 export async function POST(request) {
   try {
-    const token = request.cookies.get("event_session")?.value;
-    const session = verifySession(token);
+    const admin = isGlobalAdmin(request);
 
-    if (!session) {
-      return NextResponse.json(
-        { error: "Nicht autorisiert." },
-        { status: 401 }
-      );
-    }
+const token = request.cookies.get("event_session")?.value;
+const session = verifySession(token);
+
+if (!admin && !session) {
+  return NextResponse.json(
+    { error: "Nicht autorisiert." },
+    { status: 401 }
+  );
+}
 
     const body = await request.json();
 
@@ -82,10 +87,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "Event fehlt." }, { status: 400 });
     }
 
-if (
-  session.role !== "admin" &&
-  String(session.eventId) !== String(eventId)
-) {
+if (!admin && String(session.eventId) !== String(eventId)) {
   return NextResponse.json(
     { error: "Session passt nicht zu diesem Event." },
     { status: 403 }
