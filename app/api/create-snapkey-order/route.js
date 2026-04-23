@@ -182,7 +182,6 @@ if (!admin && String(session.eventId) !== String(eventId)) {
         frame_option: null,
         unit_price: EVENT_BASE_PRICE * 100,
         item_type: "event_activation",
-        item_name: "Eventseite Aktivierung",
         quantity: 1,
         meta: {
           eventId,
@@ -198,7 +197,6 @@ if (!admin && String(session.eventId) !== String(eventId)) {
         frame_option: null,
         unit_price: unitPrice,
         item_type: "snapkey",
-        item_name: keyConfig.name,
         quantity: parsedQuantity,
         meta: {
           keyType,
