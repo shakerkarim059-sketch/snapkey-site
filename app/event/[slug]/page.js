@@ -1062,7 +1062,15 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       {isSetupMode && (
         <div style={styles.setupCard}>
-          <h2 style={styles.setupTitle}>Dein Event aktivieren</h2>
+         <div style={styles.setupHeader}>
+  <div style={styles.setupEyebrow}>Snapkey Konfiguration</div>
+  <h2 style={styles.setupTitle}>Event aktivieren & Snapkeys bestellen</h2>
+  <p style={styles.setupIntroText}>
+    Wähle deinen Snapkey, lege die Menge fest und aktiviere dein Event für
+    deine Gäste. Jeder Snapkey kann als Erinnerungsstück mitgenommen werden
+    und führt direkt zu eurem Fotoalbum.
+  </p>
+</div>
 
           <div style={styles.setupSection}>
             <div style={styles.setupLabel}>Snapkey auswählen</div>
@@ -1121,13 +1129,33 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
           </div>
 
 <div style={styles.priceBox}>
-  <div>Eventseite: {EVENT_BASE_PRICE.toFixed(2)}€</div>
-  <div>
-    {finalQuantity} × {selectedKey.price.toFixed(2)}€
+  <div style={styles.summaryTitle}>Deine Bestellung</div>
+
+  <div style={styles.summaryRow}>
+    <span>Eventseite Aktivierung</span>
+    <span>{EVENT_BASE_PRICE.toFixed(2)} €</span>
   </div>
+
+  <div style={styles.summaryRow}>
+    <span>
+      {selectedKey.name} × {finalQuantity}
+    </span>
+    <span>
+      {(selectedKey.price * finalQuantity).toFixed(2)} €
+    </span>
+  </div>
+
+  <div style={styles.summaryDivider} />
+
   <div style={styles.setupTotalPrice}>
-    Gesamt: {setupTotalPrice.toFixed(2)}€
+    Gesamt: {setupTotalPrice.toFixed(2)} €
   </div>
+</div>
+
+      <div style={styles.trustBox}>
+  <div style={styles.trustItem}>✓ Eventseite direkt aktiviert</div>
+  <div style={styles.trustItem}>✓ Snapkeys als Erinnerung für deine Gäste</div>
+  <div style={styles.trustItem}>✓ Fotos ansehen, hochladen und bestellen</div>
 </div>
 
 <div style={styles.orderFormCard}>
@@ -2073,6 +2101,62 @@ const styles = {
   border: "1px solid #e8ebf2",
   display: "grid",
   gap: "16px",
+},
+  setupHeader: {
+  display: "grid",
+  gap: "6px",
+  marginBottom: "10px",
+},
+
+setupEyebrow: {
+  fontSize: "12px",
+  textTransform: "uppercase",
+  letterSpacing: "1px",
+  color: "#667085",
+  fontWeight: "700",
+},
+
+setupIntroText: {
+  margin: 0,
+  fontSize: "14px",
+  color: "#667085",
+  lineHeight: "1.6",
+},
+
+summaryTitle: {
+  fontWeight: "800",
+  fontSize: "16px",
+  marginBottom: "6px",
+  color: "#111827",
+},
+
+summaryRow: {
+  display: "flex",
+  justifyContent: "space-between",
+  fontSize: "14px",
+  color: "#475467",
+},
+
+summaryDivider: {
+  height: "1px",
+  background: "#e8ebf2",
+  margin: "8px 0",
+},
+
+trustBox: {
+  background: "#f8fafc",
+  border: "1px solid #e8ebf2",
+  borderRadius: "14px",
+  padding: "12px",
+  display: "grid",
+  gap: "6px",
+  marginBottom: "10px",
+},
+
+trustItem: {
+  fontSize: "14px",
+  color: "#111827",
+  fontWeight: "600",
 },
 
 setupTitle: {
