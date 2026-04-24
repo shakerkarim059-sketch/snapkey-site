@@ -1500,157 +1500,32 @@ export default function EventPage() {
         </button>
       </div>
 )}
-      {eventData?.setup_completed && (
+{eventData?.setup_completed && (
   loadingPhotos || loadingLikes || loadingComments ? (
-        <div style={styles.emptyBox}>Inhalte werden geladen...</div>
-      ) : filteredPhotos.length === 0 ? (
-        <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
-      ) : (
-        <div style={styles.photoGrid}>
-          {filteredPhotos.map((photo, index) => {
-            const likesForPhoto = getLikesForPhoto(photo.id);
-            const commentsForPhoto = getCommentsForPhoto(photo.id);
-            const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
-            const isSelected = selectedPhotoIds.includes(photo.id);
-            const mediaHeight = "280px";
+    <div style={styles.emptyBox}>Inhalte werden geladen...</div>
+  ) : filteredPhotos.length === 0 ? (
+    <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
+  ) : (
+    <div style={styles.photoGrid}>
+      {filteredPhotos.map((photo, index) => {
+        const likesForPhoto = getLikesForPhoto(photo.id);
+        const commentsForPhoto = getCommentsForPhoto(photo.id);
+        const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
+        const isSelected = selectedPhotoIds.includes(photo.id);
 
-            return (
-              <div
-                key={photo.id}
-                id={`photo-${index}`}
-                style={styles.photoCard}
-                onClick={() => openLightbox(index)}
-              >
-                <div style={{ ...styles.photoMediaWrap, height: mediaHeight }}>
-                  <img
-                    src={photo.signed_url || ""}
-                    alt={photo.caption || photo.file_name || "Foto"}
-                    style={styles.photo}
-                  />
+        return (
+          <div key={photo.id} style={styles.photoCard}>
+            <img src={photo.signed_url} style={styles.photo} />
 
-                  <div style={styles.photoOverlay}>
-                    <span style={styles.photoOverlayText}>Vergrößern</span>
-                  </div>
-
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeletePhoto(photo);
-                      }}
-                      style={styles.deleteButton}
-                    >
-                      Löschen
-                    </button>
-                  )}
-                </div>
-
-                <div style={styles.photoInfoArea} onClick={(e) => e.stopPropagation()}>
-                  {photo.caption && <div style={styles.photoCaption}>{photo.caption}</div>}
-
-                  <div style={styles.photoActionRow}>
-                    <button
-                      type="button"
-                      onClick={() => togglePhotoSelection(photo.id)}
-                      style={{
-                        ...styles.selectPhotoButton,
-                        ...(isSelected ? styles.selectPhotoButtonActive : {}),
-                      }}
-                    >
-                      {isSelected ? "Ausgewählt ✓" : "Auswählen"}
-                    </button>
-
-                    <button type="button" onClick={() => openLightbox(index)} style={styles.previewButton}>
-                      Ansehen
-                    </button>
-                  </div>
-
-                  {eventData.likes_enabled !== false && (
-                    <div style={styles.likeRow}>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleLike(photo.id);
-                        }}
-                        disabled={likingPhotoId === photo.id}
-                        style={{
-                          ...styles.likeButton,
-                          ...(likedByThisBrowser ? styles.likeButtonActive : {}),
-                        }}
-                      >
-                        {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
-                      </button>
-
-                      <span style={styles.likeCount}>
-                        {likesForPhoto.length} Like{likesForPhoto.length === 1 ? "" : "s"}
-                      </span>
-                    </div>
-                  )}
-
-                  {eventData.comments_enabled !== false && (
-                    <>
-                      <div style={styles.commentForm}>
-                        <input
-                          type="text"
-                          placeholder="Dein Name"
-                          value={commentNames[photo.id] || ""}
-                          onChange={(e) =>
-                            setCommentNames((prev) => ({
-                              ...prev,
-                              [photo.id]: e.target.value,
-                            }))
-                          }
-                          style={styles.commentInput}
-                        />
-
-                        <textarea
-                          placeholder="Kommentar schreiben"
-                          value={commentDrafts[photo.id] || ""}
-                          onChange={(e) =>
-                            setCommentDrafts((prev) => ({
-                              ...prev,
-                              [photo.id]: e.target.value,
-                            }))
-                          }
-                          rows={3}
-                          style={styles.commentTextarea}
-                        />
-
-                        <button
-                          type="button"
-                          onClick={() => handleSubmitComment(photo.id)}
-                          disabled={submittingCommentPhotoId === photo.id}
-                          style={styles.commentButton}
-                        >
-                          {submittingCommentPhotoId === photo.id ? "Speichert..." : "Kommentieren"}
-                        </button>
-                      </div>
-
-                      <div style={styles.commentList}>
-                        {commentsForPhoto.length === 0 ? (
-                          <div style={styles.noCommentsText}>Noch keine Kommentare.</div>
-                        ) : (
-                          commentsForPhoto.map((comment) => (
-                            <div key={comment.id} style={styles.commentItem}>
-                              <div style={styles.commentAuthorRow}>
-                                <span style={styles.commentAuthor}>{comment.author_name || "Unbekannt"}</span>
-                                <span style={styles.commentDate}>{formatDateTime(comment.created_at)}</span>
-                              </div>
-                              <div style={styles.commentText}>{comment.comment_text}</div>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+            <div style={styles.photoInfoArea}>
+              {photo.caption && <div>{photo.caption}</div>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  )
+)}
 
       {cartOpen && (
         <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
