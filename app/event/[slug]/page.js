@@ -1651,7 +1651,7 @@ export default function EventPage() {
           })}
         </div>
       )}
-)}
+
       {cartOpen && (
         <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
           <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
