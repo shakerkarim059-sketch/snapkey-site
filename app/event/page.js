@@ -61,7 +61,7 @@ router.push(`/event/${result.event.slug}?setup=true`);
         <div style={styles.hero}>
           <h1 style={styles.title}>Erstelle dein Event</h1>
           <p style={styles.subtitle}>
-            Teile Erinnerungen mit Familie & Freunden – einfach per Link oder NFC.
+            Erstelle deine Eventseite und wähle danach passende Snapkeys für deine Gäste.
           </p>
         </div>
 
