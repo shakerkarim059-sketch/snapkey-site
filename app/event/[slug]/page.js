@@ -1337,18 +1337,24 @@ if (!createOrderResponse.ok) {
         return;
       }
 
-<div style={styles.setupUrgency}>
-  Dein Event wird erst nach der Bestellung freigeschaltet.
-</div>
+      if (!checkoutResult.url) {
+        alert("Keine Checkout-URL erhalten.");
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
 
-<button
-  type="button"
-  style={{
-    ...styles.primaryButton,
-    ...(submittingSnapkeyOrder ? styles.buttonDisabled : {}),
+      window.location.href = checkoutResult.url;
+    } catch (error) {
+      console.error("Fehler beim Starten der Snapkey-Bestellung:", error);
+      alert("Es gab ein Problem beim Starten der Zahlung.");
+      setSubmittingSnapkeyOrder(false);
+    }
   }}
-  disabled={submittingSnapkeyOrder}
-  onClick={async () => {
+>
+  {submittingSnapkeyOrder
+    ? "Snapkey-Bestellung wird vorbereitet..."
+    : "Jetzt bestellen & Event freischalten"}
+</button>
     try {
       if (!eventData?.id) {
         alert("Event nicht gefunden.");
@@ -2845,6 +2851,16 @@ fileChipRemove: {
     resize: "vertical",
     fontFamily: "inherit",
   },
+  setupUrgency: {
+  marginTop: "10px",
+  padding: "10px 12px",
+  borderRadius: "12px",
+  background: "#fff3cd",
+  border: "1px solid #ffe69c",
+  fontSize: "13px",
+  fontWeight: "600",
+  color: "#7a5c00",
+},
 
   commentButton: {
     backgroundColor: "#111827",
