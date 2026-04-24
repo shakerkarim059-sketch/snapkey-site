@@ -1064,11 +1064,13 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
         <div style={styles.setupCard}>
          <div style={styles.setupHeader}>
   <div style={styles.setupEyebrow}>Snapkey Konfiguration</div>
-  <h2 style={styles.setupTitle}>Event aktivieren & Snapkeys bestellen</h2>
+  <h2 style={styles.setupTitle}>
+  Dein Event ist erstellt. Jetzt Snapkeys auswählen.
+</h2>
   <p style={styles.setupIntroText}>
-    Wähle deinen Snapkey, lege die Menge fest und aktiviere dein Event für
-    deine Gäste. Jeder Snapkey kann als Erinnerungsstück mitgenommen werden
-    und führt direkt zu eurem Fotoalbum.
+Deine Eventseite ist vorbereitet. Wähle jetzt die passenden Snapkeys für
+deine Gäste – als persönlichen Zugang zum Fotoalbum und als Erinnerung,
+die man mit nach Hause nimmt.
   </p>
 </div>
 
@@ -1153,9 +1155,9 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 </div>
 
       <div style={styles.trustBox}>
-  <div style={styles.trustItem}>✓ Eventseite direkt aktiviert</div>
-  <div style={styles.trustItem}>✓ Snapkeys als Erinnerung für deine Gäste</div>
-  <div style={styles.trustItem}>✓ Fotos ansehen, hochladen und bestellen</div>
+<div style={styles.trustItem}>✓ Eventseite wird nach Zahlung freigeschaltet</div>
+<div style={styles.trustItem}>✓ Snapkeys führen direkt zum privaten Fotoalbum</div>
+<div style={styles.trustItem}>✓ Gäste können Fotos hochladen und Prints bestellen</div>
 </div>
 
 <div style={styles.orderFormCard}>
@@ -1351,7 +1353,7 @@ if (!createOrderResponse.ok) {
 >
   {submittingSnapkeyOrder
     ? "Snapkey-Bestellung wird vorbereitet..."
-    : "Event aktivieren & Snapkeys bestellen"}
+: "Jetzt bestellen & Event freischalten"}
 </button>
         </div>
       )}
