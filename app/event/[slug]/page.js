@@ -16,7 +16,7 @@ const EVENT_BASE_PRICE = 29;
 
 const KEY_TYPES = {
   basic: {
-    name: "Karte / NFC Key",
+    name: "Karte / Snapkey",
     description: "Günstiger Einstieg für viele Gäste",
     price: 2.5,
   },
@@ -63,8 +63,7 @@ export default function EventPage() {
   const [updatingEvent, setUpdatingEvent] = useState(false);
 
   const [likingPhotoId, setLikingPhotoId] = useState(null);
-  const [submittingCommentPhotoId, setSubmittingCommentPhotoId] =
-    useState(null);
+  const [submittingCommentPhotoId, setSubmittingCommentPhotoId] = useState(null);
 
   const [selectedKeyType, setSelectedKeyType] = useState("standard");
   const [selectedQuantity, setSelectedQuantity] = useState(25);
@@ -104,14 +103,14 @@ export default function EventPage() {
   const [submittingOrder, setSubmittingOrder] = useState(false);
 
   const [snapkeyCustomerName, setSnapkeyCustomerName] = useState("");
-const [snapkeyCustomerEmail, setSnapkeyCustomerEmail] = useState("");
-const [snapkeyCustomerPhone, setSnapkeyCustomerPhone] = useState("");
-const [snapkeyStreet, setSnapkeyStreet] = useState("");
-const [snapkeyPostalCode, setSnapkeyPostalCode] = useState("");
-const [snapkeyCity, setSnapkeyCity] = useState("");
-const [snapkeyCountry, setSnapkeyCountry] = useState("Deutschland");
-const [snapkeyOrderNote, setSnapkeyOrderNote] = useState("");
-const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
+  const [snapkeyCustomerEmail, setSnapkeyCustomerEmail] = useState("");
+  const [snapkeyCustomerPhone, setSnapkeyCustomerPhone] = useState("");
+  const [snapkeyStreet, setSnapkeyStreet] = useState("");
+  const [snapkeyPostalCode, setSnapkeyPostalCode] = useState("");
+  const [snapkeyCity, setSnapkeyCity] = useState("");
+  const [snapkeyCountry, setSnapkeyCountry] = useState("Deutschland");
+  const [snapkeyOrderNote, setSnapkeyOrderNote] = useState("");
+  const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
   const fileInputRef = useRef(null);
   const touchStartX = useRef(0);
@@ -136,13 +135,9 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       if (!lightboxOpen) return;
 
-      if (e.key === "Escape") {
-        closeLightbox();
-      } else if (e.key === "ArrowRight") {
-        showNextPhoto();
-      } else if (e.key === "ArrowLeft") {
-        showPrevPhoto();
-      }
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") showNextPhoto();
+      if (e.key === "ArrowLeft") showPrevPhoto();
     }
 
     window.addEventListener("keydown", handleKeyDown);
@@ -191,6 +186,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
         slug,
         likes_enabled,
         comments_enabled,
+        setup_completed,
         created_at
       `)
       .eq("slug", slug)
@@ -222,7 +218,6 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
       const result = await response.json();
 
       if (!response.ok || !result?.authenticated) return;
-
       if (!result.globalAdmin && result.slug !== slug) return;
 
       setIsAuthenticated(true);
@@ -233,14 +228,9 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
   }
 
   async function attachSignedUrls(photoRows) {
-    const mapped = await Promise.all(
+    return await Promise.all(
       (photoRows || []).map(async (photo) => {
-        if (!photo.file_path) {
-          return {
-            ...photo,
-            signed_url: null,
-          };
-        }
+        if (!photo.file_path) return { ...photo, signed_url: null };
 
         const { data, error } = await supabase.storage
           .from("photos")
@@ -248,20 +238,12 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
         if (error) {
           console.error("Fehler beim Erzeugen der Signed URL:", error);
-          return {
-            ...photo,
-            signed_url: null,
-          };
+          return { ...photo, signed_url: null };
         }
 
-        return {
-          ...photo,
-          signed_url: data?.signedUrl || null,
-        };
+        return { ...photo, signed_url: data?.signedUrl || null };
       })
     );
-
-    return mapped;
   }
 
   async function fetchPhotosForEvent(eventId) {
@@ -282,7 +264,6 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
     const photosWithSignedUrls = await attachSignedUrls(data || []);
     setPhotos(photosWithSignedUrls);
-
     setLoadingPhotos(false);
   }
 
@@ -336,9 +317,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
       const result = await response.json();
 
       if (!response.ok) {
-        setLoginError(
-          result.error || "Falsches Passwort. Bitte erneut versuchen."
-        );
+        setLoginError(result.error || "Falsches Passwort. Bitte erneut versuchen.");
         return;
       }
 
@@ -363,9 +342,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
   async function handleLogout() {
     try {
-      await fetch("/api/event-logout", {
-        method: "POST",
-      });
+      await fetch("/api/event-logout", { method: "POST" });
     } catch (error) {
       console.error("Fehler beim Logout:", error);
     }
@@ -408,9 +385,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     try {
       const response = await fetch("/api/update-event", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId: editingEventId,
           title,
@@ -447,7 +422,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     setSelectedFiles((prev) => {
       const merged = [...prev, ...newFiles];
 
-      const uniqueFiles = merged.filter(
+      return merged.filter(
         (file, index, self) =>
           index ===
           self.findIndex(
@@ -457,19 +432,13 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
               f.lastModified === file.lastModified
           )
       );
-
-      return uniqueFiles;
     });
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function removeSelectedFile(indexToRemove) {
-    setSelectedFiles((prev) =>
-      prev.filter((_, index) => index !== indexToRemove)
-    );
+    setSelectedFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
   }
 
   async function handlePhotoUpload(e) {
@@ -501,9 +470,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       if (uploadError) {
         console.error("Fehler beim Hochladen:", uploadError);
-        alert(
-          `Foto "${file.name}" konnte nicht hochgeladen werden: ${uploadError.message}`
-        );
+        alert(`Foto "${file.name}" konnte nicht hochgeladen werden: ${uploadError.message}`);
         uploadErrorFound = true;
         continue;
       }
@@ -519,10 +486,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       if (insertError) {
         console.error("Fehler beim Speichern in DB:", insertError);
-        alert(
-          `DB-Fehler bei "${file.name}": ` +
-            (insertError.message || "Unbekannter Fehler")
-        );
+        alert(`DB-Fehler bei "${file.name}": ${insertError.message || "Unbekannter Fehler"}`);
         uploadErrorFound = true;
       }
     }
@@ -538,9 +502,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     setSelectedFiles([]);
     setCaption("");
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
 
     await fetchPhotosForEvent(eventData.id);
     setUploadingPhoto(false);
@@ -555,12 +517,8 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     try {
       const response = await fetch("/api/delete-photo", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          photoId: photo.id,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ photoId: photo.id }),
       });
 
       const result = await response.json();
@@ -605,7 +563,6 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     if (eventData?.likes_enabled === false) return;
 
     setLikingPhotoId(photoId);
-
     const currentScrollY = typeof window !== "undefined" ? window.scrollY : 0;
 
     try {
@@ -626,10 +583,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
         delete likeMap[photoId];
         setStoredLikeMap(likeMap);
-
-        setPhotoLikes((prev) =>
-          prev.filter((like) => like.id !== existingLikeId)
-        );
+        setPhotoLikes((prev) => prev.filter((like) => like.id !== existingLikeId));
       } else {
         const { data, error } = await supabase
           .from("photo_likes")
@@ -645,7 +599,6 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
         likeMap[photoId] = data.id;
         setStoredLikeMap(likeMap);
-
         setPhotoLikes((prev) => [...prev, data]);
       }
     } finally {
@@ -684,10 +637,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
       console.error("Fehler beim Speichern des Kommentars:", error);
       alert("Kommentar konnte nicht gespeichert werden: " + error.message);
     } else {
-      setCommentDrafts((prev) => ({
-        ...prev,
-        [photoId]: "",
-      }));
+      setCommentDrafts((prev) => ({ ...prev, [photoId]: "" }));
       await fetchAllComments();
     }
 
@@ -734,9 +684,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     try {
       const orderResponse = await fetch("/api/create-order", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId: eventData.id,
           customerName,
@@ -780,20 +728,14 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       const checkoutResponse = await fetch("/api/create-checkout-session", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderId,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
       });
 
       const checkoutResult = await checkoutResponse.json();
 
       if (!checkoutResponse.ok) {
-        alert(
-          checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden."
-        );
+        alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
         setSubmittingOrder(false);
         return;
       }
@@ -809,6 +751,104 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
       console.error("Unbekannter Fehler bei der Bestellung:", error);
       alert("Es gab ein Problem beim Starten der Zahlung.");
       setSubmittingOrder(false);
+    }
+  }
+
+  async function handleSubmitSnapkeyOrder() {
+    try {
+      if (!eventData?.id) {
+        alert("Event nicht gefunden.");
+        return;
+      }
+
+      const parsedQuantity = customQuantity ? Number(customQuantity) : selectedQuantity;
+
+      if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
+        alert("Bitte eine gültige Menge wählen.");
+        return;
+      }
+
+      if (!snapkeyCustomerName.trim()) {
+        alert("Bitte deinen Namen eingeben.");
+        return;
+      }
+
+      if (!snapkeyCustomerEmail.trim()) {
+        alert("Bitte deine E-Mail eingeben.");
+        return;
+      }
+
+      if (!snapkeyStreet.trim() || !snapkeyPostalCode.trim() || !snapkeyCity.trim()) {
+        alert("Bitte die vollständige Adresse eingeben.");
+        return;
+      }
+
+      setSubmittingSnapkeyOrder(true);
+
+      const createOrderResponse = await fetch("/api/create-snapkey-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: eventData.id,
+          keyType: selectedKeyType,
+          quantity: parsedQuantity,
+          designVariant: eventData.category || null,
+          customerName: snapkeyCustomerName,
+          customerEmail: snapkeyCustomerEmail,
+          customerPhone: snapkeyCustomerPhone,
+          street: snapkeyStreet,
+          postalCode: snapkeyPostalCode,
+          city: snapkeyCity,
+          country: snapkeyCountry,
+          orderNote: snapkeyOrderNote,
+        }),
+      });
+
+      const createOrderResult = await createOrderResponse.json();
+
+      if (!createOrderResponse.ok) {
+        alert(
+          createOrderResult.details ||
+            createOrderResult.error ||
+            "Snapkey-Bestellung konnte nicht gespeichert werden."
+        );
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
+      const orderId = createOrderResult?.order?.id;
+
+      if (!orderId) {
+        alert("Keine Bestell-ID erhalten.");
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
+      const checkoutResponse = await fetch("/api/create-snapkey-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
+
+      const checkoutResult = await checkoutResponse.json();
+
+      if (!checkoutResponse.ok) {
+        alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
+      if (!checkoutResult.url) {
+        alert("Keine Checkout-URL erhalten.");
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
+      window.location.href = checkoutResult.url;
+    } catch (error) {
+      console.error("Fehler beim Starten der Snapkey-Bestellung:", error);
+      alert("Es gab ein Problem beim Starten der Zahlung.");
+      setSubmittingSnapkeyOrder(false);
     }
   }
 
@@ -872,9 +912,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
   function showPrevPhoto() {
     if (!filteredPhotos.length) return;
-    setSelectedPhotoIndex(
-      (prev) => (prev - 1 + filteredPhotos.length) % filteredPhotos.length
-    );
+    setSelectedPhotoIndex((prev) => (prev - 1 + filteredPhotos.length) % filteredPhotos.length);
   }
 
   function handleTouchStart(e) {
@@ -885,11 +923,8 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     touchEndX.current = e.changedTouches[0].clientX;
     const diff = touchStartX.current - touchEndX.current;
 
-    if (diff > 50) {
-      showNextPhoto();
-    } else if (diff < -50) {
-      showPrevPhoto();
-    }
+    if (diff > 50) showNextPhoto();
+    if (diff < -50) showPrevPhoto();
   }
 
   const availableYears = useMemo(() => {
@@ -909,22 +944,15 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
       const photoYear = photoDate ? String(photoDate.getFullYear()) : "";
       const photoMonth = photoDate ? String(photoDate.getMonth() + 1) : "";
 
-      const matchesYear =
-        selectedYearFilter === "all" || photoYear === selectedYearFilter;
-
-      const matchesMonth =
-        selectedMonthFilter === "all" || photoMonth === selectedMonthFilter;
+      const matchesYear = selectedYearFilter === "all" || photoYear === selectedYearFilter;
+      const matchesMonth = selectedMonthFilter === "all" || photoMonth === selectedMonthFilter;
 
       return matchesYear && matchesMonth;
     });
   }, [photos, selectedYearFilter, selectedMonthFilter]);
 
-  const finalQuantity = customQuantity
-    ? Number(customQuantity)
-    : selectedQuantity;
-
+  const finalQuantity = customQuantity ? Number(customQuantity) : selectedQuantity;
   const selectedKey = KEY_TYPES[selectedKeyType];
-
   const setupTotalPrice = EVENT_BASE_PRICE + finalQuantity * selectedKey.price;
 
   const selectedPhotos = filteredPhotos.filter((photo) =>
@@ -937,9 +965,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
       frameOption: "none",
     };
 
-    return (
-      sum + (getProductPrice(options.printOption, options.frameOption) || 0)
-    );
+    return sum + (getProductPrice(options.printOption, options.frameOption) || 0);
   }, 0);
 
   const totalPrice = totalPriceInCent / 100;
@@ -1016,7 +1042,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
     <div style={styles.page}>
       <div style={styles.newHeroCard}>
         <div style={styles.newHeroTop}>
-          <div style={styles.newHeroBrand}>NFC Familien-Key</div>
+          <div style={styles.newHeroBrand}>Snapkey Eventalbum</div>
           <div style={styles.newHeroBadge}>
             {isAdmin ? "Event geöffnet" : "Gastansicht"}
           </div>
@@ -1050,9 +1076,7 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
                 style={styles.newHeroPreviewImg}
                 onClick={() => {
                   const el = document.getElementById(`photo-${i}`);
-                  if (el) {
-                    el.scrollIntoView({ behavior: "smooth", block: "start" });
-                  }
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
                 }}
               />
             ))}
@@ -1062,17 +1086,17 @@ const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
       {isSetupMode && (
         <div style={styles.setupCard}>
-         <div style={styles.setupHeader}>
-  <div style={styles.setupEyebrow}>Snapkey Konfiguration</div>
-  <h2 style={styles.setupTitle}>
-  Dein Event ist erstellt. Jetzt Snapkeys auswählen.
-</h2>
-  <p style={styles.setupIntroText}>
-Deine Eventseite ist vorbereitet. Wähle jetzt die passenden Snapkeys für
-deine Gäste – als persönlichen Zugang zum Fotoalbum und als Erinnerung,
-die man mit nach Hause nimmt.
-  </p>
-</div>
+          <div style={styles.setupHeader}>
+            <div style={styles.setupEyebrow}>Snapkey Konfiguration</div>
+            <h2 style={styles.setupTitle}>
+              Dein Event ist erstellt. Jetzt Snapkeys auswählen.
+            </h2>
+            <p style={styles.setupIntroText}>
+              Deine Eventseite ist vorbereitet. Wähle jetzt die passenden Snapkeys
+              für deine Gäste – als persönlichen Zugang zum Fotoalbum und als
+              Erinnerung, die man mit nach Hause nimmt.
+            </p>
+          </div>
 
           <div style={styles.setupSection}>
             <div style={styles.setupLabel}>Snapkey auswählen</div>
@@ -1089,9 +1113,7 @@ die man mit nach Hause nimmt.
                 >
                   <div style={styles.keyName}>{item.name}</div>
                   <div style={styles.keyDesc}>{item.description}</div>
-                  <div style={styles.keyPrice}>
-                    {item.price.toFixed(2)}€ / Stück
-                  </div>
+                  <div style={styles.keyPrice}>{item.price.toFixed(2)}€ / Stück</div>
                 </div>
               ))}
             </div>
@@ -1130,273 +1152,178 @@ die man mit nach Hause nimmt.
             />
           </div>
 
-<div style={styles.priceBox}>
-  <div style={styles.summaryTitle}>Deine Bestellung</div>
+          <div style={styles.priceBox}>
+            <div style={styles.summaryTitle}>Deine Bestellung</div>
 
-  <div style={styles.summaryRow}>
-    <span>Eventseite Aktivierung</span>
-    <span>{EVENT_BASE_PRICE.toFixed(2)} €</span>
-  </div>
+            <div style={styles.summaryRow}>
+              <span>Eventseite Aktivierung</span>
+              <span>{EVENT_BASE_PRICE.toFixed(2)} €</span>
+            </div>
 
-  <div style={styles.summaryRow}>
-    <span>
-      {selectedKey.name} × {finalQuantity}
-    </span>
-    <span>
-      {(selectedKey.price * finalQuantity).toFixed(2)} €
-    </span>
-  </div>
+            <div style={styles.summaryRow}>
+              <span>
+                {selectedKey.name} × {finalQuantity}
+              </span>
+              <span>{(selectedKey.price * finalQuantity).toFixed(2)} €</span>
+            </div>
 
-  <div style={styles.summaryDivider} />
+            <div style={styles.summaryDivider} />
 
-  <div style={styles.setupTotalPrice}>
-    Gesamt: {setupTotalPrice.toFixed(2)} €
-  </div>
-</div>
+            <div style={styles.setupTotalPrice}>
+              Gesamt: {setupTotalPrice.toFixed(2)} €
+            </div>
+          </div>
 
-      <div style={styles.trustBox}>
-<div style={styles.trustItem}>✓ Eventseite wird nach Zahlung freigeschaltet</div>
-<div style={styles.trustItem}>✓ Snapkeys führen direkt zum privaten Fotoalbum</div>
-<div style={styles.trustItem}>✓ Gäste können Fotos hochladen und Prints bestellen</div>
-</div>
+          <div style={styles.trustBox}>
+            <div style={styles.trustItem}>
+              ✓ Eventseite wird nach Zahlung freigeschaltet
+            </div>
+            <div style={styles.trustItem}>
+              ✓ Snapkeys führen direkt zum privaten Fotoalbum
+            </div>
+            <div style={styles.trustItem}>
+              ✓ Gäste können Fotos hochladen und Prints bestellen
+            </div>
+          </div>
 
-<div style={styles.orderFormCard}>
-  <h4 style={styles.orderFormTitle}>Snapkeys bestellen</h4>
-  <p style={styles.orderFormText}>
-    Gib hier deine Kontaktdaten und Lieferadresse ein. Danach wirst du direkt
-    zur Zahlung weitergeleitet.
-  </p>
+          <div style={styles.orderFormCard}>
+            <h4 style={styles.orderFormTitle}>Snapkeys bestellen</h4>
+            <p style={styles.orderFormText}>
+              Gib hier deine Kontaktdaten und Lieferadresse ein. Danach wirst du
+              direkt zur Zahlung weitergeleitet.
+            </p>
 
-  <div style={styles.orderFormGrid}>
-    <input type="text" placeholder="Vor- und Nachname" value={snapkeyCustomerName} onChange={(e) => setSnapkeyCustomerName(e.target.value)} style={styles.orderInput} />
-    <input type="email" placeholder="E-Mail" value={snapkeyCustomerEmail} onChange={(e) => setSnapkeyCustomerEmail(e.target.value)} style={styles.orderInput} />
-    <input type="text" placeholder="Telefon (optional)" value={snapkeyCustomerPhone} onChange={(e) => setSnapkeyCustomerPhone(e.target.value)} style={styles.orderInput} />
-    <input type="text" placeholder="Straße und Hausnummer" value={snapkeyStreet} onChange={(e) => setSnapkeyStreet(e.target.value)} style={styles.orderInput} />
-    <input type="text" placeholder="PLZ" value={snapkeyPostalCode} onChange={(e) => setSnapkeyPostalCode(e.target.value)} style={styles.orderInput} />
-    <input type="text" placeholder="Ort" value={snapkeyCity} onChange={(e) => setSnapkeyCity(e.target.value)} style={styles.orderInput} />
-    <input type="text" placeholder="Land" value={snapkeyCountry} onChange={(e) => setSnapkeyCountry(e.target.value)} style={styles.orderInput} />
-  </div>
+            <div style={styles.orderFormGrid}>
+              <input
+                type="text"
+                placeholder="Vor- und Nachname"
+                value={snapkeyCustomerName}
+                onChange={(e) => setSnapkeyCustomerName(e.target.value)}
+                style={styles.orderInput}
+              />
 
-  <textarea
-    placeholder="Notiz zur Bestellung (optional)"
-    value={snapkeyOrderNote}
-    onChange={(e) => setSnapkeyOrderNote(e.target.value)}
-    rows={4}
-    style={styles.orderTextarea}
-  />
-</div>
+              <input
+                type="email"
+                placeholder="E-Mail"
+                value={snapkeyCustomerEmail}
+                onChange={(e) => setSnapkeyCustomerEmail(e.target.value)}
+                style={styles.orderInput}
+              />
 
-<div style={styles.setupUrgency}>
-  Dein Event wird erst nach der Bestellung freigeschaltet.
-</div>
+              <input
+                type="text"
+                placeholder="Telefon (optional)"
+                value={snapkeyCustomerPhone}
+                onChange={(e) => setSnapkeyCustomerPhone(e.target.value)}
+                style={styles.orderInput}
+              />
 
-<button
-  type="button"
-  style={{
-    ...styles.primaryButton,
-    ...(submittingSnapkeyOrder ? styles.buttonDisabled : {}),
-  }}
-  disabled={submittingSnapkeyOrder}
-  onClick={async () => {
-    try {
-      if (!eventData?.id) return alert("Event nicht gefunden.");
+              <input
+                type="text"
+                placeholder="Straße und Hausnummer"
+                value={snapkeyStreet}
+                onChange={(e) => setSnapkeyStreet(e.target.value)}
+                style={styles.orderInput}
+              />
 
-      const parsedQuantity = customQuantity ? Number(customQuantity) : selectedQuantity;
+              <input
+                type="text"
+                placeholder="PLZ"
+                value={snapkeyPostalCode}
+                onChange={(e) => setSnapkeyPostalCode(e.target.value)}
+                style={styles.orderInput}
+              />
 
-      if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
-        return alert("Bitte eine gültige Menge wählen.");
-      }
+              <input
+                type="text"
+                placeholder="Ort"
+                value={snapkeyCity}
+                onChange={(e) => setSnapkeyCity(e.target.value)}
+                style={styles.orderInput}
+              />
 
-      if (!snapkeyCustomerName.trim()) return alert("Bitte deinen Namen eingeben.");
-      if (!snapkeyCustomerEmail.trim()) return alert("Bitte deine E-Mail eingeben.");
+              <input
+                type="text"
+                placeholder="Land"
+                value={snapkeyCountry}
+                onChange={(e) => setSnapkeyCountry(e.target.value)}
+                style={styles.orderInput}
+              />
+            </div>
 
-      if (!snapkeyStreet.trim() || !snapkeyPostalCode.trim() || !snapkeyCity.trim()) {
-        return alert("Bitte die vollständige Adresse eingeben.");
-      }
+            <textarea
+              placeholder="Notiz zur Bestellung (optional)"
+              value={snapkeyOrderNote}
+              onChange={(e) => setSnapkeyOrderNote(e.target.value)}
+              rows={4}
+              style={styles.orderTextarea}
+            />
+          </div>
 
-      setSubmittingSnapkeyOrder(true);
+          <div style={styles.setupUrgency}>
+            Dein Event wird erst nach der Bestellung freigeschaltet.
+          </div>
 
-      const createOrderResponse = await fetch("/api/create-snapkey-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventId: eventData.id,
-          keyType: selectedKeyType,
-          quantity: parsedQuantity,
-          designVariant: eventData.category || null,
-          customerName: snapkeyCustomerName,
-          customerEmail: snapkeyCustomerEmail,
-          customerPhone: snapkeyCustomerPhone,
-          street: snapkeyStreet,
-          postalCode: snapkeyPostalCode,
-          city: snapkeyCity,
-          country: snapkeyCountry,
-          orderNote: snapkeyOrderNote,
-        }),
-      });
+          <button
+            type="button"
+            style={{
+              ...styles.primaryButton,
+              ...(submittingSnapkeyOrder ? styles.buttonDisabled : {}),
+            }}
+            disabled={submittingSnapkeyOrder}
+            onClick={handleSubmitSnapkeyOrder}
+          >
+            {submittingSnapkeyOrder
+              ? "Snapkey-Bestellung wird vorbereitet..."
+              : "Jetzt bestellen & Event freischalten"}
+          </button>
+        </div>
+      )}
 
-      const createOrderResult = await createOrderResponse.json();
+      {editingEventId && isAdmin && (
+        <form onSubmit={handleUpdateEvent} style={styles.formCard}>
+          <div style={styles.editHeader}>
+            <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
+            <button type="button" onClick={cancelEditingEvent} style={styles.cancelButton}>
+              Abbrechen
+            </button>
+          </div>
 
-      if (!createOrderResponse.ok) {
-        alert(
-          createOrderResult.details ||
-            createOrderResult.error ||
-            "Snapkey-Bestellung konnte nicht gespeichert werden."
-        );
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
+          <input
+            type="text"
+            placeholder="Titel"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+            style={styles.input}
+          />
 
-      const orderId = createOrderResult?.order?.id;
+          <input
+            type="text"
+            placeholder="Ort"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            style={styles.input}
+          />
 
-      if (!orderId) {
-        alert("Keine Bestell-ID erhalten.");
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      const checkoutResponse = await fetch("/api/create-snapkey-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId }),
-      });
-
-      const checkoutResult = await checkoutResponse.json();
-
-      if (!checkoutResponse.ok) {
-        alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      if (!checkoutResult.url) {
-        alert("Keine Checkout-URL erhalten.");
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      window.location.href = checkoutResult.url;
-    } catch (error) {
-      console.error("Fehler beim Starten der Snapkey-Bestellung:", error);
-      alert("Es gab ein Problem beim Starten der Zahlung.");
-      setSubmittingSnapkeyOrder(false);
-    }
-  }}
->
-  {submittingSnapkeyOrder
-    ? "Snapkey-Bestellung wird vorbereitet..."
-    : "Jetzt bestellen & Event freischalten"}
-</button>
-      }
-
-      setSubmittingSnapkeyOrder(true);
-
-      const createOrderResponse = await fetch("/api/create-snapkey-order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          eventId: eventData.id,
-          keyType: selectedKeyType,
-          quantity: parsedQuantity,
-          designVariant: eventData.category || null,
-          customerName: snapkeyCustomerName,
-          customerEmail: snapkeyCustomerEmail,
-          customerPhone: snapkeyCustomerPhone,
-          street: snapkeyStreet,
-          postalCode: snapkeyPostalCode,
-          city: snapkeyCity,
-          country: snapkeyCountry,
-          orderNote: snapkeyOrderNote,
-        }),
-      });
-
-      const createOrderResponse = await fetch("/api/create-snapkey-order", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          eventId: eventData.id,
-          keyType: selectedKeyType,
-          quantity: parsedQuantity,
-          designVariant: eventData.category || null,
-          customerName: snapkeyCustomerName,
-          customerEmail: snapkeyCustomerEmail,
-          customerPhone: snapkeyCustomerPhone,
-          street: snapkeyStreet,
-          postalCode: snapkeyPostalCode,
-          city: snapkeyCity,
-          country: snapkeyCountry,
-          orderNote: snapkeyOrderNote,
-        }),
-      });
-
-      const createOrderResult = await createOrderResponse.json();
-
-      if (!createOrderResponse.ok) {
-        alert(
-          createOrderResult.details ||
-            createOrderResult.error ||
-            "Snapkey-Bestellung konnte nicht gespeichert werden."
-        );
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      const orderId = createOrderResult?.order?.id;
-
-      if (!orderId) {
-        alert("Keine Bestell-ID erhalten.");
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      const checkoutResponse = await fetch("/api/create-snapkey-checkout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ orderId }),
-      });
-
-      const checkoutResult = await checkoutResponse.json();
-
-      if (!checkoutResponse.ok) {
-        alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      if (!checkoutResult.url) {
-        alert("Keine Checkout-URL erhalten.");
-        setSubmittingSnapkeyOrder(false);
-        return;
-      }
-
-      window.location.href = checkoutResult.url;
-    } catch (error) {
-      console.error("Fehler beim Starten der Snapkey-Bestellung:", error);
-      alert("Es gab ein Problem beim Starten der Zahlung.");
-      setSubmittingSnapkeyOrder(false);
-    }
-  }}
->
-  {submittingSnapkeyOrder
-    ? "Snapkey-Bestellung wird vorbereitet..."
-    : "Jetzt bestellen & Event freischalten"}
-</button>
+          <div style={{ display: "grid", gap: "4px" }}>
+            <label style={styles.label}>Kategorie</label>
+            <select value={category} onChange={(e) => setCategory(e.target.value)} style={styles.input}>
+              <option value="">Bitte auswählen</option>
+              <option value="Hochzeit">Hochzeit</option>
+              <option value="Geburtstag">Geburtstag</option>
+              <option value="Familienalbum">Familienalbum</option>
+              <option value="Urlaub">Urlaub</option>
+              <option value="Baby / Taufe">Baby / Taufe</option>
+              <option value="Jubiläum">Jubiläum</option>
+              <option value="Rückblick">Rückblick</option>
+              <option value="Sonstiges">Sonstiges</option>
+            </select>
+          </div>
 
           <div style={styles.twoCol}>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              style={styles.input}
-            />
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              style={styles.input}
-            />
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={styles.input} />
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={styles.input} />
           </div>
 
           <textarea
@@ -1407,14 +1334,8 @@ die man mit nach Hause nimmt.
             style={{ ...styles.input, resize: "vertical" }}
           />
 
-          <button
-            type="submit"
-            disabled={updatingEvent}
-            style={styles.primaryButton}
-          >
-            {updatingEvent
-              ? "Ereignis wird gespeichert..."
-              : "Änderungen speichern"}
+          <button type="submit" disabled={updatingEvent} style={styles.primaryButton}>
+            {updatingEvent ? "Ereignis wird gespeichert..." : "Änderungen speichern"}
           </button>
         </form>
       )}
@@ -1426,11 +1347,7 @@ die man mit nach Hause nimmt.
           <h2 style={styles.formTitle}>Filter</h2>
 
           <div style={styles.filterGrid}>
-            <select
-              value={selectedYearFilter}
-              onChange={(e) => setSelectedYearFilter(e.target.value)}
-              style={styles.input}
-            >
+            <select value={selectedYearFilter} onChange={(e) => setSelectedYearFilter(e.target.value)} style={styles.input}>
               <option value="all">Alle Jahre</option>
               {availableYears.map((year) => (
                 <option key={year} value={String(year)}>
@@ -1439,11 +1356,7 @@ die man mit nach Hause nimmt.
               ))}
             </select>
 
-            <select
-              value={selectedMonthFilter}
-              onChange={(e) => setSelectedMonthFilter(e.target.value)}
-              style={styles.input}
-            >
+            <select value={selectedMonthFilter} onChange={(e) => setSelectedMonthFilter(e.target.value)} style={styles.input}>
               <option value="all">Alle Monate</option>
               <option value="1">Januar</option>
               <option value="2">Februar</option>
@@ -1460,9 +1373,7 @@ die man mit nach Hause nimmt.
             </select>
           </div>
 
-          <div style={styles.filterInfo}>
-            Gefundene Fotos: {filteredPhotos.length}
-          </div>
+          <div style={styles.filterInfo}>Gefundene Fotos: {filteredPhotos.length}</div>
         </div>
       )}
 
@@ -1489,10 +1400,7 @@ die man mit nach Hause nimmt.
           style={{ display: "none" }}
         />
 
-        <div
-          style={styles.uploadPickerBox}
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <div style={styles.uploadPickerBox} onClick={() => fileInputRef.current?.click()}>
           <div style={styles.uploadIcon}>↑</div>
           <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
           <div style={styles.uploadPickerText}>
@@ -1514,28 +1422,15 @@ die man mit nach Hause nimmt.
         {selectedFiles.length > 0 && (
           <div style={styles.selectedFilesWrap}>
             {selectedFiles.map((file, index) => (
-              <div
-                key={`${file.name}-${file.lastModified}-${index}`}
-                style={styles.fileChip}
-              >
-                <img
-                  src={URL.createObjectURL(file)}
-                  alt={file.name}
-                  style={styles.fileChipPreview}
-                />
+              <div key={`${file.name}-${file.lastModified}-${index}`} style={styles.fileChip}>
+                <img src={URL.createObjectURL(file)} alt={file.name} style={styles.fileChipPreview} />
 
                 <div style={styles.fileChipInfo}>
                   <span style={styles.fileChipName}>{file.name}</span>
-                  <span style={styles.fileChipSize}>
-                    {(file.size / 1024 / 1024).toFixed(1)} MB
-                  </span>
+                  <span style={styles.fileChipSize}>{(file.size / 1024 / 1024).toFixed(1)} MB</span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => removeSelectedFile(index)}
-                  style={styles.fileChipRemove}
-                >
+                <button type="button" onClick={() => removeSelectedFile(index)} style={styles.fileChipRemove}>
                   ✕
                 </button>
               </div>
@@ -1565,8 +1460,7 @@ die man mit nach Hause nimmt.
 
       <div style={styles.selectionBar}>
         <div style={styles.selectionInfo}>
-          {selectedPhotoIds.length} Bild
-          {selectedPhotoIds.length === 1 ? "" : "er"} ausgewählt
+          {selectedPhotoIds.length} Bild{selectedPhotoIds.length === 1 ? "" : "er"} ausgewählt
         </div>
 
         <button
@@ -1632,13 +1526,8 @@ die man mit nach Hause nimmt.
                   )}
                 </div>
 
-                <div
-                  style={styles.photoInfoArea}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {photo.caption && (
-                    <div style={styles.photoCaption}>{photo.caption}</div>
-                  )}
+                <div style={styles.photoInfoArea} onClick={(e) => e.stopPropagation()}>
+                  {photo.caption && <div style={styles.photoCaption}>{photo.caption}</div>}
 
                   <div style={styles.photoActionRow}>
                     <button
@@ -1652,11 +1541,7 @@ die man mit nach Hause nimmt.
                       {isSelected ? "Ausgewählt ✓" : "Auswählen"}
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => openLightbox(index)}
-                      style={styles.previewButton}
-                    >
+                    <button type="button" onClick={() => openLightbox(index)} style={styles.previewButton}>
                       Ansehen
                     </button>
                   </div>
@@ -1672,17 +1557,14 @@ die man mit nach Hause nimmt.
                         disabled={likingPhotoId === photo.id}
                         style={{
                           ...styles.likeButton,
-                          ...(likedByThisBrowser
-                            ? styles.likeButtonActive
-                            : {}),
+                          ...(likedByThisBrowser ? styles.likeButtonActive : {}),
                         }}
                       >
                         {likedByThisBrowser ? "♥ Gelikt" : "♡ Liken"}
                       </button>
 
                       <span style={styles.likeCount}>
-                        {likesForPhoto.length} Like
-                        {likesForPhoto.length === 1 ? "" : "s"}
+                        {likesForPhoto.length} Like{likesForPhoto.length === 1 ? "" : "s"}
                       </span>
                     </div>
                   )}
@@ -1722,31 +1604,21 @@ die man mit nach Hause nimmt.
                           disabled={submittingCommentPhotoId === photo.id}
                           style={styles.commentButton}
                         >
-                          {submittingCommentPhotoId === photo.id
-                            ? "Speichert..."
-                            : "Kommentieren"}
+                          {submittingCommentPhotoId === photo.id ? "Speichert..." : "Kommentieren"}
                         </button>
                       </div>
 
                       <div style={styles.commentList}>
                         {commentsForPhoto.length === 0 ? (
-                          <div style={styles.noCommentsText}>
-                            Noch keine Kommentare.
-                          </div>
+                          <div style={styles.noCommentsText}>Noch keine Kommentare.</div>
                         ) : (
                           commentsForPhoto.map((comment) => (
                             <div key={comment.id} style={styles.commentItem}>
                               <div style={styles.commentAuthorRow}>
-                                <span style={styles.commentAuthor}>
-                                  {comment.author_name || "Unbekannt"}
-                                </span>
-                                <span style={styles.commentDate}>
-                                  {formatDateTime(comment.created_at)}
-                                </span>
+                                <span style={styles.commentAuthor}>{comment.author_name || "Unbekannt"}</span>
+                                <span style={styles.commentDate}>{formatDateTime(comment.created_at)}</span>
                               </div>
-                              <div style={styles.commentText}>
-                                {comment.comment_text}
-                              </div>
+                              <div style={styles.commentText}>{comment.comment_text}</div>
                             </div>
                           ))
                         )}
@@ -1769,11 +1641,7 @@ die man mit nach Hause nimmt.
 
             <div style={styles.cartHeader}>
               <h3 style={styles.cartTitle}>Ausgewählte Bilder</h3>
-              <button
-                type="button"
-                onClick={() => setCartOpen(false)}
-                style={styles.cartCloseButton}
-              >
+              <button type="button" onClick={() => setCartOpen(false)} style={styles.cartCloseButton}>
                 ✕
               </button>
             </div>
@@ -1783,8 +1651,7 @@ die man mit nach Hause nimmt.
             ) : (
               <>
                 <div style={styles.cartInfo}>
-                  {selectedPhotos.length} Bild
-                  {selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
+                  {selectedPhotos.length} Bild{selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
                 </div>
 
                 <div style={styles.cartGrid}>
@@ -1795,10 +1662,7 @@ die man mit nach Hause nimmt.
                     };
 
                     const itemPriceInCent =
-                      getProductPrice(
-                        options.printOption,
-                        options.frameOption
-                      ) || 0;
+                      getProductPrice(options.printOption, options.frameOption) || 0;
 
                     return (
                       <div key={photo.id} style={styles.cartPhotoCard}>
@@ -1810,9 +1674,7 @@ die man mit nach Hause nimmt.
 
                         <div style={styles.cartPhotoInfo}>
                           <div style={styles.cartPhotoName}>
-                            {photo.caption ||
-                              photo.file_name ||
-                              "Ausgewähltes Foto"}
+                            {photo.caption || photo.file_name || "Ausgewähltes Foto"}
                           </div>
 
                           <div style={styles.cartItemOptions}>
@@ -1833,18 +1695,11 @@ die man mit nach Hause nimmt.
                               >
                                 {SIZE_OPTIONS.map((option) => {
                                   const price =
-                                    getProductPrice(
-                                      option.value,
-                                      options.frameOption
-                                    ) || 0;
+                                    getProductPrice(option.value, options.frameOption) || 0;
 
                                   return (
-                                    <option
-                                      key={option.value}
-                                      value={option.value}
-                                    >
-                                      {option.label} •{" "}
-                                      {formatEuroFromCent(price)} €
+                                    <option key={option.value} value={option.value}>
+                                      {option.label} • {formatEuroFromCent(price)} €
                                     </option>
                                   );
                                 })}
@@ -1866,28 +1721,20 @@ die man mit nach Hause nimmt.
                                 }
                                 style={styles.orderSelect}
                               >
-                                {Object.entries(FRAME_OPTIONS).map(
-                                  ([value, option]) => (
-                                    <option key={value} value={value}>
-                                      {option.label} •{" "}
-                                      {formatEuroFromCent(option.price)} €
-                                    </option>
-                                  )
-                                )}
+                                {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
+                                  <option key={value} value={value}>
+                                    {option.label} • {formatEuroFromCent(option.price)} €
+                                  </option>
+                                ))}
                               </select>
                             </div>
                           </div>
 
                           <div style={styles.cartItemPrice}>
-                            Preis für dieses Bild:{" "}
-                            {(itemPriceInCent / 100).toFixed(2)} €
+                            Preis für dieses Bild: {(itemPriceInCent / 100).toFixed(2)} €
                           </div>
 
-                          <button
-                            type="button"
-                            onClick={() => togglePhotoSelection(photo.id)}
-                            style={styles.removeFromCartButton}
-                          >
+                          <button type="button" onClick={() => togglePhotoSelection(photo.id)} style={styles.removeFromCartButton}>
                             Entfernen
                           </button>
                         </div>
@@ -1910,67 +1757,17 @@ die man mit nach Hause nimmt.
                 <div style={styles.orderFormCard}>
                   <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
                   <p style={styles.orderFormText}>
-                    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine
-                    ausgewählten Bilder aus diesem Event werden mit ihren
-                    individuellen Format- und Rahmenoptionen gespeichert.
+                    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine ausgewählten Bilder aus diesem Event werden mit ihren individuellen Format- und Rahmenoptionen gespeichert.
                   </p>
 
                   <div style={styles.orderFormGrid}>
-                    <input
-                      type="text"
-                      placeholder="Vor- und Nachname"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      style={styles.orderInput}
-                    />
-
-                    <input
-                      type="email"
-                      placeholder="E-Mail"
-                      value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      style={styles.orderInput}
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Telefon (optional)"
-                      value={customerPhone}
-                      onChange={(e) => setCustomerPhone(e.target.value)}
-                      style={styles.orderInput}
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Straße und Hausnummer"
-                      value={street}
-                      onChange={(e) => setStreet(e.target.value)}
-                      style={styles.orderInput}
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="PLZ"
-                      value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value)}
-                      style={styles.orderInput}
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Ort"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      style={styles.orderInput}
-                    />
-
-                    <input
-                      type="text"
-                      placeholder="Land"
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      style={styles.orderInput}
-                    />
+                    <input type="text" placeholder="Vor- und Nachname" value={customerName} onChange={(e) => setCustomerName(e.target.value)} style={styles.orderInput} />
+                    <input type="email" placeholder="E-Mail" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} style={styles.orderInput} />
+                    <input type="text" placeholder="Telefon (optional)" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} style={styles.orderInput} />
+                    <input type="text" placeholder="Straße und Hausnummer" value={street} onChange={(e) => setStreet(e.target.value)} style={styles.orderInput} />
+                    <input type="text" placeholder="PLZ" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} style={styles.orderInput} />
+                    <input type="text" placeholder="Ort" value={city} onChange={(e) => setCity(e.target.value)} style={styles.orderInput} />
+                    <input type="text" placeholder="Land" value={country} onChange={(e) => setCountry(e.target.value)} style={styles.orderInput} />
                   </div>
 
                   <textarea
@@ -1985,13 +1782,9 @@ die man mit nach Hause nimmt.
                 <div style={styles.cartFooter}>
                   <div style={styles.cartFooterSummary}>
                     <div style={styles.cartFooterSmall}>
-                      {selectedPhotos.length} Bild
-                      {selectedPhotos.length === 1 ? "" : "er"} individuell
-                      konfiguriert
+                      {selectedPhotos.length} Bild{selectedPhotos.length === 1 ? "" : "er"} individuell konfiguriert
                     </div>
-                    <div style={styles.cartFooterTotal}>
-                      {totalPrice.toFixed(2)} €
-                    </div>
+                    <div style={styles.cartFooterTotal}>{totalPrice.toFixed(2)} €</div>
                   </div>
 
                   <button
@@ -2003,9 +1796,7 @@ die man mit nach Hause nimmt.
                     onClick={handleSubmitOrder}
                     disabled={submittingOrder}
                   >
-                    {submittingOrder
-                      ? "Bestellung wird gespeichert..."
-                      : "Erinnerungen bestellen"}
+                    {submittingOrder ? "Bestellung wird gespeichert..." : "Erinnerungen bestellen"}
                   </button>
                 </div>
               </>
@@ -2022,29 +1813,17 @@ die man mit nach Hause nimmt.
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <button
-              type="button"
-              style={styles.closeButton}
-              onClick={closeLightbox}
-            >
+            <button type="button" style={styles.closeButton} onClick={closeLightbox}>
               ✕
             </button>
 
             {filteredPhotos.length > 1 && (
               <>
-                <button
-                  type="button"
-                  style={{ ...styles.navButton, left: "16px" }}
-                  onClick={showPrevPhoto}
-                >
+                <button type="button" style={{ ...styles.navButton, left: "16px" }} onClick={showPrevPhoto}>
                   ‹
                 </button>
 
-                <button
-                  type="button"
-                  style={{ ...styles.navButton, right: "16px" }}
-                  onClick={showNextPhoto}
-                >
+                <button type="button" style={{ ...styles.navButton, right: "16px" }} onClick={showNextPhoto}>
                   ›
                 </button>
               </>
@@ -2070,7 +1849,6 @@ die man mit nach Hause nimmt.
     </div>
   );
 }
-
 const styles = {
   setupCard: {
   background: "#fff",
