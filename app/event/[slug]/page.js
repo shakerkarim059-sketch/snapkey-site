@@ -952,6 +952,7 @@ export default function EventPage() {
   }, [photos, selectedYearFilter, selectedMonthFilter]);
 
   const finalQuantity = customQuantity ? Number(customQuantity) : selectedQuantity;
+  const eventIsUnlocked = eventData?.setup_completed === true;
   const selectedKey = KEY_TYPES[selectedKeyType];
   const setupTotalPrice = EVENT_BASE_PRICE + finalQuantity * selectedKey.price;
 
@@ -1083,7 +1084,23 @@ export default function EventPage() {
           </div>
         )}
       </div>
-
+{!eventData?.setup_completed && !isSetupMode && (
+  <div style={styles.lockedBox}>
+    <h2 style={styles.lockedTitle}>Event noch nicht freigeschaltet</h2>
+    <p style={styles.lockedText}>
+      Dieses Event wird aktiviert, sobald die Snapkeys bestellt wurden.
+    </p>
+    <button
+      type="button"
+      onClick={() => {
+        window.location.href = `/event/${eventData.slug}?setup=true`;
+      }}
+      style={styles.primaryButton}
+    >
+      Event freischalten
+    </button>
+  </div>
+)}
       {isSetupMode && (
         <div style={styles.setupCard}>
           <div style={styles.setupHeader}>
@@ -1377,7 +1394,8 @@ export default function EventPage() {
         </div>
       )}
 
-      <form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
+      {eventData?.setup_completed && (
+<form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
         <div style={styles.uploadTopRow}>
           <div>
             <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
@@ -1457,12 +1475,13 @@ export default function EventPage() {
           {uploadingPhoto ? "Fotos werden hochgeladen..." : "Fotos hochladen"}
         </button>
       </form>
+          )}
 
-      <div style={styles.selectionBar}>
+      {eventData?.setup_completed && (
+<div style={styles.selectionBar}>
         <div style={styles.selectionInfo}>
           {selectedPhotoIds.length} Bild{selectedPhotoIds.length === 1 ? "" : "er"} ausgewählt
         </div>
-
         <button
           type="button"
           style={{
@@ -1480,8 +1499,9 @@ export default function EventPage() {
           Ausgewählte Bilder bestellen
         </button>
       </div>
-
-      {loadingPhotos || loadingLikes || loadingComments ? (
+)}
+      {eventData?.setup_completed && (
+  loadingPhotos || loadingLikes || loadingComments ? (
         <div style={styles.emptyBox}>Inhalte werden geladen...</div>
       ) : filteredPhotos.length === 0 ? (
         <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
@@ -1631,7 +1651,7 @@ export default function EventPage() {
           })}
         </div>
       )}
-
+)}
       {cartOpen && (
         <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
           <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
