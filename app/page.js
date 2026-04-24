@@ -202,9 +202,6 @@ export default function HomePage() {
                 style={styles.productImage}
                 onClick={() => openImage(item.image, item.title)}
               />
-                  <div style={styles.pricingNote}>
-  Eventseite ab 29 € + Snapkeys je nach Auswahl
-</div>
 
               <div style={styles.productBody}>
                <div style={styles.productSubtitle}>{item.subtitle}</div>
@@ -222,8 +219,13 @@ export default function HomePage() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
+</div>
+
+<div style={styles.pricingNote}>
+  Eventseite ab 29 € + Snapkeys je nach Auswahl
+</div>
+
+</section>
 
       <section id="how-it-works" style={styles.storySection}>
         <div style={styles.storyImageWrap}>
