@@ -1168,61 +1168,13 @@ die man mit nach Hause nimmt.
   </p>
 
   <div style={styles.orderFormGrid}>
-    <input
-      type="text"
-      placeholder="Vor- und Nachname"
-      value={snapkeyCustomerName}
-      onChange={(e) => setSnapkeyCustomerName(e.target.value)}
-      style={styles.orderInput}
-    />
-
-    <input
-      type="email"
-      placeholder="E-Mail"
-      value={snapkeyCustomerEmail}
-      onChange={(e) => setSnapkeyCustomerEmail(e.target.value)}
-      style={styles.orderInput}
-    />
-
-    <input
-      type="text"
-      placeholder="Telefon (optional)"
-      value={snapkeyCustomerPhone}
-      onChange={(e) => setSnapkeyCustomerPhone(e.target.value)}
-      style={styles.orderInput}
-    />
-
-    <input
-      type="text"
-      placeholder="Straße und Hausnummer"
-      value={snapkeyStreet}
-      onChange={(e) => setSnapkeyStreet(e.target.value)}
-      style={styles.orderInput}
-    />
-
-    <input
-      type="text"
-      placeholder="PLZ"
-      value={snapkeyPostalCode}
-      onChange={(e) => setSnapkeyPostalCode(e.target.value)}
-      style={styles.orderInput}
-    />
-
-    <input
-      type="text"
-      placeholder="Ort"
-      value={snapkeyCity}
-      onChange={(e) => setSnapkeyCity(e.target.value)}
-      style={styles.orderInput}
-    />
-
-    <input
-      type="text"
-      placeholder="Land"
-      value={snapkeyCountry}
-      onChange={(e) => setSnapkeyCountry(e.target.value)}
-      style={styles.orderInput}
-    />
+    <input type="text" placeholder="Vor- und Nachname" value={snapkeyCustomerName} onChange={(e) => setSnapkeyCustomerName(e.target.value)} style={styles.orderInput} />
+    <input type="email" placeholder="E-Mail" value={snapkeyCustomerEmail} onChange={(e) => setSnapkeyCustomerEmail(e.target.value)} style={styles.orderInput} />
+    <input type="text" placeholder="Telefon (optional)" value={snapkeyCustomerPhone} onChange={(e) => setSnapkeyCustomerPhone(e.target.value)} style={styles.orderInput} />
+    <input type="text" placeholder="Straße und Hausnummer" value={snapkeyStreet} onChange={(e) => setSnapkeyStreet(e.target.value)} style={styles.orderInput} />
+    <input type="text" placeholder="PLZ" value={snapkeyPostalCode} onChange={(e) => setSnapkeyPostalCode(e.target.value)} style={styles.orderInput} />
+    <input type="text" placeholder="Ort" value={snapkeyCity} onChange={(e) => setSnapkeyCity(e.target.value)} style={styles.orderInput} />
+    <input type="text" placeholder="Land" value={snapkeyCountry} onChange={(e) => setSnapkeyCountry(e.target.value)} style={styles.orderInput} />
   </div>
 
   <textarea
@@ -1234,6 +1186,10 @@ die man mit nach Hause nimmt.
   />
 </div>
 
+<div style={styles.setupUrgency}>
+  Dein Event wird erst nach der Bestellung freigeschaltet.
+</div>
+
 <button
   type="button"
   style={{
@@ -1243,42 +1199,26 @@ die man mit nach Hause nimmt.
   disabled={submittingSnapkeyOrder}
   onClick={async () => {
     try {
-      if (!eventData?.id) {
-        alert("Event nicht gefunden.");
-        return;
-      }
+      if (!eventData?.id) return alert("Event nicht gefunden.");
 
-      const parsedQuantity = customQuantity
-        ? Number(customQuantity)
-        : selectedQuantity;
+      const parsedQuantity = customQuantity ? Number(customQuantity) : selectedQuantity;
 
       if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
-        alert("Bitte eine gültige Menge wählen.");
-        return;
+        return alert("Bitte eine gültige Menge wählen.");
       }
 
-      if (!snapkeyCustomerName.trim()) {
-        alert("Bitte deinen Namen eingeben.");
-        return;
-      }
-
-      if (!snapkeyCustomerEmail.trim()) {
-        alert("Bitte deine E-Mail eingeben.");
-        return;
-      }
+      if (!snapkeyCustomerName.trim()) return alert("Bitte deinen Namen eingeben.");
+      if (!snapkeyCustomerEmail.trim()) return alert("Bitte deine E-Mail eingeben.");
 
       if (!snapkeyStreet.trim() || !snapkeyPostalCode.trim() || !snapkeyCity.trim()) {
-        alert("Bitte die vollständige Adresse eingeben.");
-        return;
+        return alert("Bitte die vollständige Adresse eingeben.");
       }
 
       setSubmittingSnapkeyOrder(true);
 
       const createOrderResponse = await fetch("/api/create-snapkey-order", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           eventId: eventData.id,
           keyType: selectedKeyType,
@@ -1297,15 +1237,15 @@ die man mit nach Hause nimmt.
 
       const createOrderResult = await createOrderResponse.json();
 
-if (!createOrderResponse.ok) {
-  alert(
-    createOrderResult.details ||
-      createOrderResult.error ||
-      "Snapkey-Bestellung konnte nicht gespeichert werden."
-  );
-  setSubmittingSnapkeyOrder(false);
-  return;
-}
+      if (!createOrderResponse.ok) {
+        alert(
+          createOrderResult.details ||
+            createOrderResult.error ||
+            "Snapkey-Bestellung konnte nicht gespeichert werden."
+        );
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
 
       const orderId = createOrderResult?.order?.id;
 
@@ -1315,29 +1255,21 @@ if (!createOrderResponse.ok) {
         return;
       }
 
-      const checkoutResponse = await fetch(
-        "/api/create-snapkey-checkout-session",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
+      const checkoutResponse = await fetch("/api/create-snapkey-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
 
       const checkoutResult = await checkoutResponse.json();
 
       if (!checkoutResponse.ok) {
-        alert(
-          checkoutResult.error ||
-            "Stripe Checkout konnte nicht gestartet werden."
-        );
+        alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
         setSubmittingSnapkeyOrder(false);
         return;
       }
 
-           if (!checkoutResult.url) {
+      if (!checkoutResult.url) {
         alert("Keine Checkout-URL erhalten.");
         setSubmittingSnapkeyOrder(false);
         return;
