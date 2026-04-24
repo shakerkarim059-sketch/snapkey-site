@@ -1337,7 +1337,7 @@ if (!createOrderResponse.ok) {
         return;
       }
 
-      if (!checkoutResult.url) {
+           if (!checkoutResult.url) {
         alert("Keine Checkout-URL erhalten.");
         setSubmittingSnapkeyOrder(false);
         return;
@@ -1355,34 +1355,6 @@ if (!createOrderResponse.ok) {
     ? "Snapkey-Bestellung wird vorbereitet..."
     : "Jetzt bestellen & Event freischalten"}
 </button>
-    try {
-      if (!eventData?.id) {
-        alert("Event nicht gefunden.");
-        return;
-      }
-
-      const parsedQuantity = customQuantity
-        ? Number(customQuantity)
-        : selectedQuantity;
-
-      if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
-        alert("Bitte eine gültige Menge wählen.");
-        return;
-      }
-
-      if (!snapkeyCustomerName.trim()) {
-        alert("Bitte deinen Namen eingeben.");
-        return;
-      }
-
-      if (!snapkeyCustomerEmail.trim()) {
-        alert("Bitte deine E-Mail eingeben.");
-        return;
-      }
-
-      if (!snapkeyStreet.trim() || !snapkeyPostalCode.trim() || !snapkeyCity.trim()) {
-        alert("Bitte die vollständige Adresse eingeben.");
-        return;
       }
 
       setSubmittingSnapkeyOrder(true);
