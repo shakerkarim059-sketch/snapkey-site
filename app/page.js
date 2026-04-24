@@ -104,6 +104,20 @@ export default function HomePage() {
       Erstelle deine Eventseite und verbinde sie mit Snapkeys für deine Gäste.
       Ein Tap genügt – und alle Erinnerungen sind sofort da.
     </p>
+    <p style={styles.heroText}>
+  Erstelle deine Eventseite und verbinde sie mit Snapkeys für deine Gäste.
+  Ein Tap genügt – und alle Erinnerungen sind sofort da.
+</p>
+
+<p
+  style={{
+    fontSize: "15px",
+    color: "rgba(255,255,255,0.85)",
+    margin: 0,
+  }}
+>
+  Nicht nur Fotos – Erinnerungen, die deine Gäste mit nach Hause nehmen.
+</p>
 
     <div style={styles.heroActionRow}>
       <Link href="/event" style={styles.primaryButton}>
