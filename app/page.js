@@ -21,6 +21,7 @@ export default function HomePage() {
     {
       title: "Snapkey Karte",
       subtitle: "Günstig für viele Gäste",
+      price: "ab 2,50 € / Stück",
       description:
         "Ideal, wenn viele Gäste einen eigenen Zugang zum Eventalbum erhalten sollen. Praktisch, schlicht und preisbewusst.",
       image: "/nfc-event.jpg",
@@ -33,6 +34,7 @@ export default function HomePage() {
     {
       title: "Snapkey Anhänger",
       subtitle: "Der Allrounder für Events",
+      price: "ab 4,00 € / Stück",
       description:
         "Ein hochwertiger Snapkey Anhänger, den Gäste als Erinnerung mitnehmen können. Perfekt für Hochzeiten, Geburtstage und Familienfeiern.",
       image: "/nfc-wedding.jpg",
@@ -45,6 +47,7 @@ export default function HomePage() {
     {
       title: "Premium Holz-Snapkey",
       subtitle: "Hochwertig und emotional",
+      price: "ab 6,00 € / Stück",
       description:
         "Für alle, die etwas Besonderes möchten. Ein wertiger Snapkey mit persönlichem Charakter für besondere Erinnerungen.",
       image: "/nfc-family.jpg",
@@ -201,9 +204,10 @@ export default function HomePage() {
               />
 
               <div style={styles.productBody}>
-                <div style={styles.productSubtitle}>{item.subtitle}</div>
-                <h3 style={styles.productTitle}>{item.title}</h3>
-                <p style={styles.productDescription}>{item.description}</p>
+               <div style={styles.productSubtitle}>{item.subtitle}</div>
+<h3 style={styles.productTitle}>{item.title}</h3>
+<div style={styles.productPrice}>{item.price}</div>
+<p style={styles.productDescription}>{item.description}</p>
 
                 <div style={styles.productList}>
                   {item.points.map((point) => (
@@ -646,6 +650,16 @@ heroTrustItem: {
     fontWeight: "900",
     color: "#2e241d",
   },
+  productPrice: {
+  width: "fit-content",
+  background: "#f4ede6",
+  color: "#4b3a2d",
+  border: "1px solid #eadfd4",
+  borderRadius: "999px",
+  padding: "7px 11px",
+  fontSize: "14px",
+  fontWeight: "900",
+},
 
   productDescription: {
     margin: 0,
