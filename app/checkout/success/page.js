@@ -1,6 +1,8 @@
 import Link from "next/link";
 
-export default function SuccessPage() {
+export default function SuccessPage({ searchParams }) {
+  const eventSlug = searchParams?.event;
+
   return (
     <div style={{ padding: "24px", maxWidth: "520px", margin: "0 auto" }}>
       <h1 style={{ fontSize: "28px", fontWeight: "800", marginBottom: "12px" }}>
@@ -25,14 +27,14 @@ export default function SuccessPage() {
         </p>
 
         <ul style={{ marginTop: "10px", paddingLeft: "18px", lineHeight: "1.6" }}>
-          <li>Dein Event ist jetzt aktiviert</li>
+          <li>Dein Event ist jetzt freigeschaltet</li>
           <li>Deine Snapkeys werden vorbereitet</li>
-          <li>Du erhältst Updates per E-Mail</li>
+          <li>Du erhältst eine Bestätigung per E-Mail</li>
         </ul>
       </div>
 
       <Link
-        href="/"
+        href={eventSlug ? `/event/${eventSlug}` : "/"}
         style={{
           display: "block",
           width: "100%",
@@ -47,7 +49,7 @@ export default function SuccessPage() {
           boxSizing: "border-box",
         }}
       >
-        Zurück zur Startseite
+        {eventSlug ? "Zur freigeschalteten Eventseite" : "Zur Startseite"}
       </Link>
     </div>
   );
