@@ -1312,6 +1312,25 @@ die man mit nach Hause nimmt.
         }),
       });
 
+      const createOrderResponse = await fetch("/api/create-snapkey-order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventId: eventData.id,
+          keyType: selectedKeyType,
+          quantity: parsedQuantity,
+          designVariant: eventData.category || null,
+          customerName: snapkeyCustomerName,
+          customerEmail: snapkeyCustomerEmail,
+          customerPhone: snapkeyCustomerPhone,
+          street: snapkeyStreet,
+          postalCode: snapkeyPostalCode,
+          city: snapkeyCity,
+          country: snapkeyCountry,
+          orderNote: snapkeyOrderNote,
+        }),
+      });
+
       const createOrderResult = await createOrderResponse.json();
 
       if (!createOrderResponse.ok) {
@@ -1332,24 +1351,16 @@ die man mit nach Hause nimmt.
         return;
       }
 
-      const checkoutResponse = await fetch(
-        "/api/create-snapkey-checkout-session",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        }
-      );
+      const checkoutResponse = await fetch("/api/create-snapkey-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      });
 
       const checkoutResult = await checkoutResponse.json();
 
       if (!checkoutResponse.ok) {
-        alert(
-          checkoutResult.error ||
-            "Stripe Checkout konnte nicht gestartet werden."
-        );
+        alert(checkoutResult.error || "Stripe Checkout konnte nicht gestartet werden.");
         setSubmittingSnapkeyOrder(false);
         return;
       }
