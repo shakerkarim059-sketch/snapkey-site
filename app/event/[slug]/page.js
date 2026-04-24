@@ -1337,6 +1337,113 @@ if (!createOrderResponse.ok) {
         return;
       }
 
+<div style={styles.setupUrgency}>
+  Dein Event wird erst nach der Bestellung freigeschaltet.
+</div>
+
+<button
+  type="button"
+  style={{
+    ...styles.primaryButton,
+    ...(submittingSnapkeyOrder ? styles.buttonDisabled : {}),
+  }}
+  disabled={submittingSnapkeyOrder}
+  onClick={async () => {
+    try {
+      if (!eventData?.id) {
+        alert("Event nicht gefunden.");
+        return;
+      }
+
+      const parsedQuantity = customQuantity
+        ? Number(customQuantity)
+        : selectedQuantity;
+
+      if (!Number.isInteger(parsedQuantity) || parsedQuantity <= 0) {
+        alert("Bitte eine gültige Menge wählen.");
+        return;
+      }
+
+      if (!snapkeyCustomerName.trim()) {
+        alert("Bitte deinen Namen eingeben.");
+        return;
+      }
+
+      if (!snapkeyCustomerEmail.trim()) {
+        alert("Bitte deine E-Mail eingeben.");
+        return;
+      }
+
+      if (!snapkeyStreet.trim() || !snapkeyPostalCode.trim() || !snapkeyCity.trim()) {
+        alert("Bitte die vollständige Adresse eingeben.");
+        return;
+      }
+
+      setSubmittingSnapkeyOrder(true);
+
+      const createOrderResponse = await fetch("/api/create-snapkey-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: eventData.id,
+          keyType: selectedKeyType,
+          quantity: parsedQuantity,
+          designVariant: eventData.category || null,
+          customerName: snapkeyCustomerName,
+          customerEmail: snapkeyCustomerEmail,
+          customerPhone: snapkeyCustomerPhone,
+          street: snapkeyStreet,
+          postalCode: snapkeyPostalCode,
+          city: snapkeyCity,
+          country: snapkeyCountry,
+          orderNote: snapkeyOrderNote,
+        }),
+      });
+
+      const createOrderResult = await createOrderResponse.json();
+
+      if (!createOrderResponse.ok) {
+        alert(
+          createOrderResult.details ||
+            createOrderResult.error ||
+            "Snapkey-Bestellung konnte nicht gespeichert werden."
+        );
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
+      const orderId = createOrderResult?.order?.id;
+
+      if (!orderId) {
+        alert("Keine Bestell-ID erhalten.");
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
+      const checkoutResponse = await fetch(
+        "/api/create-snapkey-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId }),
+        }
+      );
+
+      const checkoutResult = await checkoutResponse.json();
+
+      if (!checkoutResponse.ok) {
+        alert(
+          checkoutResult.error ||
+            "Stripe Checkout konnte nicht gestartet werden."
+        );
+        setSubmittingSnapkeyOrder(false);
+        return;
+      }
+
       if (!checkoutResult.url) {
         alert("Keine Checkout-URL erhalten.");
         setSubmittingSnapkeyOrder(false);
@@ -1353,59 +1460,8 @@ if (!createOrderResponse.ok) {
 >
   {submittingSnapkeyOrder
     ? "Snapkey-Bestellung wird vorbereitet..."
-: "Jetzt bestellen & Event freischalten"}
+    : "Jetzt bestellen & Event freischalten"}
 </button>
-        </div>
-      )}
-
-      {editingEventId && isAdmin && (
-        <form onSubmit={handleUpdateEvent} style={styles.formCard}>
-          <div style={styles.editHeader}>
-            <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
-            <button
-              type="button"
-              onClick={cancelEditingEvent}
-              style={styles.cancelButton}
-            >
-              Abbrechen
-            </button>
-          </div>
-
-          <input
-            type="text"
-            placeholder="Titel"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={styles.input}
-          />
-
-          <input
-            type="text"
-            placeholder="Ort"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            style={styles.input}
-          />
-
-          <div style={{ display: "grid", gap: "4px" }}>
-            <label style={styles.label}>Kategorie</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              style={styles.input}
-            >
-              <option value="">Bitte auswählen</option>
-              <option value="Hochzeit">Hochzeit</option>
-              <option value="Geburtstag">Geburtstag</option>
-              <option value="Familienalbum">Familienalbum</option>
-              <option value="Urlaub">Urlaub</option>
-              <option value="Baby / Taufe">Baby / Taufe</option>
-              <option value="Jubiläum">Jubiläum</option>
-              <option value="Rückblick">Rückblick</option>
-              <option value="Sonstiges">Sonstiges</option>
-            </select>
-          </div>
 
           <div style={styles.twoCol}>
             <input
