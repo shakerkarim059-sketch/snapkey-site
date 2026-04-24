@@ -202,6 +202,9 @@ export default function HomePage() {
                 style={styles.productImage}
                 onClick={() => openImage(item.image, item.title)}
               />
+                  <div style={styles.pricingNote}>
+  Eventseite ab 29 € + Snapkeys je nach Auswahl
+</div>
 
               <div style={styles.productBody}>
                <div style={styles.productSubtitle}>{item.subtitle}</div>
@@ -378,6 +381,13 @@ const styles = {
     padding: "14px 12px 56px",
     overflowX: "hidden",
   },
+  pricingNote: {
+  marginTop: "12px",
+  fontSize: "14px",
+  color: "#6b5c50",
+  textAlign: "center",
+  fontWeight: "600",
+},
 
 heroSection: {
   position: "relative",
