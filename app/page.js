@@ -19,7 +19,7 @@ export default function HomePage() {
 
   const snapkeyTypes = [
     {
-      title: "NFC Karte",
+      title: "Snapkey Karte",
       subtitle: "Günstig für viele Gäste",
       description:
         "Ideal, wenn viele Gäste einen eigenen Zugang zum Eventalbum erhalten sollen. Praktisch, schlicht und preisbewusst.",
@@ -34,7 +34,7 @@ export default function HomePage() {
       title: "Snapkey Anhänger",
       subtitle: "Der Allrounder für Events",
       description:
-        "Ein hochwertiger NFC Anhänger, den Gäste als Erinnerung mitnehmen können. Perfekt für Hochzeiten, Geburtstage und Familienfeiern.",
+        "Ein hochwertiger Snapkey Anhänger, den Gäste als Erinnerung mitnehmen können. Perfekt für Hochzeiten, Geburtstage und Familienfeiern.",
       image: "/nfc-wedding.jpg",
       points: [
         "Als Erinnerungsstück mitnehmbar",
@@ -70,7 +70,7 @@ export default function HomePage() {
     {
       number: "3",
       title: "Gäste scannen",
-      text: "Gäste öffnen das Fotoalbum per NFC mit einem Tap – ohne App, ohne komplizierten Link.",
+      text: "Gäste öffnen das Fotoalbum per Snapkey mit einem Tap – ohne App, ohne komplizierten Link.",
     },
     {
       number: "4",
@@ -80,7 +80,7 @@ export default function HomePage() {
   ];
 
   const benefits = [
-    "NFC-Erinnerung für Gäste",
+    "Snapkey-Erinnerung für Gäste",
     "Eventalbum ohne App öffnen",
     "Fotos hochladen & teilen",
     "Prints mit oder ohne Rahmen bestellen",
@@ -88,55 +88,42 @@ export default function HomePage() {
 
   return (
     <main style={styles.page}>
-      <section style={styles.heroSection}>
-        <div style={styles.heroTextCol}>
-          <div style={styles.heroBadge}>Snapkey für Hochzeiten & Events</div>
+<section style={styles.heroSection}>
+  <div style={styles.heroOverlay} />
 
-          <h1 style={styles.heroTitle}>
-            Dein Event als NFC-Erinnerung.
-            <br />
-            Fotos sammeln, teilen & für immer behalten.
-          </h1>
+  <div style={styles.heroContent}>
+    <div style={styles.heroBadge}>Snapkey für Hochzeiten & Events</div>
 
-          <p style={styles.heroText}>
-            Erstelle eine persönliche Eventseite und verbinde sie mit Snapkeys
-            für deine Gäste. Fotos hochladen, ansehen und als hochwertige
-            Erinnerung bestellen – alles an einem Ort.
-          </p>
+    <h1 style={styles.heroTitle}>
+      Dein Event als Snapkey-Erinnerung.
+      <br />
+      Fotos sammeln, teilen & für immer behalten.
+    </h1>
 
-          <div style={styles.heroActionRow}>
-            <Link href="/event" style={styles.primaryButton}>
-              Event erstellen
-            </Link>
+    <p style={styles.heroText}>
+      Erstelle deine Eventseite und verbinde sie mit Snapkeys für deine Gäste.
+      Ein Tap genügt – und alle Erinnerungen sind sofort da.
+    </p>
 
-            <a href="#how-it-works" style={styles.secondaryButton}>
-              So funktioniert’s
-            </a>
-          </div>
+    <div style={styles.heroActionRow}>
+      <Link href="/event" style={styles.primaryButton}>
+        Event erstellen
+      </Link>
 
-          <div style={styles.heroTrustRow}>
-            {benefits.map((item) => (
-              <div key={item} style={styles.heroTrustItem}>
-                ✓ {item}
-              </div>
-            ))}
-          </div>
+      <a href="#how-it-works" style={styles.secondaryButton}>
+        So funktioniert’s
+      </a>
+    </div>
+
+    <div style={styles.heroTrustRow}>
+      {benefits.map((item) => (
+        <div key={item} style={styles.heroTrustItem}>
+          ✓ {item.replace("NFC-", "Snapkey-")}
         </div>
-
-        <div style={styles.heroImageCol}>
-          <img
-            src="/hero-nfc.jpg"
-            alt="Snapkey mit Smartphone und geöffneter Eventseite"
-            style={styles.heroImage}
-            onClick={() =>
-              openImage(
-                "/hero-nfc.jpg",
-                "Snapkey mit Smartphone und geöffneter Eventseite"
-              )
-            }
-          />
-        </div>
-      </section>
+      ))}
+    </div>
+  </div>
+</section>
 
       <section style={styles.explainSection}>
         <div style={styles.explainCard}>
@@ -145,7 +132,7 @@ export default function HomePage() {
             Kein normales Fotoalbum. Ein echtes Erinnerungsstück für deine Gäste.
           </h2>
           <p style={styles.sectionText}>
-            Snapkey verbindet ein digitales Eventalbum mit einem physischen NFC
+            Snapkey verbindet ein digitales Eventalbum mit einem physischen Snapkey
             Key. Deine Gäste können den Key mit nach Hause nehmen und später
             jederzeit wieder in eure Erinnerungen eintauchen.
           </p>
@@ -183,7 +170,7 @@ export default function HomePage() {
           <div style={styles.sectionEyebrow}>Snapkey Varianten</div>
           <h2 style={styles.sectionTitle}>Für jedes Budget der passende Key</h2>
           <p style={styles.sectionText}>
-            Manche möchten für jeden Gast einen günstigen NFC Zugang. Andere
+            Manche möchten für jeden Gast einen günstigen Snapkey Zugang. Andere
             möchten ein hochwertiges Erinnerungsstück. Deshalb bleibt Snapkey
             flexibel.
           </p>
@@ -235,7 +222,7 @@ export default function HomePage() {
         <div style={styles.storyContent}>
           <div style={styles.sectionEyebrow}>So funktioniert’s</div>
           <h2 style={styles.sectionTitle}>
-            Von der Eventseite bis zum NFC Key – alles in einem Flow.
+            Von der Eventseite bis zum Snapkey – alles in einem Flow.
           </h2>
           <p style={styles.sectionText}>
             Du erstellst dein Event, wählst passende Snapkeys aus und aktivierst
@@ -374,121 +361,129 @@ const styles = {
     overflowX: "hidden",
   },
 
-  heroSection: {
-    maxWidth: "1320px",
-    margin: "0 auto 34px",
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-    gap: "26px",
-    alignItems: "center",
-  },
+heroSection: {
+  position: "relative",
+  maxWidth: "1320px",
+  minHeight: "min(760px, 86vh)",
+  margin: "0 auto 34px",
+  borderRadius: "34px",
+  overflow: "hidden",
+  display: "flex",
+  alignItems: "flex-end",
+  padding: "26px",
+  boxSizing: "border-box",
+  backgroundImage: "url('/hero-nfc.jpg')",
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  boxShadow: "0 24px 56px rgba(46, 36, 29, 0.16)",
+},
 
-  heroTextCol: {
-    display: "grid",
-    gap: "18px",
-  },
+heroOverlay: {
+  position: "absolute",
+  inset: 0,
+  background:
+    "linear-gradient(180deg, rgba(17,24,39,0.18) 0%, rgba(17,24,39,0.42) 42%, rgba(17,24,39,0.78) 100%)",
+  zIndex: 1,
+},
 
-  heroBadge: {
-    width: "fit-content",
-    background: "#eaded1",
-    color: "#7a5c45",
-    padding: "9px 13px",
-    borderRadius: "999px",
-    fontSize: "11px",
-    fontWeight: "800",
-    textTransform: "uppercase",
-    letterSpacing: "0.06em",
-  },
+heroContent: {
+  position: "relative",
+  zIndex: 2,
+  maxWidth: "760px",
+  display: "grid",
+  gap: "16px",
+},
 
-  heroTitle: {
-    margin: 0,
-    fontSize: "clamp(38px, 8vw, 72px)",
-    lineHeight: "0.98",
-    fontWeight: "900",
-    color: "#2e241d",
-    letterSpacing: "-0.04em",
-  },
+heroBadge: {
+  width: "fit-content",
+  background: "rgba(255,255,255,0.9)",
+  color: "#4b3a2d",
+  padding: "9px 13px",
+  borderRadius: "999px",
+  fontSize: "11px",
+  fontWeight: "900",
+  textTransform: "uppercase",
+  letterSpacing: "0.06em",
+  boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+},
 
-  heroText: {
-    margin: 0,
-    maxWidth: "720px",
-    fontSize: "clamp(16px, 3.2vw, 20px)",
-    lineHeight: "1.75",
-    color: "#5b4d42",
-  },
+heroTitle: {
+  margin: 0,
+  fontSize: "clamp(36px, 8vw, 72px)",
+  lineHeight: "0.98",
+  fontWeight: "900",
+  color: "#fff",
+  letterSpacing: "-0.04em",
+  textShadow: "0 10px 34px rgba(0,0,0,0.35)",
+},
 
-  heroActionRow: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "10px",
-  },
+heroText: {
+  margin: 0,
+  maxWidth: "680px",
+  fontSize: "clamp(16px, 3.2vw, 20px)",
+  lineHeight: "1.65",
+  color: "rgba(255,255,255,0.92)",
+  textShadow: "0 8px 24px rgba(0,0,0,0.32)",
+},
 
-  primaryButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textDecoration: "none",
-    backgroundColor: "#4b3a2d",
-    color: "#fff",
-    border: "none",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    fontSize: "15px",
-    fontWeight: "800",
-    minHeight: "50px",
-    minWidth: "190px",
-    boxShadow: "0 12px 26px rgba(75, 58, 45, 0.18)",
-  },
+heroActionRow: {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "10px",
+},
 
-  secondaryButton: {
-    display: "inline-flex",
-    alignItems: "center",
-    justifyContent: "center",
-    textDecoration: "none",
-    backgroundColor: "#fff",
-    color: "#4b3a2d",
-    border: "1px solid #dbcbbd",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    fontSize: "15px",
-    fontWeight: "800",
-    minHeight: "50px",
-    minWidth: "190px",
-    boxShadow: "0 6px 18px rgba(46, 36, 29, 0.05)",
-  },
+primaryButton: {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  textDecoration: "none",
+  backgroundColor: "#111827", // 🔥 NEU
+  color: "#fff",
+  border: "none",
+  padding: "14px 18px",
+  borderRadius: "14px",
+  fontSize: "15px",
+  fontWeight: "800",
+  minHeight: "50px",
+  minWidth: "190px",
+  boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+},
 
-  heroTrustRow: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-    gap: "10px",
-    marginTop: "4px",
-  },
+secondaryButton: {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  textDecoration: "none",
+  backgroundColor: "rgba(255,255,255,0.92)", // 🔥 NEU
+  color: "#111827",
+  border: "1px solid rgba(255,255,255,0.4)",
+  padding: "14px 18px",
+  borderRadius: "14px",
+  fontSize: "15px",
+  fontWeight: "800",
+  minHeight: "50px",
+  minWidth: "190px",
+  backdropFilter: "blur(6px)",
+},
 
-  heroTrustItem: {
-    background: "rgba(255,255,255,0.82)",
-    border: "1px solid #eadfd4",
-    borderRadius: "14px",
-    padding: "11px 12px",
-    color: "#4f4339",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
+heroTrustRow: {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
+  gap: "10px",
+  marginTop: "4px",
+},
 
-  heroImageCol: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  heroImage: {
-    width: "100%",
-    maxWidth: "760px",
-    borderRadius: "30px",
-    display: "block",
-    boxShadow: "0 24px 48px rgba(46, 36, 29, 0.14)",
-    cursor: "pointer",
-    objectFit: "cover",
-  },
+heroTrustItem: {
+  background: "rgba(255,255,255,0.14)",
+  border: "1px solid rgba(255,255,255,0.22)",
+  backdropFilter: "blur(10px)",
+  WebkitBackdropFilter: "blur(10px)",
+  borderRadius: "14px",
+  padding: "11px 12px",
+  color: "#fff",
+  fontSize: "14px",
+  fontWeight: "800",
+},
 
   explainSection: {
     maxWidth: "1180px",
