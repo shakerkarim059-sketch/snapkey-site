@@ -52,7 +52,7 @@ if (!response.ok) {
   return;
 }
 
-router.push(`/event/success?slug=${result.event.slug}`);
+router.push(`/event/${result.event.slug}?setup=true`);
   }
 
   return (
