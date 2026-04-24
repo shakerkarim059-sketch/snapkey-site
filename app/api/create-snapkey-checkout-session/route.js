@@ -71,11 +71,23 @@ export async function POST(req) {
         },
       },
     ];
+const { data: eventData, error: eventError } = await supabase
+  .from("events")
+  .select("slug")
+  .eq("id", order.event_id)
+  .single();
 
+if (eventError || !eventData?.slug) {
+  console.error("Event-Slug konnte nicht geladen werden:", eventError);
+  return NextResponse.json(
+    { error: "Event-Link konnte nicht erstellt werden" },
+    { status: 500 }
+  );
+}
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success`,
+     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?event=${eventData.slug}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
       customer_email: order.customer_email || undefined,
       metadata: {
