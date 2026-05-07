@@ -1,4 +1,22 @@
 import { NextResponse } from "next/server";
+import crypto from "crypto";
+
+function signSession(data) {
+  const secret = process.env.SESSION_SECRET;
+
+  if (!secret) {
+    throw new Error("SESSION_SECRET ist nicht gesetzt.");
+  }
+
+  const payload = Buffer.from(JSON.stringify(data)).toString("base64url");
+
+  const signature = crypto
+    .createHmac("sha256", secret)
+    .update(payload)
+    .digest("base64url");
+
+  return `${payload}.${signature}`;
+}
 
 export async function POST(req) {
   try {
@@ -25,9 +43,17 @@ export async function POST(req) {
       );
     }
 
-    const response = NextResponse.json({ success: true });
+    const token = signSession({
+      role: "super_admin",
+      exp: Date.now() + 1000 * 60 * 60 * 8,
+    });
 
-    response.cookies.set("admin_session", "authenticated", {
+    const response = NextResponse.json({
+      success: true,
+      role: "super_admin",
+    });
+
+    response.cookies.set("admin_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -37,6 +63,8 @@ export async function POST(req) {
 
     return response;
   } catch (error) {
+    console.error("Fehler bei admin-login:", error);
+
     return NextResponse.json(
       { error: "Serverfehler." },
       { status: 500 }
