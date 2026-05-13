@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { supabase } from "../../lib/supabase";
 
 export default function AdminPage() {
   const [events, setEvents] = useState([]);
@@ -18,73 +17,42 @@ export default function AdminPage() {
   const [loadingFailedOrders, setLoadingFailedOrders] = useState(true);
   const [retryingOrderId, setRetryingOrderId] = useState(null);
 
-  useEffect(() => {
-    fetchEvents();
-    fetchBatchCount();
-    fetchFailedOrders();
-  }, []);
+useEffect(() => {
+  fetchEvents();
+}, []);
 
-  async function fetchEvents() {
-    setLoading(true);
+ async function fetchEvents() {
+  setLoading(true);
 
-    const { data, error } = await supabase
-      .from("events")
-      .select("*")
-      .order("created_at", { ascending: false });
+  try {
+    const response = await fetch("/api/admin-dashboard");
 
-    if (error) {
-      console.error("Fehler beim Laden der Events:", error);
-      alert("Events konnten nicht geladen werden: " + error.message);
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Dashboard konnte nicht geladen werden.");
       setEvents([]);
+      setFailedOrders([]);
+      setBatchCount(0);
       setLoading(false);
       return;
     }
 
-    setEvents(data || []);
-    setLoading(false);
+    setEvents(result.events || []);
+    setFailedOrders(result.failedOrders || []);
+    setBatchCount(result.batchCount || 0);
+  } catch (error) {
+    console.error("Fehler beim Laden des Dashboards:", error);
+
+    alert("Dashboard konnte nicht geladen werden.");
+
+    setEvents([]);
+    setFailedOrders([]);
+    setBatchCount(0);
   }
 
-  async function fetchBatchCount() {
-    setLoadingBatchCount(true);
-
-    const { count, error } = await supabase
-      .from("orders")
-      .select("*", { count: "exact", head: true })
-      .eq("fulfillment_status", "waiting_for_batch");
-
-    if (error) {
-      console.error("Fehler beim Laden der Batch-Anzahl:", error);
-      setBatchCount(0);
-      setLoadingBatchCount(false);
-      return;
-    }
-
-    setBatchCount(count || 0);
-    setLoadingBatchCount(false);
-  }
-
-  async function fetchFailedOrders() {
-    setLoadingFailedOrders(true);
-
-    const { data, error } = await supabase
-      .from("orders")
-      .select("*")
-      .eq("fulfillment_status", "failed")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error(
-        "Fehler beim Laden der fehlgeschlagenen Bestellungen:",
-        error
-      );
-      setFailedOrders([]);
-      setLoadingFailedOrders(false);
-      return;
-    }
-
-    setFailedOrders(data || []);
-    setLoadingFailedOrders(false);
-  }
+  setLoading(false);
+}
 
   async function handleRunBatch() {
     if (batchCount === 0) {
@@ -169,31 +137,46 @@ export default function AdminPage() {
     setRetryingOrderId(null);
   }
 
-  async function handleDeleteEvent(eventItem) {
-    const confirmed = window.confirm(
-      `Event "${eventItem.title}" wirklich löschen?\n\nAchtung: Die Event-Zeile wird gelöscht. Fotos in Storage bleiben nur dann bestehen, wenn du sie nicht separat entfernst.`
-    );
+ async function handleDeleteEvent(eventItem) {
+  const confirmed = window.confirm(
+    `Event "${eventItem.title}" wirklich löschen?\n\nAchtung: Die Event-Zeile wird gelöscht.`
+  );
 
-    if (!confirmed) return;
+  if (!confirmed) return;
 
-    setDeletingId(eventItem.id);
+  setDeletingId(eventItem.id);
 
-    const { error } = await supabase
-      .from("events")
-      .delete()
-      .eq("id", eventItem.id);
+  try {
+    const response = await fetch("/api/delete-event", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        eventId: eventItem.id,
+      }),
+    });
 
-    if (error) {
-      console.error("Fehler beim Löschen des Events:", error);
-      alert("Event konnte nicht gelöscht werden: " + error.message);
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Event konnte nicht gelöscht werden.");
       setDeletingId(null);
       return;
     }
 
-    setEvents((prev) => prev.filter((event) => event.id !== eventItem.id));
-    setDeletingId(null);
+    setEvents((prev) =>
+      prev.filter((event) => event.id !== eventItem.id)
+    );
+
     alert("Event gelöscht.");
+  } catch (error) {
+    console.error("Fehler beim Löschen:", error);
+    alert("Event konnte nicht gelöscht werden.");
   }
+
+  setDeletingId(null);
+}
 
   async function handleCopyLink(slug) {
     const url =
