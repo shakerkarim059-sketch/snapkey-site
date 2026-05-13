@@ -17,48 +17,60 @@ export default function HomePage() {
     setLightboxAlt("");
   }
 
-  const snapkeyTypes = [
-    {
-      title: "Snapkey Karte",
-      subtitle: "Günstig für viele Gäste",
-      price: "ab 2,50 € / Stück",
-      description:
-        "Ideal, wenn viele Gäste einen eigenen Zugang zum Eventalbum erhalten sollen. Praktisch, schlicht und preisbewusst.",
-      image: "/nfc-event.jpg",
-      points: [
-        "Sehr gut für große Feiern",
-        "Günstiger Einstieg",
-        "Direkter Zugang zum Eventalbum",
-      ],
-    },
-    {
-      title: "Snapkey Anhänger",
-      subtitle: "Der Allrounder für Events",
-      price: "ab 4,00 € / Stück",
-      description:
-        "Ein hochwertiger Snapkey Anhänger, den Gäste als Erinnerung mitnehmen können. Perfekt für Hochzeiten, Geburtstage und Familienfeiern.",
-      image: "/nfc-wedding.jpg",
-      points: [
-        "Als Erinnerungsstück mitnehmbar",
-        "Ideal für Hochzeit & Event",
-        "Persönlich und praktisch",
-      ],
-    },
-    {
-      title: "Premium Holz-Snapkey",
-      subtitle: "Hochwertig und emotional",
-      price: "ab 6,00 € / Stück",
-      description:
-        "Für alle, die etwas Besonderes möchten. Ein wertiger Snapkey mit persönlichem Charakter für besondere Erinnerungen.",
-      image: "/nfc-family.jpg",
-      points: [
-        "Premium-Look",
-        "Sehr emotionales Geschenk",
-        "Perfekt für Familie & besondere Anlässe",
-      ],
-    },
-  ];
-
+const snapkeyTypes = [
+  {
+    title: "Snapkey Karte",
+    subtitle: "Günstig für viele Gäste",
+    price: "ab 2,50 € / Stück",
+    description:
+      "Die günstigste Variante für große Events. Ideal, wenn viele Gäste einen eigenen Zugang zum Eventalbum bekommen sollen.",
+    image: "/snapkey-card.jpg",
+    points: [
+      "Perfekt für große Feiern",
+      "Sehr günstiger Einstieg",
+      "Mit NFC und QR-Code möglich",
+    ],
+  },
+  {
+    title: "Snapkey PVC-Anhänger",
+    subtitle: "Der praktische Standard-Key",
+    price: "ab 4,90 € / Stück",
+    description:
+      "Ein robuster Anhänger für Gäste, Taschen oder Schlüsselbund. Der beste Allrounder für Events.",
+    image: "/snapkey-pvc-keychain.jpg",
+    points: [
+      "Robust und alltagstauglich",
+      "Ideal für Events und Reisen",
+      "Gutes Preis-Leistungs-Verhältnis",
+    ],
+  },
+  {
+    title: "Snapkey Holz Basic",
+    subtitle: "Natürlich und persönlich",
+    price: "ab 7,90 € / Stück",
+    description:
+      "Ein günstiger Holz-Snapkey mit warmer Optik. Schön als kleines Erinnerungsstück für besondere Momente.",
+    image: "/snapkey-wood-basic.jpg",
+    points: [
+      "Natürliche Holzoptik",
+      "Emotionaler als Kunststoff",
+      "Gut für Hochzeiten und Familie",
+    ],
+  },
+  {
+    title: "Snapkey Holz Premium",
+    subtitle: "Hochwertiges Erinnerungsstück",
+    price: "ab 12,90 € / Stück",
+    description:
+      "Der hochwertigste Snapkey für besondere Anlässe. Ideal als persönliches Geschenk oder Premium-Erinnerung.",
+    image: "/snapkey-wood-premium.jpg",
+    points: [
+      "Premium-Haptik",
+      "Sehr emotionales Geschenk",
+      "Für besondere Events",
+    ],
+  },
+];
   const steps = [
     {
       number: "1",
