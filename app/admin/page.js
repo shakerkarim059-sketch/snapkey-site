@@ -29,15 +29,19 @@ useEffect(() => {
 
     const result = await response.json();
 
-    if (!response.ok) {
-      alert(result.error || "Dashboard konnte nicht geladen werden.");
-      setEvents([]);
-      setFailedOrders([]);
-      setBatchCount(0);
-      setLoading(false);
-      return;
-    }
+   if (!response.ok) {
+  alert(result.error || "Dashboard konnte nicht geladen werden.");
 
+  setEvents([]);
+  setFailedOrders([]);
+  setBatchCount(0);
+
+  setLoading(false);
+  setLoadingBatchCount(false);
+  setLoadingFailedOrders(false);
+
+  return;
+}
     setEvents(result.events || []);
     setFailedOrders(result.failedOrders || []);
     setBatchCount(result.batchCount || 0);
