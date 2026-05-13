@@ -157,7 +157,7 @@ export default function HomePage() {
           <div style={styles.featureGrid}>
             <div style={styles.featureCard}>
               <div style={styles.featureIcon}>⌁</div>
-              <div style={styles.featureTitle}>NFC statt Link</div>
+              <div style={styles.featureTitle}>Snapkey statt Link</div>
               <div style={styles.featureText}>
                 Ein Tap mit dem Smartphone öffnet direkt die Eventseite.
               </div>
