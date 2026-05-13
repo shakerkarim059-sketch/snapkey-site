@@ -4,10 +4,6 @@ import crypto from "crypto";
 function signSession(data) {
   const secret = process.env.SESSION_SECRET;
 
-  if (!secret) {
-    throw new Error("SESSION_SECRET ist nicht gesetzt.");
-  }
-
   const payload = Buffer.from(JSON.stringify(data)).toString("base64url");
 
   const signature = crypto
@@ -31,7 +27,7 @@ export async function POST(req) {
 
     if (!process.env.ADMIN_PASSWORD) {
       return NextResponse.json(
-        { error: "ADMIN_PASSWORD ist nicht gesetzt." },
+        { error: "ADMIN_PASSWORD fehlt." },
         { status: 500 }
       );
     }
@@ -50,7 +46,6 @@ export async function POST(req) {
 
     const response = NextResponse.json({
       success: true,
-      role: "super_admin",
     });
 
     response.cookies.set("admin_session", token, {
@@ -63,7 +58,7 @@ export async function POST(req) {
 
     return response;
   } catch (error) {
-    console.error("Fehler bei admin-login:", error);
+    console.error("Admin Login Fehler:", error);
 
     return NextResponse.json(
       { error: "Serverfehler." },
