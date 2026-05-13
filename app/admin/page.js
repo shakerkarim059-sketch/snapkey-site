@@ -41,6 +41,8 @@ useEffect(() => {
     setEvents(result.events || []);
     setFailedOrders(result.failedOrders || []);
     setBatchCount(result.batchCount || 0);
+    setLoadingBatchCount(false);
+setLoadingFailedOrders(false);
   } catch (error) {
     console.error("Fehler beim Laden des Dashboards:", error);
 
@@ -49,6 +51,8 @@ useEffect(() => {
     setEvents([]);
     setFailedOrders([]);
     setBatchCount(0);
+    setLoadingBatchCount(false);
+setLoadingFailedOrders(false);
   }
 
   setLoading(false);
@@ -89,8 +93,7 @@ useEffect(() => {
         } verarbeitet.`
       );
 
-      await fetchBatchCount();
-      await fetchFailedOrders();
+await fetchEvents();
     } catch (error) {
       console.error("Fehler beim Starten des Batchs:", error);
       alert("Batch konnte nicht gestartet werden.");
@@ -127,8 +130,7 @@ useEffect(() => {
 
       alert("Bestellung erfolgreich erneut an Gelato gesendet.");
 
-      await fetchFailedOrders();
-      await fetchBatchCount();
+await fetchEvents();
     } catch (error) {
       console.error("Fehler beim Retry:", error);
       alert("Retry konnte nicht gestartet werden.");
