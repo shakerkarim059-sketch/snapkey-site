@@ -24,7 +24,7 @@ const snapkeyTypes = [
     price: "ab 2,50 € / Stück",
     description:
       "Die günstigste Variante für große Events. Ideal, wenn viele Gäste einen eigenen Zugang zum Eventalbum bekommen sollen.",
-    image: "/snapkey-card.jpg",
+    image: "/pvc-cards.jpg",
     points: [
       "Perfekt für große Feiern",
       "Sehr günstiger Einstieg",
@@ -37,7 +37,7 @@ const snapkeyTypes = [
     price: "ab 4,90 € / Stück",
     description:
       "Ein robuster Anhänger für Gäste, Taschen oder Schlüsselbund. Der beste Allrounder für Events.",
-    image: "/snapkey-pvc-keychain.jpg",
+    image: "/nfc-chip.jpg",
     points: [
       "Robust und alltagstauglich",
       "Ideal für Events und Reisen",
@@ -50,7 +50,7 @@ const snapkeyTypes = [
     price: "ab 7,90 € / Stück",
     description:
       "Ein günstiger Holz-Snapkey mit warmer Optik. Schön als kleines Erinnerungsstück für besondere Momente.",
-    image: "/snapkey-wood-basic.jpg",
+    image: "/wood-keychain.jpg",
     points: [
       "Natürliche Holzoptik",
       "Emotionaler als Kunststoff",
@@ -63,7 +63,7 @@ const snapkeyTypes = [
     price: "ab 12,90 € / Stück",
     description:
       "Der hochwertigste Snapkey für besondere Anlässe. Ideal als persönliches Geschenk oder Premium-Erinnerung.",
-    image: "/snapkey-wood-premium.jpg",
+    image: "/snapkey-products.jpg",
     points: [
       "Premium-Haptik",
       "Sehr emotionales Geschenk",
