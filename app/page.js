@@ -34,7 +34,7 @@ export default function HomePage() {
       description:
         "Eine hochwertige Snapkey-Karte im Eventdesign. Ideal für Hochzeiten, Familienfeiern und besondere Erinnerungen.",
       image: "/pvc-cards.jpg",
-      points: ["Premium Kartenlook", "Key + QR-Code", "Perfekt für Hochzeit & Event"],
+      points: ["Premium Kartenlook", "Tap + QR-Code", "Perfekt für Hochzeit & Event"],
     },
     {
       title: "Snapkey Wood",
@@ -72,7 +72,7 @@ export default function HomePage() {
 
   const benefits = [
     "Ohne App nutzbar",
-    "Key & QR-Code",
+    "Tap & QR-Code",
     "Für Hochzeit, Familie & Events",
     "Persönliche Erinnerungsstücke",
   ];
