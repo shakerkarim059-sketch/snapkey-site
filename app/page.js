@@ -414,7 +414,7 @@ heroSection: {
   alignItems: "flex-end",
   padding: "26px",
   boxSizing: "border-box",
-  backgroundImage: "url('/hero-nfc.jpg')",
+  backgroundImage: "url('/hero-snapkey.jpg')",
   backgroundSize: "cover",
   backgroundPosition: "center",
   boxShadow: "0 24px 56px rgba(46, 36, 29, 0.16)",
