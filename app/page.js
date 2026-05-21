@@ -32,9 +32,9 @@ export default function HomePage() {
       subtitle: "Elegant für Events",
       price: "ab 2,90 € / Stück",
       description:
-        "Eine hochwertige NFC-Karte im Eventdesign. Ideal für Hochzeiten, Familienfeiern und besondere Erinnerungen.",
+        "Eine hochwertige Snapkey-Karte im Eventdesign. Ideal für Hochzeiten, Familienfeiern und besondere Erinnerungen.",
       image: "/pvc-cards.jpg",
-      points: ["Premium Kartenlook", "NFC + QR-Code möglich", "Perfekt für Hochzeit & Event"],
+      points: ["Premium Kartenlook", "Key + QR-Code", "Perfekt für Hochzeit & Event"],
     },
     {
       title: "Snapkey Wood",
@@ -72,7 +72,7 @@ export default function HomePage() {
 
   const benefits = [
     "Ohne App nutzbar",
-    "NFC & QR-Code",
+    "Key & QR-Code",
     "Für Hochzeit, Familie & Events",
     "Persönliche Erinnerungsstücke",
   ];
@@ -251,7 +251,7 @@ export default function HomePage() {
           <div style={styles.printList}>
             <div style={styles.printListItem}>✓ Für Hochzeiten & Familienfeiern</div>
             <div style={styles.printListItem}>✓ Gäste brauchen keine App</div>
-            <div style={styles.printListItem}>✓ Persönlicher Zugang per NFC oder QR</div>
+            <div style={styles.printListItem}>✓ Persönlicher Zugang per Key oder QR</div>
           </div>
         </div>
 
