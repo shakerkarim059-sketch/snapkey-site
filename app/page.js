@@ -67,10 +67,10 @@ const faqs = [
 ];
 
 export default function HomePage() {
-  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [lightboxImage, setLightboxImage] = useState(null);
   const [lightboxAlt, setLightboxAlt] = useState("");
 
-  function openImage(src: string, alt = "Bildvorschau") {
+  function openImage(src, alt = "Bildvorschau") {
     setLightboxImage(src);
     setLightboxAlt(alt);
   }
