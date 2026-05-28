@@ -1363,8 +1363,7 @@ export default function HomePage() {
               hunderte echte Momente von unseren Gästen."
             </blockquote>
             <div className="testimonial-author">
-              <strong>Beispiel-Testimonial</strong>
-              Später durch echte Kundenstimme ersetzen
+              <strong>Frank Lucas</strong>
             </div>
           </div>
         </div>
