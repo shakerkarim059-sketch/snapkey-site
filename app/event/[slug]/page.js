@@ -3404,40 +3404,39 @@ select {
       }
       /* Abstand-Fix für Menge und Formular */
 
+/* Abstand-Fix für Menge und Formular */
+
 .quantity-row {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 22px;
   margin-top: 22px;
+  margin-bottom: 26px;
 }
 
 .quantity-button {
   box-sizing: border-box;
+  width: 100%;
   min-height: 92px;
 }
 
 .quantity-button.active {
   border: 2px solid var(--gold);
-  outline: 6px solid #ffffff;
   box-shadow: 0 14px 34px rgba(201, 167, 108, 0.18);
 }
 
-.custom-quantity-input {
-  margin-top: 22px;
+.custom-quantity-wrap {
+  margin-top: 0;
+  display: block;
+  width: 100%;
 }
 
 .form-grid {
   gap: 22px;
 }
 
-.input,
-.textarea,
-select {
-  margin: 0;
-}
-
-.textarea {
-  margin-top: 22px;
+.snapkey-note-textarea {
+  margin-top: 26px;
 }
     `}</style>
   );
