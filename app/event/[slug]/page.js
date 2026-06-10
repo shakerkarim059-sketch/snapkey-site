@@ -3438,6 +3438,63 @@ select {
 .snapkey-note-textarea {
   margin-top: 26px;
 }
+/* Finaler Mobile-Overflow-Fix */
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.event-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.event-shell {
+  width: 100%;
+  max-width: 1180px;
+  overflow-x: hidden;
+}
+
+.album-hero,
+.setup-card,
+.setup-hero,
+.setup-layout,
+.setup-main,
+.setup-section,
+.summary-card,
+.snapkey-grid,
+.design-grid,
+.quantity-row,
+.form-grid,
+.upload-card,
+.gallery-section,
+.locked-card,
+.admin-card,
+.filter-card {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.snapkey-card,
+.design-card,
+.quantity-button,
+.input,
+.textarea,
+select,
+.primary-button,
+.secondary-button,
+.ghost-button,
+.small-link-button {
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+}
     `}</style>
   );
 }
