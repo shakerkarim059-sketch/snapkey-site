@@ -9,7 +9,7 @@ const snapkeyTypes = [
     label: "Für viele Gäste",
     price: "ab 1,90 €",
     description:
-      "Der leichte Einstieg für große Gruppen. Klein, praktisch und perfekt, wenn viele Menschen Erinnerungen teilen sollen.",
+      "Der leichte Einstieg für große Feiern. Klein, praktisch und perfekt, damit jeder Gast eure Erinnerungen teilen kann.",
     image: "/nfc-chip.jpg",
     points: ["Ideal für viele Gäste", "Tap + QR-Code", "Günstigste Variante"],
   },
@@ -18,9 +18,9 @@ const snapkeyTypes = [
     label: "Am beliebtesten",
     price: "ab 2,90 €",
     description:
-      "Eine hochwertige Karte für Tische, Einladungen oder als kleines Erinnerungsstück. Elegant, schlicht und vielseitig einsetzbar.",
+      "Eine elegante Karte im Hochzeitslook. Schlicht, hochwertig und perfekt für den Tisch, die Einladung oder als Gastgeschenk.",
     image: "/pvc-cards.jpg",
-    points: ["Premium Kartenlook", "Für viele Anlässe", "Persönliches Design"],
+    points: ["Premium Kartenlook", "Ideal für Hochzeiten", "Persönliches Design"],
     featured: true,
   },
   {
@@ -28,186 +28,134 @@ const snapkeyTypes = [
     label: "Als Erinnerung",
     price: "ab 7,90 €",
     description:
-      "Ein natürlicher Holzanhänger, der nach dem Event bleibt. Schön für Familie, Freunde oder ganz besondere Momente.",
+      "Ein natürlicher Holzanhänger, der nach der Feier bleibt. Für Gäste, Familie oder besondere Momente.",
     image: "/wood-keychain.jpg",
-    points: ["Natürliches Holz", "Sehr persönlich", "Zum Mitnehmen"],
+    points: ["Natürliches Holz", "Sehr emotional", "Zum Mitnehmen"],
   },
 ];
 
 const steps = [
   {
-    icon: "calendar",
-    title: "Album erstellen",
-    text: "Legt euer persönliches Album in wenigen Minuten an — mit Anlass, Namen, Datum und eigenem Look.",
+    title: "Event erstellen",
+    text: "In wenigen Minuten legt ihr euer persönliches Eventalbum an — mit Namen, Datum und einem Look, der zu euch passt.",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 3v3M17 3v3M4.5 9.2h15M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z" />
+        <path d="m9.2 14 1.8 1.8 4-4" />
+      </svg>
+    ),
   },
   {
-    icon: "key",
     title: "Snapkeys verteilen",
-    text: "Legt eure Snapkeys auf Tische, in Einladungen, an der Bar oder gebt sie direkt an eure Gäste weiter.",
+    text: "Legt die Snapkeys auf Tische, in Einladungen oder als Gastgeschenk aus. Gäste öffnen alles direkt per Tap oder QR-Code.",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8.5 8.5h7A3.5 3.5 0 0 1 19 12v0a3.5 3.5 0 0 1-3.5 3.5h-7A3.5 3.5 0 0 1 5 12v0a3.5 3.5 0 0 1 3.5-3.5Z" />
+        <path d="M9.5 12h5M12 9.5v5" />
+        <path d="M3.5 6.5c1-1.4 2.4-2.4 4-3M20.5 17.5c-1 1.4-2.4 2.4-4 3" />
+      </svg>
+    ),
   },
   {
-    icon: "gallery",
-    title: "Erinnerungen sammeln",
-    text: "Fotos und Videos von allen Beteiligten landen automatisch an einem gemeinsamen Ort.",
+    title: "Gemeinsam sammeln",
+    text: "Fotos und Videos von allen Gästen landen automatisch an einem Ort — übersichtlich, emotional und jederzeit abrufbar.",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4.5 7.5A2.5 2.5 0 0 1 7 5h10a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 17 19H7a2.5 2.5 0 0 1-2.5-2.5v-9Z" />
+        <path d="m7 15 3.2-3.2a1.2 1.2 0 0 1 1.7 0L14 14l1-1a1.2 1.2 0 0 1 1.7 0L19.5 16" />
+        <path d="M15.5 9.2h.01" />
+      </svg>
+    ),
   },
 ];
 
 const features = [
-  { icon: "✦", text: "Ohne App" },
-  { icon: "✓", text: "Tap & QR-Code" },
-  { icon: "●", text: "Fotos & Videos" },
-  { icon: "♡", text: "Für jeden Anlass" },
-];
-
-const occasions = [
-  "Hochzeiten",
-  "Geburtstage",
-  "Familienalben",
-  "Jubiläen",
-  "Taufen",
-  "Urlaube",
-  "Firmenevents",
-  "Vereinsfeste",
-];
-
-const comparisons = [
-  {
-    title: "Ohne Snapkey",
-    items: [
-      "Bilder landen in verschiedenen Chats",
-      "Viele Gäste schicken Fotos nie weiter",
-      "Videos gehen schnell verloren",
-      "Alles muss mühsam zusammengesucht werden",
-    ],
-    negative: true,
-  },
-  {
-    title: "Mit Snapkey",
-    items: [
-      "Alle Erinnerungen an einem Ort",
-      "Einfach per Tap oder QR-Code öffnen",
-      "Fotos und Videos direkt sammeln",
-      "Album jederzeit teilen oder herunterladen",
-    ],
-    negative: false,
-  },
+  { icon: "✓", text: "Ohne App" },
+  { icon: "↗", text: "Tap & QR" },
+  { icon: "♡", text: "Für Hochzeiten" },
+  { icon: "▦", text: "Ein Album für alle" },
 ];
 
 const testimonials = [
   {
-    name: "Anna & Tobias M.",
-    occasion: "Hochzeit",
     quote:
-      "Wir hatten am nächsten Morgen schon hunderte Bilder unserer Gäste im Album. Genau diese spontanen Momente hätten wir sonst nie gesehen.",
+      "Wir hatten am nächsten Morgen so viele schöne Momente gesammelt, die wir selbst gar nicht mitbekommen hätten.",
+    name: "Laura & Tim Schneider",
+    event: "Hochzeit in Köln",
   },
   {
-    name: "Familie Schneider",
-    occasion: "Familienurlaub",
     quote:
-      "Endlich waren nicht alle Urlaubsbilder auf fünf verschiedenen Handys verteilt. Jeder konnte seine Fotos direkt hinzufügen.",
+      "Für unsere Gäste war es super einfach. Kein Erklären, keine App — einfach öffnen und Bilder hochladen.",
+    name: "Miriam Hoffmann",
+    event: "Sommerhochzeit",
   },
   {
-    name: "Markus K.",
-    occasion: "50. Geburtstag",
     quote:
-      "Sehr einfach für die Gäste. Kein Erklären, keine App, kein Durcheinander in WhatsApp-Gruppen.",
+      "Die Snapkeys lagen auf den Tischen und wurden wirklich genutzt. Genau so hatten wir uns das vorgestellt.",
+    name: "Anna & Daniel Weber",
+    event: "Feier mit 92 Gästen",
   },
   {
-    name: "Julia W.",
-    occasion: "Taufe",
     quote:
-      "Für unsere Familie war es perfekt. Auch Oma und Opa konnten die Bilder später ganz einfach anschauen.",
+      "Besonders schön waren die spontanen Videos von Freunden und Familie. Das fühlt sich viel persönlicher an.",
+    name: "Sophie Krüger",
+    event: "Geburtstag & Familienfeier",
   },
   {
-    name: "Claudia S.",
-    occasion: "Jubiläum",
     quote:
-      "Das Album war nach der Feier wie ein gemeinsames Erinnerungsbuch. Sehr schön und unkompliziert.",
+      "Schick, unkompliziert und die perfekte Ergänzung zum Fotografen. Wir würden es sofort wieder nutzen.",
+    name: "Nadine & Felix Bauer",
+    event: "Hochzeit im Garten",
   },
   {
-    name: "Andreas B.",
-    occasion: "Firmenevent",
     quote:
-      "Für unser Team-Event war Snapkey super praktisch. Alle Fotos waren gesammelt, ohne dass jemand extra etwas installieren musste.",
+      "Endlich nicht mehr überall einzelne Bilder zusammensuchen. Alles war an einem Ort und sah hochwertig aus.",
+    name: "Katharina Meier",
+    event: "Jubiläumsfeier",
   },
 ];
 
 const faqs = [
   {
-    question: "Brauchen Gäste eine App?",
+    question: "Brauchen unsere Gäste eine App?",
     answer:
-      "Nein. Snapkey funktioniert direkt im Browser — egal ob iPhone oder Android. Gäste öffnen das Album per Tap oder QR-Code.",
+      "Nein. Snapkey funktioniert komplett im Browser — egal ob iPhone oder Android. Einfach tippen oder QR-Code scannen und los geht's.",
   },
   {
-    question: "Für welche Anlässe eignet sich Snapkey?",
+    question: "Funktioniert das auch mit älteren Handys?",
     answer:
-      "Snapkey eignet sich für Hochzeiten, Geburtstage, Familienfeiern, Urlaube, Taufen, Jubiläen, Firmenevents, Vereinsfeste und alle Momente, bei denen mehrere Menschen Fotos und Videos sammeln möchten.",
+      "Ja. Bei älteren Geräten funktioniert der QR-Code als Alternative genauso einfach.",
   },
   {
-    question: "Können Gäste auch Videos hochladen?",
+    question: "Können wir Snapkey auch für andere Events nutzen?",
     answer:
-      "Ja. Gäste können Fotos und Videos hinzufügen, damit nicht nur einzelne Bilder, sondern ganze Momente erhalten bleiben.",
+      "Absolut. Neben Hochzeiten eignet sich Snapkey perfekt für Geburtstage, Jubiläen, Firmenevents oder Familientreffen.",
   },
   {
     question: "Wie lange bleiben die Fotos gespeichert?",
     answer:
-      "Die Fotos bleiben in der Regel 1 Monat gespeichert. Für 4,99 € im Monat kann die Speicherung verlängert werden. Die Verlängerung ist monatlich kündbar.",
-  },
-  {
-    question: "Können wir die Bilder herunterladen?",
-    answer:
-      "Ja. Ihr könnt eure gesammelten Erinnerungen herunterladen und privat sichern.",
-  },
-  {
-    question: "Funktioniert Snapkey auch mit älteren Handys?",
-    answer:
-      "Ja. Falls der Tap nicht genutzt wird, funktioniert der QR-Code als einfache Alternative.",
+      "Eure Erinnerungen bleiben dauerhaft erhalten. Ihr könnt sie jederzeit herunterladen oder mit Familie und Freunden teilen.",
   },
 ];
-
-function StepIcon({ type }) {
-  if (type === "calendar") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M7 3v3M17 3v3M4.5 9.5h15M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z" />
-        <path d="M8 13h3v3H8zM14 13h2" />
-      </svg>
-    );
-  }
-
-  if (type === "key") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M9.5 14.5a5 5 0 1 1 3.6-3.6L21 18.8V21h-2.2l-1.5-1.5H15v-2.3l-1.5-1.5h-2.3l-1.7-1.2Z" />
-        <path d="M7.5 9.5h.01" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4.5 6.5h15A2.5 2.5 0 0 1 22 9v8.5A2.5 2.5 0 0 1 19.5 20h-15A2.5 2.5 0 0 1 2 17.5V9a2.5 2.5 0 0 1 2.5-2.5Z" />
-      <path d="m6 16 3.2-3.2a1.2 1.2 0 0 1 1.7 0l1.1 1.1 2.2-2.2a1.2 1.2 0 0 1 1.7 0L20 15.8" />
-      <path d="M8.5 10h.01" />
-    </svg>
-  );
-}
 
 function useInView(options = {}) {
   const ref = useRef(null);
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsInView(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1, ...options });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, ...options }
+    );
 
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, [options]);
+  }, []);
 
   return [ref, isInView];
 }
@@ -221,6 +169,7 @@ export default function HomePage() {
   const [stepsRef, stepsInView] = useInView();
   const [showcaseRef, showcaseInView] = useInView();
   const [productsRef, productsInView] = useInView();
+  const [reviewsRef, reviewsInView] = useInView();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -249,29 +198,23 @@ export default function HomePage() {
   return (
     <main className="snap-page">
       <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap");
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
         :root {
-          --bg: #fbf8f3;
+          --bg: #faf8f5;
           --surface: #ffffff;
-          --surface-soft: #fffdf9;
-          --ink: #19140f;
-          --ink-soft: #3d332b;
-          --muted: #74685d;
-          --muted-light: #9e9287;
-          --line: #ebe2d8;
-          --line-strong: #d8cabb;
-          --cream: #f5eee4;
-          --cream-strong: #eadfce;
-          --gold: #c79f5b;
-          --gold-dark: #9d7738;
-          --rose: #f3dfd6;
-          --success: #6f7f58;
-          --shadow: 0 24px 80px rgba(25, 20, 15, 0.11);
-          --shadow-soft: 0 14px 44px rgba(25, 20, 15, 0.075);
-          --radius-xl: 32px;
-          --radius-lg: 24px;
-          --radius-md: 18px;
+          --surface-elevated: #fffefe;
+          --accent: #1a1612;
+          --accent-soft: #2d251f;
+          --text: #1a1612;
+          --text-secondary: #6b5f54;
+          --text-muted: #9a8d82;
+          --border: #ebe5dd;
+          --border-hover: #d4cbc0;
+          --warm: #f5efe7;
+          --warm-deep: #ebe2d5;
+          --gold: #c9a76c;
+          --gold-soft: #e8d9bb;
         }
 
         * {
@@ -286,11 +229,9 @@ export default function HomePage() {
 
         body {
           margin: 0;
-          background:
-            radial-gradient(circle at top left, rgba(199, 159, 91, 0.16), transparent 34rem),
-            linear-gradient(180deg, #fffaf2 0%, var(--bg) 42%, #fff 100%);
-          color: var(--ink);
-          font-family: "DM Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           line-height: 1.6;
         }
 
@@ -307,7 +248,7 @@ export default function HomePage() {
         }
 
         .container {
-          width: min(1180px, calc(100% - 32px));
+          width: min(1200px, calc(100% - 40px));
           margin: 0 auto;
         }
 
@@ -317,121 +258,103 @@ export default function HomePage() {
           left: 0;
           right: 0;
           z-index: 100;
-          transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+          transition: all 0.3s ease;
         }
 
         .nav.scrolled {
-          background: rgba(251, 248, 243, 0.88);
+          background: rgba(250, 248, 245, 0.92);
           backdrop-filter: blur(20px);
           -webkit-backdrop-filter: blur(20px);
-          border-bottom: 1px solid rgba(235, 226, 216, 0.85);
-          box-shadow: 0 8px 30px rgba(25, 20, 15, 0.05);
+          border-bottom: 1px solid var(--border);
         }
 
         .nav-inner {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          height: 70px;
-          max-width: 1180px;
+          height: 72px;
+          padding: 0 20px;
+          max-width: 1200px;
           margin: 0 auto;
-          padding: 0 16px;
         }
 
         .logo {
-          font-family: "Playfair Display", Georgia, serif;
-          font-size: 27px;
-          font-weight: 700;
-          color: var(--ink);
+          font-size: 25px;
+          font-weight: 800;
+          color: var(--accent);
           text-decoration: none;
           letter-spacing: -0.04em;
         }
 
         .nav-links {
           display: none;
-          align-items: center;
-          gap: 28px;
+          gap: 32px;
         }
 
         .nav-link {
-          color: var(--muted);
+          color: var(--text-secondary);
           text-decoration: none;
           font-size: 14px;
-          font-weight: 700;
+          font-weight: 600;
           transition: color 0.2s;
         }
 
         .nav-link:hover {
-          color: var(--ink);
+          color: var(--text);
         }
 
         .nav-cta {
-          display: inline-flex;
+          display: flex;
           align-items: center;
-          justify-content: center;
-          min-height: 44px;
-          padding: 0 18px;
-          background: var(--ink);
+          height: 44px;
+          padding: 0 20px;
+          background: var(--accent);
           color: #fff;
           text-decoration: none;
           font-size: 14px;
-          font-weight: 800;
-          border-radius: 999px;
-          box-shadow: 0 10px 28px rgba(25, 20, 15, 0.14);
-          transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-          white-space: nowrap;
+          font-weight: 700;
+          border-radius: 100px;
+          transition: all 0.2s;
         }
 
         .nav-cta:hover {
-          background: var(--ink-soft);
+          background: var(--accent-soft);
           transform: translateY(-1px);
-          box-shadow: 0 14px 34px rgba(25, 20, 15, 0.18);
         }
 
         .hero {
           min-height: 100svh;
           display: flex;
           align-items: center;
+          padding: 100px 0 60px;
           position: relative;
-          padding: 96px 0 56px;
+          overflow: hidden;
         }
 
-        .hero::after {
+        .hero::before {
           content: "";
           position: absolute;
-          inset: auto -18% 4% auto;
-          width: min(680px, 80vw);
-          height: min(680px, 80vw);
-          background: radial-gradient(circle, rgba(243, 223, 214, 0.62), transparent 68%);
+          top: -50%;
+          right: -20%;
+          width: 80%;
+          height: 120%;
+          background: radial-gradient(ellipse, rgba(201, 167, 108, 0.08) 0%, transparent 70%);
           pointer-events: none;
-          z-index: -1;
         }
 
         .hero-grid {
           display: grid;
-          gap: 34px;
+          gap: 48px;
           align-items: center;
         }
 
-        .hero-content,
-        .hero-visual,
-        .steps-wrapper,
-        .showcase-wrapper,
-        .products-wrapper {
+        .hero-content {
           opacity: 0;
-          transform: translateY(28px);
-          transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+          transform: translateY(30px);
+          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .hero-visual {
-          transition-delay: 0.14s;
-        }
-
-        .hero-content.visible,
-        .hero-visual.visible,
-        .steps-wrapper.visible,
-        .showcase-wrapper.visible,
-        .products-wrapper.visible {
+        .hero-content.visible {
           opacity: 1;
           transform: translateY(0);
         }
@@ -439,307 +362,322 @@ export default function HomePage() {
         .hero-badge {
           display: inline-flex;
           align-items: center;
-          gap: 9px;
-          max-width: 100%;
-          padding: 9px 14px;
-          background: rgba(255, 255, 255, 0.72);
-          border: 1px solid var(--line);
-          border-radius: 999px;
+          gap: 8px;
+          padding: 8px 16px;
+          background: var(--warm);
+          border: 1px solid var(--border);
+          border-radius: 100px;
           font-size: 13px;
-          font-weight: 800;
-          color: var(--muted);
-          margin-bottom: 22px;
-          box-shadow: 0 10px 34px rgba(25, 20, 15, 0.055);
+          font-weight: 700;
+          color: var(--text-secondary);
+          margin-bottom: 24px;
         }
 
         .hero-badge-dot {
-          width: 7px;
-          height: 7px;
+          width: 6px;
+          height: 6px;
           background: var(--gold);
           border-radius: 50%;
-          box-shadow: 0 0 0 5px rgba(199, 159, 91, 0.16);
-          flex: 0 0 auto;
         }
 
         .hero-title {
           margin: 0;
-          font-family: "Playfair Display", Georgia, serif;
-          font-size: clamp(40px, 12vw, 74px);
-          font-weight: 700;
-          line-height: 0.98;
-          letter-spacing: -0.055em;
-          color: var(--ink);
+          font-size: clamp(42px, 8vw, 72px);
+          font-weight: 800;
+          line-height: 1.02;
+          letter-spacing: -0.06em;
+          color: var(--accent);
         }
 
         .hero-title span {
           display: block;
-          background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+          background: linear-gradient(135deg, var(--gold) 0%, #a88a4a 100%);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
         }
 
         .hero-description {
-          margin: 22px 0 0;
-          font-size: 17px;
+          margin: 24px 0 0;
+          font-size: 18px;
           line-height: 1.75;
-          color: var(--muted);
-          max-width: 560px;
+          color: var(--text-secondary);
+          max-width: 500px;
         }
 
         .hero-actions {
           display: flex;
-          flex-direction: column;
+          flex-wrap: wrap;
           gap: 12px;
-          margin-top: 28px;
+          margin-top: 32px;
         }
 
         .btn {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          min-height: 58px;
+          height: 56px;
           padding: 0 28px;
           font-size: 15px;
-          font-weight: 800;
-          border-radius: 999px;
+          font-weight: 700;
+          border-radius: 100px;
           text-decoration: none;
-          transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+          transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
           cursor: pointer;
           border: none;
-          width: 100%;
         }
 
         .btn-primary {
-          background: var(--ink);
+          background: var(--accent);
           color: #fff;
-          box-shadow: 0 14px 34px rgba(25, 20, 15, 0.18);
+          box-shadow: 0 4px 24px rgba(26, 22, 18, 0.15);
         }
 
         .btn-primary:hover {
-          background: var(--ink-soft);
+          background: var(--accent-soft);
           transform: translateY(-2px);
-          box-shadow: 0 18px 42px rgba(25, 20, 15, 0.23);
+          box-shadow: 0 8px 32px rgba(26, 22, 18, 0.2);
         }
 
         .btn-secondary {
-          background: rgba(255, 255, 255, 0.74);
-          color: var(--ink);
-          border: 1px solid var(--line);
+          background: var(--surface);
+          color: var(--text);
+          border: 1px solid var(--border);
         }
 
         .btn-secondary:hover {
-          background: var(--cream);
-          border-color: var(--line-strong);
+          background: var(--warm);
+          border-color: var(--border-hover);
         }
 
         .hero-features {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
-          margin-top: 32px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 16px;
+          margin-top: 48px;
+          padding-top: 32px;
+          border-top: 1px solid var(--border);
         }
 
         .hero-feature {
           display: flex;
           align-items: center;
-          gap: 9px;
-          min-height: 42px;
-          padding: 10px 12px;
-          background: rgba(255, 255, 255, 0.66);
-          border: 1px solid var(--line);
-          border-radius: 999px;
-          font-size: 13px;
-          font-weight: 800;
-          color: var(--muted);
+          gap: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          color: var(--text-secondary);
         }
 
         .hero-feature-icon {
+          width: 22px;
+          height: 22px;
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          width: 22px;
-          height: 22px;
-          background: var(--cream);
+          background: var(--warm);
+          border: 1px solid var(--border);
           border-radius: 999px;
-          color: var(--gold-dark);
-          font-size: 12px;
-          flex: 0 0 auto;
-        }
-
-        .occasion-strip {
-          display: flex;
-          gap: 8px;
-          overflow-x: auto;
-          margin-top: 18px;
-          padding: 2px 0 8px;
-          scrollbar-width: none;
-        }
-
-        .occasion-strip::-webkit-scrollbar {
-          display: none;
-        }
-
-        .occasion-pill {
-          flex: 0 0 auto;
-          padding: 8px 12px;
-          background: var(--cream);
-          border: 1px solid var(--line);
-          border-radius: 999px;
-          color: var(--ink-soft);
-          font-size: 12px;
+          color: var(--gold);
+          font-size: 13px;
           font-weight: 800;
-          white-space: nowrap;
         }
 
-        .hero-visual-card {
+        .hero-visual {
           position: relative;
-          padding: 10px;
-          background: rgba(255, 255, 255, 0.72);
-          border: 1px solid rgba(255, 255, 255, 0.82);
-          border-radius: 28px;
-          box-shadow: var(--shadow);
+          opacity: 0;
+          transform: translateY(40px) scale(0.98);
+          transition: all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+        }
+
+        .hero-visual.visible {
+          opacity: 1;
+          transform: translateY(0) scale(1);
         }
 
         .hero-image-wrapper {
           position: relative;
-          border-radius: 22px;
+          border-radius: 24px;
           overflow: hidden;
-          background: var(--cream);
           aspect-ratio: 4 / 3;
-          cursor: zoom-in;
+          box-shadow: 0 24px 80px rgba(26, 22, 18, 0.12), 0 0 0 1px rgba(26, 22, 18, 0.04);
+          background: var(--warm);
+        }
+
+        .hero-image-wrapper::after,
+        .product-image::after,
+        .showcase-image::after {
+          content: "Bild vergrößern";
+          position: absolute;
+          right: 14px;
+          bottom: 14px;
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--accent);
+          font-size: 12px;
+          font-weight: 800;
+          opacity: 0;
+          transform: translateY(6px);
+          transition: all 0.25s ease;
+          pointer-events: none;
+          box-shadow: 0 8px 24px rgba(26, 22, 18, 0.12);
+        }
+
+        .hero-image-wrapper:hover::after,
+        .product-image:hover::after,
+        .showcase-image:hover::after {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .hero-image-wrapper img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           object-position: center;
-          display: block;
+          cursor: zoom-in;
+          background: var(--warm);
           transition: transform 0.5s ease;
         }
 
-        .hero-image-wrapper:hover img {
-          transform: scale(1.025);
+        .hero-image-wrapper img:hover {
+          transform: scale(1.02);
         }
 
-        .hero-mini-panel {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 10px;
-          margin-top: 10px;
+        .hero-float {
+          position: absolute;
+          background: var(--surface);
+          border-radius: 16px;
+          padding: 16px 20px;
+          box-shadow: 0 12px 40px rgba(26, 22, 18, 0.1), 0 0 0 1px rgba(26, 22, 18, 0.04);
+          animation: float 4s ease-in-out infinite;
         }
 
-        .hero-stat {
-          padding: 14px;
-          background: #fff;
-          border: 1px solid var(--line);
-          border-radius: 18px;
+        .hero-float-1 {
+          top: 12%;
+          right: -16px;
+          animation-delay: 0s;
         }
 
-        .hero-stat strong {
-          display: block;
-          color: var(--ink);
-          font-size: 18px;
-          line-height: 1.1;
+        .hero-float-2 {
+          bottom: 16%;
+          left: -16px;
+          animation-delay: 2s;
         }
 
-        .hero-stat span {
-          display: block;
-          margin-top: 4px;
-          color: var(--muted);
-          font-size: 12px;
-          font-weight: 700;
+        .hero-float-icon {
+          font-size: 24px;
+          margin-bottom: 4px;
+        }
+
+        .hero-float-text {
+          font-size: 13px;
+          font-weight: 800;
+          color: var(--text);
+        }
+
+        .hero-float-sub {
+          font-size: 11px;
+          color: var(--text-muted);
+        }
+
+        @keyframes float {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-8px); }
         }
 
         .section {
-          padding: 76px 0;
+          padding: 80px 0;
         }
 
         .section-header {
-          max-width: 700px;
-          margin: 0 auto 38px;
           text-align: center;
+          max-width: 680px;
+          margin: 0 auto 56px;
         }
 
         .section-eyebrow {
           display: inline-flex;
           align-items: center;
-          justify-content: center;
           gap: 8px;
           font-size: 12px;
-          font-weight: 900;
+          font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: var(--gold-dark);
-          margin-bottom: 14px;
+          letter-spacing: 0.1em;
+          color: var(--gold);
+          margin-bottom: 16px;
         }
 
         .section-title {
           margin: 0;
-          font-family: "Playfair Display", Georgia, serif;
-          font-size: clamp(32px, 8vw, 52px);
-          font-weight: 700;
-          line-height: 1.05;
-          letter-spacing: -0.04em;
-          color: var(--ink);
+          font-size: clamp(32px, 5vw, 48px);
+          font-weight: 800;
+          line-height: 1.12;
+          letter-spacing: -0.045em;
+          color: var(--accent);
         }
 
         .section-description {
-          margin: 16px auto 0;
-          max-width: 620px;
-          font-size: 16px;
+          margin: 16px 0 0;
+          font-size: 17px;
           line-height: 1.75;
-          color: var(--muted);
+          color: var(--text-secondary);
+        }
+
+        .steps-wrapper,
+        .showcase-wrapper,
+        .products-wrapper,
+        .reviews-wrapper {
+          opacity: 0;
+          transform: translateY(40px);
+          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .steps-wrapper.visible,
+        .showcase-wrapper.visible,
+        .products-wrapper.visible,
+        .reviews-wrapper.visible {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .steps-grid {
           display: grid;
-          gap: 16px;
+          gap: 20px;
         }
 
         .step-card {
           position: relative;
-          padding: 24px;
-          background: rgba(255, 255, 255, 0.78);
-          border: 1px solid var(--line);
-          border-radius: var(--radius-lg);
-          box-shadow: 0 10px 34px rgba(25, 20, 15, 0.045);
-          overflow: hidden;
-          transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-
-        .step-card::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: radial-gradient(circle at top right, rgba(199, 159, 91, 0.12), transparent 42%);
-          pointer-events: none;
+          padding: 32px;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 20px;
+          transition: all 0.3s ease;
         }
 
         .step-card:hover {
+          border-color: var(--border-hover);
           transform: translateY(-4px);
-          border-color: var(--line-strong);
-          box-shadow: var(--shadow-soft);
+          box-shadow: 0 16px 48px rgba(26, 22, 18, 0.08);
         }
 
         .step-icon {
-          position: relative;
           width: 54px;
           height: 54px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: var(--cream);
-          border: 1px solid var(--line);
-          border-radius: 17px;
-          color: var(--gold-dark);
-          margin-bottom: 18px;
+          background: linear-gradient(135deg, var(--warm), #fff);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          margin-bottom: 20px;
+          color: var(--accent);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
         }
 
         .step-icon svg {
-          width: 25px;
-          height: 25px;
+          width: 27px;
+          height: 27px;
           fill: none;
           stroke: currentColor;
           stroke-width: 1.8;
@@ -749,104 +687,92 @@ export default function HomePage() {
 
         .step-number {
           position: absolute;
-          top: 20px;
-          right: 22px;
-          font-family: "Playfair Display", Georgia, serif;
-          font-size: 54px;
-          font-weight: 700;
-          color: rgba(234, 223, 206, 0.82);
+          top: 24px;
+          right: 24px;
+          font-size: 42px;
+          font-weight: 800;
+          color: var(--warm-deep);
           line-height: 1;
+          letter-spacing: -0.04em;
         }
 
         .step-title {
-          position: relative;
           margin: 0 0 8px;
           font-size: 20px;
-          font-weight: 900;
-          color: var(--ink);
+          font-weight: 800;
+          color: var(--accent);
           letter-spacing: -0.02em;
         }
 
         .step-text {
-          position: relative;
           margin: 0;
           font-size: 15px;
           line-height: 1.7;
-          color: var(--muted);
-        }
-
-        .showcase-wrapper {
-          border-radius: var(--radius-xl);
+          color: var(--text-secondary);
         }
 
         .showcase {
           display: grid;
           gap: 0;
-          background: linear-gradient(135deg, var(--ink) 0%, #2c241d 100%);
-          border-radius: var(--radius-xl);
+          background: var(--accent);
+          border-radius: 28px;
           overflow: hidden;
-          box-shadow: var(--shadow);
         }
 
         .showcase-image {
-          min-height: 0;
-          background: #f7efe4;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 10px;
+          position: relative;
+          aspect-ratio: 16 / 11;
+          overflow: hidden;
+          background: #241f1a;
+          min-height: 320px;
         }
 
         .showcase-image img {
           width: 100%;
-          height: auto;
-          max-height: 420px;
+          height: 100%;
           object-fit: contain;
           object-position: center;
-          border-radius: 22px;
           cursor: zoom-in;
-          display: block;
           transition: transform 0.5s ease;
         }
 
         .showcase-image img:hover {
-          transform: scale(1.015);
+          transform: scale(1.03);
         }
 
         .showcase-content {
-          padding: 30px 24px;
+          padding: 32px;
           color: #fff;
         }
 
         .showcase-eyebrow {
           font-size: 12px;
-          font-weight: 900;
+          font-weight: 800;
           text-transform: uppercase;
-          letter-spacing: 0.12em;
-          color: var(--gold);
+          letter-spacing: 0.1em;
+          color: var(--gold-soft);
           margin-bottom: 12px;
         }
 
         .showcase-title {
           margin: 0;
-          font-family: "Playfair Display", Georgia, serif;
-          font-size: clamp(30px, 8vw, 46px);
-          font-weight: 700;
-          line-height: 1.08;
-          letter-spacing: -0.04em;
+          font-size: clamp(28px, 5vw, 40px);
+          font-weight: 800;
+          line-height: 1.12;
+          letter-spacing: -0.045em;
         }
 
         .showcase-text {
           margin: 16px 0 0;
           font-size: 16px;
           line-height: 1.75;
-          color: rgba(255, 255, 255, 0.78);
+          color: rgba(255, 255, 255, 0.8);
         }
 
         .showcase-list {
           display: grid;
           gap: 12px;
-          margin-top: 26px;
+          margin-top: 28px;
         }
 
         .showcase-list-item {
@@ -854,130 +780,48 @@ export default function HomePage() {
           align-items: center;
           gap: 12px;
           font-size: 15px;
-          font-weight: 800;
-          color: rgba(255, 255, 255, 0.9);
+          font-weight: 600;
         }
 
         .showcase-list-icon {
-          width: 27px;
-          height: 27px;
+          width: 24px;
+          height: 24px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: rgba(255, 255, 255, 0.1);
-          border: 1px solid rgba(255, 255, 255, 0.14);
-          border-radius: 9px;
-          font-size: 13px;
-          color: var(--gold);
-          flex: 0 0 auto;
-        }
-
-        .occasion-grid {
-          display: grid;
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-          gap: 12px;
-          margin-top: 28px;
-        }
-
-        .occasion-card {
-          padding: 18px 14px;
-          background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: 20px;
-          text-align: center;
-          font-size: 14px;
-          font-weight: 900;
-          color: var(--ink-soft);
-          box-shadow: 0 10px 30px rgba(25, 20, 15, 0.04);
-        }
-
-        .comparison-grid {
-          display: grid;
-          gap: 16px;
-        }
-
-        .comparison-card {
-          padding: 24px;
-          background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: var(--radius-lg);
-          box-shadow: var(--shadow-soft);
-        }
-
-        .comparison-card.positive {
-          border-color: rgba(199, 159, 91, 0.46);
-          background: linear-gradient(180deg, #fff 0%, #fffaf1 100%);
-        }
-
-        .comparison-title {
-          margin: 0 0 16px;
-          font-size: 21px;
-          font-weight: 900;
-          color: var(--ink);
-          letter-spacing: -0.03em;
-        }
-
-        .comparison-list {
-          display: grid;
-          gap: 12px;
-          margin: 0;
-          padding: 0;
-          list-style: none;
-        }
-
-        .comparison-list li {
-          display: flex;
-          gap: 10px;
-          color: var(--muted);
-          font-size: 15px;
-          line-height: 1.55;
-          font-weight: 700;
-        }
-
-        .comparison-mark {
-          flex: 0 0 auto;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 24px;
-          height: 24px;
-          border-radius: 999px;
-          background: var(--cream);
-          color: var(--gold-dark);
+          border-radius: 8px;
           font-size: 12px;
-          font-weight: 900;
         }
 
         .products-grid {
           display: grid;
-          gap: 18px;
+          gap: 20px;
         }
 
         .product-card {
           background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: var(--radius-lg);
+          border: 1px solid var(--border);
+          border-radius: 24px;
           overflow: hidden;
-          transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
-          box-shadow: 0 10px 34px rgba(25, 20, 15, 0.045);
+          transition: all 0.3s ease;
         }
 
         .product-card:hover {
-          border-color: var(--line-strong);
-          box-shadow: var(--shadow-soft);
-          transform: translateY(-3px);
+          border-color: var(--border-hover);
+          box-shadow: 0 20px 60px rgba(26, 22, 18, 0.1);
         }
 
         .product-card.featured {
-          border-color: rgba(199, 159, 91, 0.62);
-          box-shadow: 0 20px 54px rgba(199, 159, 91, 0.15);
+          border-color: var(--gold-soft);
+          box-shadow: 0 0 0 1px var(--gold-soft);
         }
 
         .product-image {
           position: relative;
           aspect-ratio: 4 / 3;
           overflow: hidden;
-          background: var(--cream);
+          background: var(--warm);
         }
 
         .product-image img {
@@ -987,25 +831,23 @@ export default function HomePage() {
           object-position: center;
           cursor: zoom-in;
           transition: transform 0.5s ease;
-          display: block;
         }
 
         .product-card:hover .product-image img {
-          transform: scale(1.04);
+          transform: scale(1.05);
         }
 
         .product-label {
           position: absolute;
-          top: 14px;
-          left: 14px;
-          padding: 8px 13px;
-          background: rgba(255, 255, 255, 0.92);
-          border: 1px solid rgba(255, 255, 255, 0.72);
-          border-radius: 999px;
+          top: 16px;
+          left: 16px;
+          padding: 8px 14px;
+          background: var(--surface);
+          border-radius: 100px;
           font-size: 12px;
-          font-weight: 900;
-          color: var(--ink);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.11);
+          font-weight: 800;
+          color: var(--text);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
         .product-card.featured .product-label {
@@ -1014,41 +856,40 @@ export default function HomePage() {
         }
 
         .product-body {
-          padding: 22px;
+          padding: 24px;
         }
 
         .product-header {
           display: flex;
           align-items: flex-start;
           justify-content: space-between;
-          gap: 14px;
+          gap: 16px;
           margin-bottom: 12px;
         }
 
         .product-title {
           margin: 0;
           font-size: 22px;
-          font-weight: 900;
-          color: var(--ink);
+          font-weight: 800;
+          color: var(--accent);
           letter-spacing: -0.03em;
         }
 
         .product-price {
           flex-shrink: 0;
-          padding: 7px 11px;
-          background: var(--cream);
-          border-radius: 10px;
+          padding: 6px 12px;
+          background: var(--warm);
+          border-radius: 8px;
           font-size: 13px;
-          font-weight: 900;
-          color: var(--gold-dark);
-          white-space: nowrap;
+          font-weight: 800;
+          color: var(--text-secondary);
         }
 
         .product-description {
           margin: 0 0 16px;
           font-size: 14px;
           line-height: 1.7;
-          color: var(--muted);
+          color: var(--text-secondary);
         }
 
         .product-features {
@@ -1058,187 +899,190 @@ export default function HomePage() {
         }
 
         .product-feature {
-          padding: 7px 11px;
-          background: var(--cream);
-          border-radius: 10px;
+          padding: 6px 12px;
+          background: var(--warm);
+          border-radius: 8px;
           font-size: 12px;
-          font-weight: 800;
-          color: var(--muted);
+          font-weight: 700;
+          color: var(--text-secondary);
         }
 
         .pricing-info {
-          margin-top: 26px;
-          padding: 22px;
-          background: linear-gradient(135deg, var(--cream) 0%, #fff 100%);
-          border: 1px solid var(--line);
-          border-radius: 20px;
+          margin-top: 32px;
+          padding: 24px;
+          background: var(--warm);
+          border-radius: 16px;
           text-align: center;
         }
 
         .pricing-info p {
           margin: 0;
           font-size: 15px;
-          color: var(--muted);
-          line-height: 1.65;
+          color: var(--text-secondary);
         }
 
         .pricing-info strong {
-          color: var(--ink);
+          color: var(--text);
         }
 
-        .testimonials-grid {
+        .reviews-grid {
           display: grid;
-          gap: 14px;
+          gap: 18px;
         }
 
-        .testimonial-card {
-          padding: 22px;
-          background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: 22px;
-          box-shadow: 0 10px 32px rgba(25, 20, 15, 0.04);
-        }
-
-        .testimonial-stars {
-          color: var(--gold);
-          letter-spacing: 0.08em;
-          font-size: 15px;
-          margin-bottom: 14px;
-        }
-
-        .testimonial-quote {
-          margin: 0;
-          font-size: 15px;
-          line-height: 1.72;
-          color: var(--ink-soft);
-          font-weight: 600;
-        }
-
-        .testimonial-author {
-          margin-top: 18px;
+        .review-card {
           display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 12px;
+          flex-direction: column;
+          min-height: 100%;
+          padding: 26px;
+          background: var(--surface);
+          border: 1px solid var(--border);
+          border-radius: 22px;
+          transition: all 0.25s ease;
         }
 
-        .testimonial-author strong {
-          display: block;
+        .review-card:hover {
+          border-color: var(--border-hover);
+          transform: translateY(-3px);
+          box-shadow: 0 16px 44px rgba(26, 22, 18, 0.07);
+        }
+
+        .review-stars {
+          color: var(--gold);
+          font-size: 18px;
+          letter-spacing: 0.08em;
+          margin-bottom: 16px;
+        }
+
+        .review-quote {
+          margin: 0;
+          color: var(--text);
+          font-size: 15px;
+          line-height: 1.75;
+          font-weight: 500;
+        }
+
+        .review-author {
+          margin-top: auto;
+          padding-top: 20px;
           font-size: 14px;
-          font-weight: 900;
-          color: var(--ink);
+          color: var(--text-muted);
         }
 
-        .testimonial-author span {
+        .review-author strong {
           display: block;
-          margin-top: 2px;
-          font-size: 12px;
+          color: var(--accent);
           font-weight: 800;
-          color: var(--muted-light);
+          margin-bottom: 2px;
         }
 
         .faq-grid {
           display: grid;
-          gap: 14px;
+          gap: 16px;
         }
 
         .faq-item {
-          padding: 22px;
+          padding: 24px;
           background: var(--surface);
-          border: 1px solid var(--line);
-          border-radius: 20px;
-          transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          transition: all 0.2s;
         }
 
         .faq-item:hover {
-          border-color: var(--line-strong);
-          transform: translateY(-2px);
-          box-shadow: 0 12px 32px rgba(25, 20, 15, 0.055);
+          border-color: var(--border-hover);
         }
 
         .faq-question {
           margin: 0 0 8px;
           font-size: 17px;
-          font-weight: 900;
-          color: var(--ink);
+          font-weight: 800;
+          color: var(--accent);
           letter-spacing: -0.02em;
         }
 
         .faq-answer {
           margin: 0;
           font-size: 15px;
-          line-height: 1.72;
-          color: var(--muted);
+          line-height: 1.7;
+          color: var(--text-secondary);
         }
 
         .cta-section {
-          padding: 70px 0;
+          padding: 80px 0;
         }
 
         .cta-card {
           position: relative;
-          padding: 52px 22px;
-          background:
-            radial-gradient(circle at top right, rgba(199, 159, 91, 0.24), transparent 34rem),
-            linear-gradient(135deg, var(--ink) 0%, #2c241d 100%);
-          border-radius: var(--radius-xl);
+          padding: 64px 32px;
+          background: linear-gradient(135deg, var(--accent) 0%, var(--accent-soft) 100%);
+          border-radius: 32px;
           text-align: center;
           overflow: hidden;
-          box-shadow: var(--shadow);
+        }
+
+        .cta-card::before {
+          content: "";
+          position: absolute;
+          top: -50%;
+          right: -30%;
+          width: 80%;
+          height: 150%;
+          background: radial-gradient(ellipse, rgba(201, 167, 108, 0.15) 0%, transparent 60%);
+          pointer-events: none;
         }
 
         .cta-title {
           position: relative;
           margin: 0;
-          font-family: "Playfair Display", Georgia, serif;
-          font-size: clamp(32px, 9vw, 56px);
-          font-weight: 700;
-          line-height: 1.04;
-          letter-spacing: -0.045em;
+          font-size: clamp(32px, 6vw, 52px);
+          font-weight: 800;
+          line-height: 1.08;
+          letter-spacing: -0.05em;
           color: #fff;
         }
 
         .cta-text {
           position: relative;
-          margin: 18px auto 0;
-          max-width: 560px;
-          font-size: 16px;
+          margin: 20px auto 0;
+          max-width: 540px;
+          font-size: 17px;
           line-height: 1.75;
-          color: rgba(255, 255, 255, 0.76);
+          color: rgba(255, 255, 255, 0.8);
         }
 
         .cta-actions {
           position: relative;
           display: flex;
-          flex-direction: column;
+          flex-wrap: wrap;
           justify-content: center;
           gap: 12px;
-          margin-top: 28px;
+          margin-top: 32px;
         }
 
         .btn-cta {
           background: #fff;
-          color: var(--ink);
+          color: var(--accent);
         }
 
         .btn-cta:hover {
-          background: var(--cream);
+          background: var(--warm);
           transform: translateY(-2px);
         }
 
         .btn-cta-secondary {
           background: rgba(255, 255, 255, 0.1);
           color: #fff;
-          border: 1px solid rgba(255, 255, 255, 0.22);
+          border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .btn-cta-secondary:hover {
-          background: rgba(255, 255, 255, 0.16);
+          background: rgba(255, 255, 255, 0.15);
         }
 
         .footer {
-          padding: 30px 0 46px;
-          border-top: 1px solid var(--line);
+          padding: 32px 0 48px;
+          border-top: 1px solid var(--border);
         }
 
         .footer-inner {
@@ -1251,27 +1095,24 @@ export default function HomePage() {
 
         .footer-links {
           display: flex;
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 22px;
+          gap: 24px;
         }
 
         .footer-link {
-          color: var(--muted);
+          color: var(--text-secondary);
           text-decoration: none;
           font-size: 14px;
-          font-weight: 800;
+          font-weight: 600;
           transition: color 0.2s;
         }
 
         .footer-link:hover {
-          color: var(--ink);
+          color: var(--text);
         }
 
         .footer-copy {
           font-size: 13px;
-          color: var(--muted-light);
-          font-weight: 700;
+          color: var(--text-muted);
         }
 
         .lightbox {
@@ -1281,10 +1122,10 @@ export default function HomePage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          padding: 18px;
-          background: rgba(25, 20, 15, 0.9);
-          backdrop-filter: blur(12px);
-          -webkit-backdrop-filter: blur(12px);
+          padding: 20px;
+          background: rgba(26, 22, 18, 0.9);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
           animation: fadeIn 0.2s ease;
         }
 
@@ -1296,160 +1137,106 @@ export default function HomePage() {
         .lightbox-content {
           position: relative;
           max-width: 94vw;
-          max-height: 90vh;
-          animation: scaleIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+          max-height: 92vh;
+          animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
 
         .lightbox-image {
           display: block;
           max-width: 94vw;
-          max-height: 84vh;
+          max-height: 88vh;
+          width: auto;
+          height: auto;
           object-fit: contain;
-          border-radius: 18px;
-          box-shadow: 0 32px 90px rgba(0, 0, 0, 0.48);
-          background: #fff;
+          border-radius: 16px;
+          box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+          background: var(--warm);
         }
 
         .lightbox-close {
           position: absolute;
           top: -12px;
           right: -12px;
-          width: 42px;
-          height: 42px;
+          width: 40px;
+          height: 40px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: #fff;
           border: none;
-          border-radius: 999px;
-          font-size: 22px;
+          border-radius: 50%;
+          font-size: 20px;
           cursor: pointer;
-          box-shadow: 0 8px 26px rgba(0, 0, 0, 0.26);
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
           transition: transform 0.2s;
-          color: var(--ink);
         }
 
         .lightbox-close:hover {
-          transform: scale(1.06);
-        }
-
-        @media (min-width: 560px) {
-          .hero-actions,
-          .cta-actions {
-            flex-direction: row;
-          }
-
-          .btn {
-            width: auto;
-          }
-
-          .occasion-grid {
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-          }
-
-          .testimonials-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-          }
+          transform: scale(1.1);
         }
 
         @media (min-width: 768px) {
           .container {
-            width: min(1180px, calc(100% - 72px));
-          }
-
-          .nav-inner {
-            padding: 0 36px;
-            height: 76px;
+            width: min(1200px, calc(100% - 80px));
           }
 
           .nav-links {
             display: flex;
           }
 
-          .hero {
-            padding: 118px 0 76px;
-          }
-
           .hero-grid {
-            grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-            gap: 58px;
+            grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr);
+            gap: 64px;
           }
 
-          .hero-actions {
-            justify-content: flex-start;
-          }
-
-          .hero-features {
-            grid-template-columns: repeat(4, max-content);
-            gap: 12px;
-          }
-
-          .occasion-strip {
-            flex-wrap: wrap;
-            overflow: visible;
+          .hero-visual {
+            order: 2;
           }
 
           .section {
-            padding: 104px 0;
+            padding: 120px 0;
           }
 
-          .section-header {
-            margin-bottom: 52px;
-          }
-
-          .steps-grid,
-          .products-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+          .steps-grid {
+            grid-template-columns: repeat(3, 1fr);
           }
 
           .showcase {
-            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
             align-items: stretch;
           }
 
           .showcase-image {
-            padding: 18px;
             min-height: 520px;
-          }
-
-          .showcase-image img {
-            max-height: none;
-            height: 100%;
-            object-fit: contain;
+            aspect-ratio: auto;
           }
 
           .showcase-content {
-            padding: 52px;
+            padding: 56px;
             display: flex;
             flex-direction: column;
             justify-content: center;
           }
 
-          .comparison-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+          .products-grid {
+            grid-template-columns: repeat(3, 1fr);
           }
 
-          .testimonials-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+          .reviews-grid {
+            grid-template-columns: repeat(3, 1fr);
           }
 
           .faq-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(2, 1fr);
           }
 
           .cta-card {
-            padding: 82px 48px;
+            padding: 80px 48px;
           }
 
           .footer-inner {
@@ -1458,17 +1245,28 @@ export default function HomePage() {
           }
         }
 
+        @media (max-width: 767px) {
+          .showcase-image img {
+            object-fit: cover;
+          }
+        }
+
         @media (max-width: 480px) {
+          .container {
+            width: calc(100% - 32px);
+          }
+
           .nav-inner {
             height: 64px;
+            padding: 0 16px;
           }
 
           .logo {
-            font-size: 25px;
+            font-size: 23px;
           }
 
           .nav-cta {
-            min-height: 40px;
+            height: 40px;
             padding: 0 14px;
             font-size: 13px;
           }
@@ -1477,53 +1275,19 @@ export default function HomePage() {
             padding-top: 84px;
           }
 
-          .hero-title {
-            font-size: clamp(39px, 12vw, 48px);
+          .hero-float {
+            display: none;
           }
 
-          .hero-description {
-            font-size: 16px;
-          }
-
-          .hero-image-wrapper {
-            aspect-ratio: 1 / 1;
-          }
-
-          .hero-image-wrapper img {
-            object-fit: cover;
-          }
-
-          .hero-mini-panel {
-            grid-template-columns: 1fr;
-          }
-
-          .showcase {
-            border-radius: 26px;
-          }
-
-          .showcase-image {
-            padding: 12px;
-            background: #f7efe4;
-          }
-
-          .showcase-image img {
+          .btn {
             width: 100%;
-            height: auto;
-            max-height: none;
-            object-fit: contain;
-            object-position: center;
           }
 
-          .product-header {
-            flex-direction: column;
-            align-items: flex-start;
-          }
-
-          .testimonial-card,
-          .faq-item,
-          .comparison-card,
-          .step-card {
-            padding: 21px;
+          .hero-image-wrapper::after,
+          .product-image::after,
+          .showcase-image::after {
+            opacity: 1;
+            transform: none;
           }
         }
       `}</style>
@@ -1533,13 +1297,13 @@ export default function HomePage() {
           <Link href="/" className="logo">snapkey</Link>
 
           <div className="nav-links">
-            <a href="#occasions" className="nav-link">Anlässe</a>
             <a href="#how-it-works" className="nav-link">So funktioniert's</a>
             <a href="#products" className="nav-link">Varianten</a>
+            <a href="#reviews" className="nav-link">Bewertungen</a>
             <a href="#faq" className="nav-link">FAQ</a>
           </div>
 
-          <Link href="/event" className="nav-cta">Album erstellen</Link>
+          <Link href="/event" className="nav-cta">Event erstellen</Link>
         </div>
       </nav>
 
@@ -1549,7 +1313,7 @@ export default function HomePage() {
             <div className={`hero-content ${heroInView ? "visible" : ""}`}>
               <div className="hero-badge">
                 <span className="hero-badge-dot" />
-                Für Feiern, Familie, Urlaub & besondere Momente
+                Für Hochzeiten & besondere Events
               </div>
 
               <h1 className="hero-title">
@@ -1558,13 +1322,13 @@ export default function HomePage() {
               </h1>
 
               <p className="hero-description">
-                Mit Snapkey sammeln Familie, Freunde und Gäste Fotos und Videos direkt in einem gemeinsamen Album —
-                ohne App, ohne WhatsApp-Chaos und ohne verlorene Momente.
+                Eure Gäste teilen Fotos und Videos mit einem Tap — ohne App,
+                ohne Chaos und ohne verlorene Momente.
               </p>
 
               <div className="hero-actions">
                 <Link href="/event" className="btn btn-primary">
-                  Album in 2 Minuten erstellen →
+                  Event erstellen →
                 </Link>
                 <a href="#how-it-works" className="btn btn-secondary">
                   So funktioniert's
@@ -1579,57 +1343,29 @@ export default function HomePage() {
                   </div>
                 ))}
               </div>
-
-              <div className="occasion-strip" aria-label="Anlässe">
-                {occasions.map((occasion) => (
-                  <span className="occasion-pill" key={occasion}>{occasion}</span>
-                ))}
-              </div>
             </div>
 
             <div className={`hero-visual ${heroInView ? "visible" : ""}`}>
-              <div className="hero-visual-card">
-                <div
-                  className="hero-image-wrapper"
-                  onClick={() => openImage("/hero-snapkey.jpg", "Snapkey für gemeinsame Erinnerungen")}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => e.key === "Enter" && openImage("/hero-snapkey.jpg", "Snapkey für gemeinsame Erinnerungen")}
-                  aria-label="Hero-Bild vergrößern"
-                >
-                  <img src="/hero-snapkey.jpg" alt="Snapkey für gemeinsame Erinnerungen" />
-                </div>
+              <div className="hero-image-wrapper">
+                <img
+                  src="/hero-snapkey.jpg"
+                  alt="Snapkey bei einer Hochzeit"
+                  onClick={() => openImage("/hero-snapkey.jpg", "Snapkey bei einer Hochzeit")}
+                />
+              </div>
 
-                <div className="hero-mini-panel">
-                  <div className="hero-stat">
-                    <strong>1 Album</strong>
-                    <span>für alle Bilder & Videos</span>
-                  </div>
-                  <div className="hero-stat">
-                    <strong>0 Apps</strong>
-                    <span>direkt im Browser nutzbar</span>
-                  </div>
-                </div>
+              <div className="hero-float hero-float-1">
+                <div className="hero-float-icon">📸</div>
+                <div className="hero-float-text">247 Fotos</div>
+                <div className="hero-float-sub">von 86 Gästen</div>
+              </div>
+
+              <div className="hero-float hero-float-2">
+                <div className="hero-float-icon">✓</div>
+                <div className="hero-float-text">Keine App nötig</div>
+                <div className="hero-float-sub">Direkt im Browser</div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section" id="occasions">
-        <div className="container">
-          <div className="section-header">
-            <div className="section-eyebrow">✦ Für jeden Anlass</div>
-            <h2 className="section-title">Nicht nur für Hochzeiten. Für alles, was bleiben soll.</h2>
-            <p className="section-description">
-              Snapkey passt überall dort, wo Menschen zusammenkommen und Erinnerungen nicht auf einzelnen Handys verschwinden sollen.
-            </p>
-          </div>
-
-          <div className="occasion-grid">
-            {occasions.map((occasion) => (
-              <div className="occasion-card" key={occasion}>{occasion}</div>
-            ))}
           </div>
         </div>
       </section>
@@ -1637,10 +1373,10 @@ export default function HomePage() {
       <section className="section" id="how-it-works" ref={stepsRef}>
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">◇ So funktioniert's</div>
+            <div className="section-eyebrow">So funktioniert's</div>
             <h2 className="section-title">Drei Schritte zu eurem gemeinsamen Album</h2>
             <p className="section-description">
-              Snapkey macht das Sammeln von Fotos und Videos einfach — für Gastgeber und für Gäste.
+              Snapkey verbindet euer digitales Album mit einem physischen Zugang für alle Gäste.
             </p>
           </div>
 
@@ -1648,7 +1384,7 @@ export default function HomePage() {
             <div className="steps-grid">
               {steps.map((step, i) => (
                 <article className="step-card" key={step.title}>
-                  <div className="step-icon"><StepIcon type={step.icon} /></div>
+                  <div className="step-icon">{step.icon}</div>
                   <span className="step-number">0{i + 1}</span>
                   <h3 className="step-title">{step.title}</h3>
                   <p className="step-text">{step.text}</p>
@@ -1674,11 +1410,11 @@ export default function HomePage() {
               <div className="showcase-content">
                 <div className="showcase-eyebrow">Mehr als ein Fotoalbum</div>
                 <h2 className="showcase-title">
-                  Aus vielen einzelnen Momenten wird eine gemeinsame Geschichte.
+                  Aus spontanen Momenten wird eine gemeinsame Geschichte.
                 </h2>
                 <p className="showcase-text">
-                  Die besten Erinnerungen entstehen oft spontan — beim Essen, auf der Tanzfläche, im Urlaub,
-                  beim Auspacken, Lachen oder Wiedersehen. Snapkey sammelt genau diese Perspektiven.
+                  Die schönsten Bilder entstehen oft nicht beim Fotografen —
+                  sondern bei euren Gästen. Snapkey sammelt genau diese Perspektiven.
                 </p>
 
                 <div className="showcase-list">
@@ -1688,11 +1424,11 @@ export default function HomePage() {
                   </div>
                   <div className="showcase-list-item">
                     <span className="showcase-list-icon">✓</span>
-                    Zugang per Snapkey oder QR-Code
+                    Zugang per Tap oder QR-Code
                   </div>
                   <div className="showcase-list-item">
                     <span className="showcase-list-icon">✓</span>
-                    Perfekt als Tischdetail, Einladung oder Erinnerung
+                    Perfekt als Tischdetail oder Gastgeschenk
                   </div>
                 </div>
               </div>
@@ -1701,38 +1437,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div className="section-header">
-            <div className="section-eyebrow">○ Warum Snapkey?</div>
-            <h2 className="section-title">Weniger Suchen. Mehr Erinnerungen.</h2>
-          </div>
-
-          <div className="comparison-grid">
-            {comparisons.map((group) => (
-              <article className={`comparison-card ${group.negative ? "" : "positive"}`} key={group.title}>
-                <h3 className="comparison-title">{group.title}</h3>
-                <ul className="comparison-list">
-                  {group.items.map((item) => (
-                    <li key={item}>
-                      <span className="comparison-mark">{group.negative ? "–" : "✓"}</span>
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="section" id="products" ref={productsRef}>
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">✦ Snapkey Varianten</div>
+            <div className="section-eyebrow">Snapkey Varianten</div>
             <h2 className="section-title">Wählt den Zugang, der zu euch passt</h2>
             <p className="section-description">
-              Vom günstigen Mini für viele Gäste bis zum persönlichen Erinnerungsstück aus Holz.
+              Vom günstigen Mini für viele Gäste bis zum Erinnerungsstück aus Holz.
             </p>
           </div>
 
@@ -1772,37 +1483,37 @@ export default function HomePage() {
 
             <div className="pricing-info">
               <p>
-                <strong>Eventseite genau 29 €</strong> + Snapkeys je nach Auswahl.
-                Design und Farben lassen sich später an euren Anlass anpassen.
+                <strong>Eventseite ab 29 €</strong> + Snapkeys je nach Auswahl.
+                Design und Farben lassen sich später anpassen.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" id="reviews" ref={reviewsRef}>
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">★★★★★ Bewertungen</div>
-            <h2 className="section-title">So fühlt sich gemeinsames Sammeln an</h2>
+            <div className="section-eyebrow">Bewertungen</div>
+            <h2 className="section-title">Das sagen unsere ersten Paare und Gastgeber</h2>
             <p className="section-description">
-              Stimmen von Menschen, die ihre Erinnerungen nicht mehr in Chats und auf einzelnen Handys verlieren wollten.
+              Beispielbewertungen als Platzhalter, bis echte Rückmeldungen eingebunden werden.
             </p>
           </div>
 
-          <div className="testimonials-grid">
-            {testimonials.map((testimonial) => (
-              <article className="testimonial-card" key={`${testimonial.name}-${testimonial.occasion}`}>
-                <div className="testimonial-stars">★★★★★</div>
-                <p className="testimonial-quote">„{testimonial.quote}“</p>
-                <div className="testimonial-author">
-                  <div>
-                    <strong>{testimonial.name}</strong>
-                    <span>{testimonial.occasion}</span>
+          <div className={`reviews-wrapper ${reviewsInView ? "visible" : ""}`}>
+            <div className="reviews-grid">
+              {testimonials.map((review) => (
+                <article className="review-card" key={review.name}>
+                  <div className="review-stars" aria-label="5 von 5 Sternen">★★★★★</div>
+                  <p className="review-quote">„{review.quote}”</p>
+                  <div className="review-author">
+                    <strong>{review.name}</strong>
+                    {review.event}
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -1810,8 +1521,8 @@ export default function HomePage() {
       <section className="section" id="faq">
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">◇ Häufige Fragen</div>
-            <h2 className="section-title">Einfach für euch. Einfach für alle Gäste.</h2>
+            <div className="section-eyebrow">Häufige Fragen</div>
+            <h2 className="section-title">Einfach für euch. Einfach für eure Gäste.</h2>
           </div>
 
           <div className="faq-grid">
@@ -1828,15 +1539,15 @@ export default function HomePage() {
       <section className="cta-section">
         <div className="container">
           <div className="cta-card">
-            <h2 className="cta-title">Bereit für Erinnerungen, die nicht verloren gehen?</h2>
+            <h2 className="cta-title">Bereit für Erinnerungen, die bleiben?</h2>
             <p className="cta-text">
-              Erstellt euer Album, wählt eure Snapkeys und gebt allen einen einfachen Weg,
-              Fotos und Videos zu teilen.
+              Erstellt euer Eventalbum, wählt eure Snapkeys und gebt euren Gästen
+              einen einfachen Weg, Momente zu teilen.
             </p>
 
             <div className="cta-actions">
               <Link href="/event" className="btn btn-cta">
-                Album erstellen →
+                Event erstellen →
               </Link>
               <a href="#products" className="btn btn-cta-secondary">
                 Varianten ansehen
@@ -1859,7 +1570,7 @@ export default function HomePage() {
       </footer>
 
       {lightboxImage && (
-        <div className="lightbox" onClick={closeImage}>
+        <div className="lightbox" onClick={closeImage} role="dialog" aria-modal="true">
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
             <button
               className="lightbox-close"
