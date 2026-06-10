@@ -1360,13 +1360,15 @@ export default function EventPage() {
                     ))}
                   </div>
 
-                  <input
-                    type="number"
-                    placeholder="Eigene Menge eingeben"
-                    value={customQuantity}
-                    onChange={(e) => setCustomQuantity(e.target.value)}
-                    className="input custom-quantity-input"
-                  />
+<div className="custom-quantity-wrap">
+  <input
+    type="number"
+    placeholder="Eigene Menge eingeben"
+    value={customQuantity}
+    onChange={(e) => setCustomQuantity(e.target.value)}
+    className="input"
+  />
+</div>
                 </section>
 
                 <section className="setup-section">
