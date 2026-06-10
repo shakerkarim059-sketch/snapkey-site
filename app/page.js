@@ -134,7 +134,7 @@ const faqs = [
   {
     question: "Wie lange bleiben die Fotos gespeichert?",
     answer:
-      ""Fotos und Videos werden standardmäßig für 1 Monat gespeichert. Wer das Album länger nutzen möchte, kann die Speicherzeit für 4,99 € pro Monat verlängern. Die Verlängerung ist jederzeit monatlich kündbar."",
+      "Fotos und Videos werden standardmäßig für 1 Monat gespeichert. Wer das Album länger nutzen möchte, kann die Speicherzeit für 4,99 € pro Monat verlängern. Die Verlängerung ist jederzeit monatlich kündbar.",
   },
 ];
 
@@ -1179,7 +1179,28 @@ export default function HomePage() {
         .lightbox-close:hover {
           transform: scale(1.1);
         }
+.occasion-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
 
+.occasion-card {
+  padding: 32px 20px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.occasion-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-hover);
+  box-shadow: 0 12px 36px rgba(26, 22, 18, 0.08);
+}
         @media (min-width: 768px) {
           .container {
             width: min(1200px, calc(100% - 80px));
@@ -1337,8 +1358,7 @@ export default function HomePage() {
               </h1>
 
               <p className="hero-description">
-                Eure Gäste teilen Fotos und Videos mit einem Tap — ohne App,
-                ohne Chaos und ohne verlorene Momente.
+              Fotos und Videos von Familie, Freunden und Gästen automatisch sammeln – für Hochzeiten, Geburtstage, Urlaube, Taufen, Jubiläen und besondere Momente.
               </p>
 
               <div className="hero-actions">
