@@ -1482,6 +1482,7 @@ export default function HomePage() {
     </div>
   ))}
 </div>
+  </div>
 </section>
       <section className="section" id="how-it-works" ref={stepsRef}>
         <div className="container">
@@ -1613,8 +1614,7 @@ Snapkey sammelt die Fotos und Videos aller Beteiligten automatisch in einem geme
           <h2 className="section-title">
   Das sagen unsere Nutzer
 </h2>
-            <p className="section-description">
-            </p>
+
           </div>
 
           <div className={`reviews-wrapper ${reviewsInView ? "visible" : ""}`}>
