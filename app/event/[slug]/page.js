@@ -3449,8 +3449,8 @@ body {
 }
 
 .event-page {
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
   box-sizing: border-box;
 }
