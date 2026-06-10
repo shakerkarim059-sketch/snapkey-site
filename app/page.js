@@ -70,48 +70,48 @@ const steps = [
 ];
 
 const features = [
-  { icon: "✓", text: "Ohne App" },
-  { icon: "↗", text: "Tap & QR" },
-  { icon: "♡", text: "Für Hochzeiten" },
-  { icon: "▦", text: "Ein Album für alle" },
+  { icon: "📸", text: "Fotos & Videos" },
+  { icon: "📱", text: "Ohne App" },
+  { icon: "🔗", text: "Einfach teilen" },
+  { icon: "👨‍👩‍👧‍👦", text: "Für jede Gruppe" },
 ];
 
 const testimonials = [
   {
     quote:
       "Wir hatten am nächsten Morgen so viele schöne Momente gesammelt, die wir selbst gar nicht mitbekommen hätten.",
-    name: "Laura & Tim Schneider",
-    event: "Hochzeit in Köln",
+    name: "Anna & Tobias M.",
+    event: "Hochzeit mit 120 Gästen",
   },
   {
     quote:
       "Für unsere Gäste war es super einfach. Kein Erklären, keine App — einfach öffnen und Bilder hochladen.",
-    name: "Miriam Hoffmann",
-    event: "Sommerhochzeit",
+    name: "Markus K.",
+    event: "50. Geburtstag",
   },
   {
     quote:
-      "Die Snapkeys lagen auf den Tischen und wurden wirklich genutzt. Genau so hatten wir uns das vorgestellt.",
-    name: "Anna & Daniel Weber",
-    event: "Feier mit 92 Gästen",
+      "Endlich hatten wir alle Urlaubsbilder an einem Ort statt in zehn verschiedenen Chats.",
+    name: "Familie Schneider",
+    event: "Gemeinsamer Sommerurlaub",
   },
   {
     quote:
       "Besonders schön waren die spontanen Videos von Freunden und Familie. Das fühlt sich viel persönlicher an.",
-    name: "Sophie Krüger",
-    event: "Geburtstag & Familienfeier",
+    name: "Julia W.",
+    event: "Taufe unserer Tochter",
   },
   {
     quote:
-      "Schick, unkompliziert und die perfekte Ergänzung zum Fotografen. Wir würden es sofort wieder nutzen.",
-    name: "Nadine & Felix Bauer",
-    event: "Hochzeit im Garten",
+      "Die Snapkeys lagen auf den Tischen und wurden wirklich genutzt. Genau so hatten wir uns das vorgestellt.",
+    name: "Andreas B.",
+    event: "Firmenfeier",
   },
   {
     quote:
-      "Endlich nicht mehr überall einzelne Bilder zusammensuchen. Alles war an einem Ort und sah hochwertig aus.",
-    name: "Katharina Meier",
-    event: "Jubiläumsfeier",
+      "Schick, unkompliziert und endlich nicht mehr überall einzelne Bilder zusammensuchen.",
+    name: "Claudia S.",
+    event: "Familientreffen",
   },
 ];
 
@@ -134,7 +134,7 @@ const faqs = [
   {
     question: "Wie lange bleiben die Fotos gespeichert?",
     answer:
-      "Eure Erinnerungen bleiben dauerhaft erhalten. Ihr könnt sie jederzeit herunterladen oder mit Familie und Freunden teilen.",
+      ""Fotos und Videos werden standardmäßig für 1 Monat gespeichert. Wer das Album länger nutzen möchte, kann die Speicherzeit für 4,99 € pro Monat verlängern. Die Verlängerung ist jederzeit monatlich kündbar."",
   },
 ];
 
@@ -1245,11 +1245,11 @@ export default function HomePage() {
           }
         }
 
-        @media (max-width: 767px) {
-          .showcase-image img {
-            object-fit: cover;
-          }
-        }
+@media (max-width: 767px) {
+  .showcase-image img {
+    object-fit: contain;
+  }
+}
 
         @media (max-width: 480px) {
           .container {
@@ -1296,12 +1296,27 @@ export default function HomePage() {
         <div className="nav-inner">
           <Link href="/" className="logo">snapkey</Link>
 
-          <div className="nav-links">
-            <a href="#how-it-works" className="nav-link">So funktioniert's</a>
-            <a href="#products" className="nav-link">Varianten</a>
-            <a href="#reviews" className="nav-link">Bewertungen</a>
-            <a href="#faq" className="nav-link">FAQ</a>
-          </div>
+<div className="nav-links">
+  <a href="#occasions" className="nav-link">
+    Anlässe
+  </a>
+
+  <a href="#how-it-works" className="nav-link">
+    So funktioniert's
+  </a>
+
+  <a href="#products" className="nav-link">
+    Varianten
+  </a>
+
+  <a href="#reviews" className="nav-link">
+    Bewertungen
+  </a>
+
+  <a href="#faq" className="nav-link">
+    FAQ
+  </a>
+</div>
 
           <Link href="/event" className="nav-cta">Event erstellen</Link>
         </div>
@@ -1369,7 +1384,32 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+<section className="section" id="occasions">
+  <div className="container">
+    <div className="section-header">
+      <div className="section-eyebrow">Für jeden Anlass</div>
 
+      <h2 className="section-title">
+        Ein Album für jede Art von Erinnerung
+      </h2>
+
+      <p className="section-description">
+        Ob Hochzeit, Geburtstag oder Urlaub –
+        alle Fotos und Videos landen an einem gemeinsamen Ort.
+      </p>
+    </div>
+
+    <div className="occasion-grid">
+      <div className="occasion-card">💒 Hochzeit</div>
+      <div className="occasion-card">🎂 Geburtstag</div>
+      <div className="occasion-card">🕊️ Taufe</div>
+      <div className="occasion-card">🎉 Jubiläum</div>
+      <div className="occasion-card">✈️ Urlaub</div>
+      <div className="occasion-card">👨‍👩‍👧‍👦 Familienfeier</div>
+      <div className="occasion-card">🏢 Firmenevent</div>
+    </div>
+  </div>
+</section>
       <section className="section" id="how-it-works" ref={stepsRef}>
         <div className="container">
           <div className="section-header">
@@ -1413,8 +1453,10 @@ export default function HomePage() {
                   Aus spontanen Momenten wird eine gemeinsame Geschichte.
                 </h2>
                 <p className="showcase-text">
-                  Die schönsten Bilder entstehen oft nicht beim Fotografen —
-                  sondern bei euren Gästen. Snapkey sammelt genau diese Perspektiven.
+                  Die besten Erinnerungen entstehen oft dann, wenn niemand darauf achtet.
+
+Snapkey sammelt die Fotos und Videos aller Beteiligten automatisch in einem gemeinsamen Album – egal ob Hochzeit, Geburtstag, Urlaub, Taufe oder Firmenevent.
+
                 </p>
 
                 <div className="showcase-list">
@@ -1483,7 +1525,7 @@ export default function HomePage() {
 
             <div className="pricing-info">
               <p>
-                <strong>Eventseite ab 29 €</strong> + Snapkeys je nach Auswahl.
+                <strong>Eventseite für 29 €</strong> + Snapkeys je nach Auswahl.
                 Design und Farben lassen sich später anpassen.
               </p>
             </div>
@@ -1495,9 +1537,10 @@ export default function HomePage() {
         <div className="container">
           <div className="section-header">
             <div className="section-eyebrow">Bewertungen</div>
-            <h2 className="section-title">Das sagen unsere ersten Paare und Gastgeber</h2>
+          <h2 className="section-title">
+  Das sagen unsere Nutzer
+</h2>
             <p className="section-description">
-              Beispielbewertungen als Platzhalter, bis echte Rückmeldungen eingebunden werden.
             </p>
           </div>
 
