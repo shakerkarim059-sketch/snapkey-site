@@ -719,14 +719,12 @@ export default function HomePage() {
           overflow: hidden;
         }
 
-        .showcase-image {
-          position: relative;
-          aspect-ratio: 16 / 11;
-          overflow: hidden;
-          background: #241f1a;
-          min-height: 320px;
-        }
-
+.showcase-image {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #241f1a;
+}
         .showcase-image img {
           width: 100%;
           height: 100%;
@@ -1179,27 +1177,73 @@ export default function HomePage() {
         .lightbox-close:hover {
           transform: scale(1.1);
         }
-.occasion-grid {
-  display: grid;
-  gap: 18px;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+.occasion-grid,
+.occasion-card {
+  all: unset;
 }
 
-.occasion-card {
-  padding: 32px 20px;
-  text-align: center;
+.occasion-strip {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  padding: 4px 4px 14px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.occasion-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.occasion-pill-card {
+  flex: 0 0 260px;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  font-size: 18px;
-  font-weight: 700;
-  transition: all 0.25s ease;
+  border-radius: 22px;
+  box-shadow: 0 10px 30px rgba(26, 22, 18, 0.05);
 }
 
-.occasion-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--border-hover);
-  box-shadow: 0 12px 36px rgba(26, 22, 18, 0.08);
+.occasion-icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--warm);
+  border-radius: 16px;
+  font-size: 22px;
+}
+
+.occasion-pill-card strong {
+  display: block;
+  font-size: 16px;
+  line-height: 1.2;
+}
+
+.occasion-pill-card small {
+  display: block;
+  margin-top: 4px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+@media (min-width: 768px) {
+  .occasion-strip {
+    justify-content: center;
+    flex-wrap: wrap;
+    overflow: visible;
+  }
+
+  .occasion-pill-card {
+    flex: 0 1 300px;
+  }
 }
         @media (min-width: 768px) {
           .container {
@@ -1232,10 +1276,10 @@ export default function HomePage() {
             align-items: stretch;
           }
 
-          .showcase-image {
-            min-height: 520px;
-            aspect-ratio: auto;
-          }
+.showcase-image {
+  min-height: auto;
+  aspect-ratio: 16 / 9;
+}
 
           .showcase-content {
             padding: 56px;
@@ -1419,16 +1463,25 @@ export default function HomePage() {
       </p>
     </div>
 
-    <div className="occasion-grid">
-      <div className="occasion-card">💒 Hochzeit</div>
-      <div className="occasion-card">🎂 Geburtstag</div>
-      <div className="occasion-card">🕊️ Taufe</div>
-      <div className="occasion-card">🎉 Jubiläum</div>
-      <div className="occasion-card">✈️ Urlaub</div>
-      <div className="occasion-card">👨‍👩‍👧‍👦 Familienfeier</div>
-      <div className="occasion-card">🏢 Firmenevent</div>
+<div className="occasion-strip">
+  {[
+    ["💍", "Hochzeit", "Gäste sammeln Fotos & Videos"],
+    ["🎂", "Geburtstag", "Alle Momente an einem Ort"],
+    ["🕊️", "Taufe", "Familie einfach einbinden"],
+    ["🎉", "Jubiläum", "Erinnerungen gemeinsam sichern"],
+    ["✈️", "Urlaub", "Bilder statt Chat-Chaos"],
+    ["👨‍👩‍👧‍👦", "Familienfeier", "Für alle Generationen"],
+    ["🏢", "Firmenevent", "Team-Momente sammeln"],
+  ].map(([icon, title, text]) => (
+    <div className="occasion-pill-card" key={title}>
+      <span className="occasion-icon">{icon}</span>
+      <div>
+        <strong>{title}</strong>
+        <small>{text}</small>
+      </div>
     </div>
-  </div>
+  ))}
+</div>
 </section>
       <section className="section" id="how-it-works" ref={stepsRef}>
         <div className="container">
