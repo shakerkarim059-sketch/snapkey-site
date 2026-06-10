@@ -16,21 +16,43 @@ const EVENT_BASE_PRICE = 29;
 
 const KEY_TYPES = {
   basic: {
-    name: "Karte / Snapkey",
-    description: "Günstiger Einstieg für viele Gäste",
+    name: "Snapkey Mini",
+    label: "Für viele Gäste",
+    description:
+      "Der leichte Einstieg für große Feiern. Klein, praktisch und perfekt, damit jeder Gast Erinnerungen teilen kann.",
     price: 2.5,
+    image: "/nfc-chip.jpg",
+    points: ["Tap + QR-Code", "Für viele Gäste", "Günstigste Variante"],
   },
   standard: {
-    name: "Snapkey Anhänger",
-    description: "Beliebte Wahl für Events und Hochzeiten",
+    name: "Snapkey Card",
+    label: "Am beliebtesten",
+    description:
+      "Eine elegante Karte mit persönlichem Design. Perfekt für Tische, Einladungen oder als hochwertiges Gastgeschenk.",
     price: 4,
+    image: "/pvc-cards.jpg",
+    points: ["Premium Kartenlook", "Persönliches Design", "Für jeden Anlass"],
+    featured: true,
   },
   premium: {
-    name: "Premium Holz-Snapkey",
-    description: "Hochwertiges Erinnerungsstück",
+    name: "Snapkey Wood",
+    label: "Als Erinnerung",
+    description:
+      "Ein natürlicher Holz-Snapkey, der nach dem Event bleibt. Emotional, hochwertig und besonders persönlich.",
     price: 6,
+    image: "/wood-keychain.jpg",
+    points: ["Natürliches Holz", "Sehr emotional", "Zum Mitnehmen"],
   },
 };
+
+const DESIGN_OPTIONS = [
+  { id: "elegant", name: "Elegant", icon: "✨", text: "Zeitlos, ruhig und hochwertig" },
+  { id: "natural", name: "Natürlich", icon: "🌿", text: "Warm, weich und organisch" },
+  { id: "modern", name: "Modern", icon: "◐", text: "Klar, reduziert und frisch" },
+  { id: "festive", name: "Feierlich", icon: "🎉", text: "Emotional und besonders" },
+  { id: "travel", name: "Reise", icon: "✈️", text: "Für Urlaub, Gruppen & Abenteuer" },
+  { id: "custom", name: "Eigenes Design", icon: "🎨", text: "Bild hochladen oder Idee beschreiben" },
+];
 
 const PACKAGE_OPTIONS = [10, 25, 50, 100];
 
@@ -68,6 +90,11 @@ export default function EventPage() {
   const [selectedKeyType, setSelectedKeyType] = useState("standard");
   const [selectedQuantity, setSelectedQuantity] = useState(25);
   const [customQuantity, setCustomQuantity] = useState("");
+
+  const [selectedDesign, setSelectedDesign] = useState("modern");
+  const [customDesignNote, setCustomDesignNote] = useState("");
+  const [customDesignFile, setCustomDesignFile] = useState(null);
+  const [wantsDesignConsulting, setWantsDesignConsulting] = useState(false);
 
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState("");
@@ -113,6 +140,9 @@ export default function EventPage() {
   const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
   const fileInputRef = useRef(null);
+  const customDesignInputRef = useRef(null);
+  const galleryRef = useRef(null);
+  const uploadRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -754,6 +784,49 @@ export default function EventPage() {
     }
   }
 
+  function getDesignVariantForOrder() {
+    const selected = DESIGN_OPTIONS.find((item) => item.id === selectedDesign);
+    const base = selected?.name || "Modern";
+
+    if (selectedDesign !== "custom") {
+      return base;
+    }
+
+    const parts = ["Eigenes Design"];
+
+    if (customDesignNote.trim()) {
+      parts.push(`Beschreibung: ${customDesignNote.trim()}`);
+    }
+
+    if (customDesignFile?.name) {
+      parts.push(`Referenzbild: ${customDesignFile.name}`);
+    }
+
+    if (wantsDesignConsulting) {
+      parts.push("Design gemeinsam entwickeln / Rücksprache gewünscht");
+    }
+
+    return parts.join(" | ");
+  }
+
+  function getSnapkeyOrderNote() {
+    const notes = [];
+
+    if (snapkeyOrderNote.trim()) {
+      notes.push(snapkeyOrderNote.trim());
+    }
+
+    if (selectedDesign === "custom") {
+      notes.push(`Designwunsch: ${getDesignVariantForOrder()}`);
+    }
+
+    if (wantsDesignConsulting) {
+      notes.push("Bitte Kontakt zur Designabstimmung aufnehmen.");
+    }
+
+    return notes.join("\n\n");
+  }
+
   async function handleSubmitSnapkeyOrder() {
     try {
       if (!eventData?.id) {
@@ -792,7 +865,7 @@ export default function EventPage() {
           eventId: eventData.id,
           keyType: selectedKeyType,
           quantity: parsedQuantity,
-          designVariant: eventData.category || null,
+          designVariant: getDesignVariantForOrder(),
           customerName: snapkeyCustomerName,
           customerEmail: snapkeyCustomerEmail,
           customerPhone: snapkeyCustomerPhone,
@@ -800,7 +873,7 @@ export default function EventPage() {
           postalCode: snapkeyPostalCode,
           city: snapkeyCity,
           country: snapkeyCountry,
-          orderNote: snapkeyOrderNote,
+          orderNote: getSnapkeyOrderNote(),
         }),
       });
 
@@ -927,6 +1000,14 @@ export default function EventPage() {
     if (diff < -50) showPrevPhoto();
   }
 
+  function scrollToUpload() {
+    uploadRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function scrollToGallery() {
+    galleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   const availableYears = useMemo(() => {
     const years = photos
       .map((photo) => {
@@ -952,7 +1033,6 @@ export default function EventPage() {
   }, [photos, selectedYearFilter, selectedMonthFilter]);
 
   const finalQuantity = customQuantity ? Number(customQuantity) : selectedQuantity;
-  const eventIsUnlocked = eventData?.setup_completed === true;
   const selectedKey = KEY_TYPES[selectedKeyType];
   const setupTotalPrice = EVENT_BASE_PRICE + finalQuantity * selectedKey.price;
 
@@ -976,356 +1056,473 @@ export default function EventPage() {
 
   if (loadingEvent) {
     return (
-      <div style={styles.page}>
-        <div style={styles.emptyBox}>Event wird geladen...</div>
-      </div>
+      <main className="event-page">
+        <EventStyles />
+        <div className="center-card">Album wird geladen...</div>
+      </main>
     );
   }
 
   if (eventNotFound || !eventData) {
     return (
-      <div style={styles.page}>
-        <div style={styles.emptyBox}>Dieses Event wurde nicht gefunden.</div>
-      </div>
+      <main className="event-page">
+        <EventStyles />
+        <div className="center-card">Dieses Album wurde nicht gefunden.</div>
+      </main>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div style={styles.page}>
-        <div style={styles.loginBox}>
-          <h1 style={styles.title}>{eventData.title || "Event"}</h1>
-          <p style={styles.subtitle}>
-            Bitte Passwort eingeben, um dieses Event zu öffnen.
-          </p>
+      <main className="event-page">
+        <EventStyles />
 
-          <input
-            type="password"
-            placeholder="Passwort eingeben"
-            value={passwordInput}
-            onChange={(e) => {
-              setPasswordInput(e.target.value);
-              setLoginError("");
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleLogin();
-            }}
-            style={{
-              ...styles.input,
-              ...(loginError
-                ? { borderColor: "#dc2626", backgroundColor: "#fef2f2" }
-                : {}),
-            }}
-          />
+        <section className="login-shell">
+          <div className="login-card">
+            <div className="brand">snapkey</div>
+            <div className="eyebrow">Privates Album</div>
 
-          {loginError && (
-            <p
-              style={{
-                color: "#dc2626",
-                fontSize: "14px",
-                margin: "4px 0 0 0",
-                fontWeight: "600",
-              }}
-            >
-              {loginError}
+            <h1>{eventData.title || "Gemeinsames Album"}</h1>
+
+            <p>
+              Gib den Zugangscode ein, um Fotos und Videos dieses Albums zu sehen.
             </p>
-          )}
 
-          <button onClick={handleLogin} style={styles.primaryButton}>
-            Einloggen
-          </button>
-        </div>
-      </div>
+            <input
+              type="password"
+              placeholder="Zugangscode eingeben"
+              value={passwordInput}
+              onChange={(e) => {
+                setPasswordInput(e.target.value);
+                setLoginError("");
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleLogin();
+              }}
+              className={loginError ? "input input-error" : "input"}
+            />
+
+            {loginError && <div className="error-text">{loginError}</div>}
+
+            <button onClick={handleLogin} className="primary-button">
+              Album öffnen
+            </button>
+          </div>
+        </section>
+      </main>
     );
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.newHeroCard}>
-        <div style={styles.newHeroTop}>
-          <div style={styles.newHeroBrand}>Snapkey Eventalbum</div>
-          <div style={styles.newHeroBadge}>
-            {isAdmin ? "Event geöffnet" : "Gastansicht"}
-          </div>
-        </div>
+    <main className="event-page">
+      <EventStyles />
 
-        <h1 style={styles.newHeroTitle}>{eventData.title}</h1>
-        <p style={styles.newHeroSubtitle}>
-          {eventData.location || "Kein Ort"} • {formatDate(eventData.start_date)}
-        </p>
+      <section className="event-shell">
+        <header className="album-hero">
+          <div className="album-hero-content">
+            <div className="brand-row">
+              <div className="brand">snapkey</div>
+              <button type="button" onClick={handleLogout} className="ghost-button">
+                Abmelden
+              </button>
+            </div>
 
-        <div style={styles.newHeroImage}>
-          <img
-            src={coverPhoto?.signed_url || ""}
-            alt="Event Cover"
-            style={styles.newHeroImageTag}
-          />
-        </div>
+            <div className="hero-badge">
+              {isAdmin ? "Adminansicht" : "Gemeinsames Album"}
+            </div>
 
-        <p style={styles.newHeroDescription}>
-          {eventData.description ||
-            "Fotos hochladen, ansehen und gemeinsam an einem Ort sammeln."}
-        </p>
+            <h1>
+              Alle Erinnerungen.
+              <span>Ein gemeinsamer Ort.</span>
+            </h1>
 
-        {filteredPhotos.length > 0 && (
-          <div style={styles.newHeroPreviewRow}>
-            {filteredPhotos.map((p, i) => (
-              <img
-                key={p.id}
-                src={p.signed_url}
-                alt={p.caption || `Vorschaubild ${i + 1}`}
-                style={styles.newHeroPreviewImg}
-                onClick={() => {
-                  const el = document.getElementById(`photo-${i}`);
-                  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-{!eventData?.setup_completed && !isSetupMode && (
-  <div style={styles.lockedBox}>
-    <h2 style={styles.lockedTitle}>Event noch nicht freigeschaltet</h2>
-    <p style={styles.lockedText}>
-      Dieses Event wird aktiviert, sobald die Snapkeys bestellt wurden.
-    </p>
-    <button
-      type="button"
-      onClick={() => {
-        window.location.href = `/event/${eventData.slug}?setup=true`;
-      }}
-      style={styles.primaryButton}
-    >
-      Event freischalten
-    </button>
-  </div>
-)}
-      {isSetupMode && (
-        <div style={styles.setupCard}>
-          <div style={styles.setupHeader}>
-            <div style={styles.setupEyebrow}>Snapkey Konfiguration</div>
-            <h2 style={styles.setupTitle}>
-              Dein Event ist erstellt. Jetzt Snapkeys auswählen.
-            </h2>
-            <p style={styles.setupIntroText}>
-              Deine Eventseite ist vorbereitet. Wähle jetzt die passenden Snapkeys
-              für deine Gäste – als persönlichen Zugang zum Fotoalbum und als
-              Erinnerung, die man mit nach Hause nimmt.
+            <p className="hero-event-name">{eventData.title}</p>
+
+            <div className="hero-meta">
+              <span>{eventData.location || "Kein Ort"}</span>
+              <span>{formatDate(eventData.start_date)}</span>
+              <span>{photos.length} Foto{photos.length === 1 ? "" : "s"}</span>
+            </div>
+
+            <p className="hero-description">
+              {eventData.description ||
+                "Fotos und Videos von Familie, Freunden und Gästen sammeln – automatisch an einem gemeinsamen Ort."}
             </p>
-          </div>
 
-          <div style={styles.setupSection}>
-            <div style={styles.setupLabel}>Snapkey auswählen</div>
-
-            <div style={styles.keyGrid}>
-              {Object.entries(KEY_TYPES).map(([key, item]) => (
-                <div
-                  key={key}
-                  onClick={() => setSelectedKeyType(key)}
-                  style={{
-                    ...styles.keyCard,
-                    ...(selectedKeyType === key ? styles.keyCardActive : {}),
-                  }}
-                >
-                  <div style={styles.keyName}>{item.name}</div>
-                  <div style={styles.keyDesc}>{item.description}</div>
-                  <div style={styles.keyPrice}>{item.price.toFixed(2)}€ / Stück</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div style={styles.setupSection}>
-            <div style={styles.setupLabel}>Menge wählen</div>
-
-            <div style={styles.quantityRow}>
-              {PACKAGE_OPTIONS.map((qty) => (
-                <button
-                  key={qty}
-                  type="button"
-                  onClick={() => {
-                    setSelectedQuantity(qty);
-                    setCustomQuantity("");
-                  }}
-                  style={{
-                    ...styles.qtyButton,
-                    ...(selectedQuantity === qty && !customQuantity
-                      ? styles.qtyButtonActive
-                      : {}),
-                  }}
-                >
-                  {qty}
+            {eventData?.setup_completed && (
+              <div className="hero-actions">
+                <button type="button" onClick={scrollToUpload} className="primary-button">
+                  Fotos hochladen
                 </button>
-              ))}
+
+                <button type="button" onClick={scrollToGallery} className="secondary-button">
+                  Galerie ansehen
+                </button>
+              </div>
+            )}
+
+            {isAdmin && (
+              <div className="admin-actions">
+                <button type="button" onClick={startEditingEvent} className="small-link-button">
+                  Event bearbeiten
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="album-hero-visual">
+            {coverPhoto?.signed_url ? (
+              <img src={coverPhoto.signed_url} alt="Album Cover" />
+            ) : (
+              <div className="hero-placeholder">
+                <span>📸</span>
+                <strong>Noch keine Fotos</strong>
+                <small>Nach der Freischaltung können Gäste Erinnerungen hochladen.</small>
+              </div>
+            )}
+          </div>
+        </header>
+
+        {!eventData?.setup_completed && !isSetupMode && (
+          <section className="locked-card">
+            <div>
+              <div className="eyebrow">Fast geschafft</div>
+              <h2>Dein Album ist vorbereitet.</h2>
+              <p>
+                Bestelle jetzt deine Snapkeys und schalte das Album für deine Gäste frei.
+              </p>
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                window.location.href = `/event/${eventData.slug}?setup=true`;
+              }}
+              className="primary-button"
+            >
+              Snapkeys auswählen
+            </button>
+          </section>
+        )}
+
+        {isSetupMode && (
+          <section className="setup-card">
+            <div className="setup-hero">
+              <div className="eyebrow">Snapkey Setup</div>
+
+              <h2>
+                Dein Album ist bereit.
+                <span>Jetzt fehlen nur noch deine Snapkeys.</span>
+              </h2>
+
+              <p>
+                Jeder Snapkey führt direkt zu deinem privaten Album. Für deine Gäste ist er Zugang,
+                Erinnerung und persönliches Detail in einem.
+              </p>
+
+              <div className="progress-row">
+                <span>✓ Event erstellt</span>
+                <span>✓ Album vorbereitet</span>
+                <span className="active">Snapkeys wählen</span>
+                <span>Zahlung</span>
+              </div>
+            </div>
+
+            <div className="setup-layout">
+              <div className="setup-main">
+                <section className="setup-section">
+                  <div className="section-label">1. Snapkey auswählen</div>
+
+                  <div className="snapkey-grid">
+                    {Object.entries(KEY_TYPES).map(([key, item]) => (
+                      <button
+                        type="button"
+                        key={key}
+                        onClick={() => setSelectedKeyType(key)}
+                        className={`snapkey-card ${selectedKeyType === key ? "selected" : ""} ${
+                          item.featured ? "featured" : ""
+                        }`}
+                      >
+                        <div className="snapkey-image">
+                          <img src={item.image} alt={item.name} />
+                          <span>{item.label}</span>
+                        </div>
+
+                        <div className="snapkey-body">
+                          <div className="snapkey-title-row">
+                            <h3>{item.name}</h3>
+                            <strong>{item.price.toFixed(2)} €</strong>
+                          </div>
+
+                          <p>{item.description}</p>
+
+                          <div className="chip-row">
+                            {item.points.map((point) => (
+                              <span key={point}>{point}</span>
+                            ))}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="setup-section">
+                  <div className="section-label">2. Design auswählen</div>
+
+                  <div className="design-grid">
+                    {DESIGN_OPTIONS.map((design) => (
+                      <button
+                        type="button"
+                        key={design.id}
+                        onClick={() => setSelectedDesign(design.id)}
+                        className={`design-card ${selectedDesign === design.id ? "selected" : ""}`}
+                      >
+                        <span>{design.icon}</span>
+                        <strong>{design.name}</strong>
+                        <small>{design.text}</small>
+                      </button>
+                    ))}
+                  </div>
+
+                  {selectedDesign === "custom" && (
+                    <div className="custom-design-box">
+                      <div className="custom-design-upload">
+                        <input
+                          ref={customDesignInputRef}
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            setCustomDesignFile(file || null);
+                          }}
+                          style={{ display: "none" }}
+                        />
+
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          onClick={() => customDesignInputRef.current?.click()}
+                        >
+                          Bildvorschlag hochladen
+                        </button>
+
+                        <p>
+                          {customDesignFile
+                            ? `Ausgewählt: ${customDesignFile.name}`
+                            : "Lade ein Beispielbild, Logo oder Designvorschlag hoch."}
+                        </p>
+                      </div>
+
+                      <textarea
+                        placeholder="Beschreibe dein Wunschdesign, z. B. goldene Schrift mit Eukalyptus, Firmenlogo auf schwarzem Hintergrund oder Boho-Stil mit Trockenblumen."
+                        value={customDesignNote}
+                        onChange={(e) => setCustomDesignNote(e.target.value)}
+                        rows={4}
+                        className="textarea"
+                      />
+
+                      <label className="checkbox-row">
+                        <input
+                          type="checkbox"
+                          checked={wantsDesignConsulting}
+                          onChange={(e) => setWantsDesignConsulting(e.target.checked)}
+                        />
+                        <span>
+                          Ich möchte mein Design gemeinsam besprechen. Bitte kontaktiert mich zur Gestaltung.
+                        </span>
+                      </label>
+                    </div>
+                  )}
+                </section>
+
+                <section className="setup-section">
+                  <div className="section-label">3. Menge wählen</div>
+
+                  <div className="quantity-row">
+                    {PACKAGE_OPTIONS.map((qty) => (
+                      <button
+                        key={qty}
+                        type="button"
+                        onClick={() => {
+                          setSelectedQuantity(qty);
+                          setCustomQuantity("");
+                        }}
+                        className={
+                          selectedQuantity === qty && !customQuantity
+                            ? "quantity-button active"
+                            : "quantity-button"
+                        }
+                      >
+                        {qty} Gäste
+                        {qty === 25 && <small>Empfohlen</small>}
+                      </button>
+                    ))}
+                  </div>
+
+                  <input
+                    type="number"
+                    placeholder="Eigene Menge eingeben"
+                    value={customQuantity}
+                    onChange={(e) => setCustomQuantity(e.target.value)}
+                    className="input"
+                  />
+                </section>
+
+                <section className="setup-section">
+                  <div className="section-label">4. Kontakt & Lieferung</div>
+
+                  <p className="section-help">
+                    Gib hier deine Kontaktdaten und Lieferadresse ein. Danach wirst du sicher zur Zahlung weitergeleitet.
+                  </p>
+
+                  <div className="form-grid">
+                    <input
+                      type="text"
+                      placeholder="Vor- und Nachname"
+                      value={snapkeyCustomerName}
+                      onChange={(e) => setSnapkeyCustomerName(e.target.value)}
+                      className="input"
+                    />
+
+                    <input
+                      type="email"
+                      placeholder="E-Mail"
+                      value={snapkeyCustomerEmail}
+                      onChange={(e) => setSnapkeyCustomerEmail(e.target.value)}
+                      className="input"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Telefon optional"
+                      value={snapkeyCustomerPhone}
+                      onChange={(e) => setSnapkeyCustomerPhone(e.target.value)}
+                      className="input"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Straße und Hausnummer"
+                      value={snapkeyStreet}
+                      onChange={(e) => setSnapkeyStreet(e.target.value)}
+                      className="input"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="PLZ"
+                      value={snapkeyPostalCode}
+                      onChange={(e) => setSnapkeyPostalCode(e.target.value)}
+                      className="input"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Ort"
+                      value={snapkeyCity}
+                      onChange={(e) => setSnapkeyCity(e.target.value)}
+                      className="input"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Land"
+                      value={snapkeyCountry}
+                      onChange={(e) => setSnapkeyCountry(e.target.value)}
+                      className="input"
+                    />
+                  </div>
+
+                  <textarea
+                    placeholder="Notiz zur Bestellung optional"
+                    value={snapkeyOrderNote}
+                    onChange={(e) => setSnapkeyOrderNote(e.target.value)}
+                    rows={4}
+                    className="textarea"
+                  />
+                </section>
+              </div>
+
+              <aside className="summary-card">
+                <div className="summary-title">Deine Bestellung</div>
+
+                <div className="summary-line">
+                  <span>Eventseite</span>
+                  <strong>{EVENT_BASE_PRICE.toFixed(2)} €</strong>
+                </div>
+
+                <div className="summary-line">
+                  <span>
+                    {selectedKey.name} × {finalQuantity}
+                  </span>
+                  <strong>{(selectedKey.price * finalQuantity).toFixed(2)} €</strong>
+                </div>
+
+                <div className="summary-line">
+                  <span>Design</span>
+                  <strong>
+                    {DESIGN_OPTIONS.find((d) => d.id === selectedDesign)?.name || "Modern"}
+                  </strong>
+                </div>
+
+                <div className="summary-divider" />
+
+                <div className="summary-total">
+                  <span>Gesamt</span>
+                  <strong>{setupTotalPrice.toFixed(2)} €</strong>
+                </div>
+
+                <div className="trust-box">
+                  <div>✓ Snapkeys führen direkt zum privaten Album</div>
+                  <div>✓ Gäste brauchen keine App</div>
+                  <div>✓ Persönliches Design möglich</div>
+                  <div>✓ Sichere Zahlung über Stripe</div>
+                  <div>✓ 1 Monat Speicherung inklusive</div>
+                </div>
+
+                <div className="storage-note">
+                  Fotos & Videos bleiben standardmäßig 1 Monat gespeichert.
+                  Danach optional für 4,99 € pro Monat verlängerbar.
+                </div>
+
+                <button
+                  type="button"
+                  disabled={submittingSnapkeyOrder}
+                  onClick={handleSubmitSnapkeyOrder}
+                  className="primary-button full"
+                >
+                  {submittingSnapkeyOrder
+                    ? "Bestellung wird vorbereitet..."
+                    : "Jetzt bestellen & Event freischalten"}
+                </button>
+              </aside>
+            </div>
+          </section>
+        )}
+
+        {editingEventId && isAdmin && (
+          <form onSubmit={handleUpdateEvent} className="admin-card">
+            <div className="section-label">Event bearbeiten</div>
 
             <input
-              type="number"
-              placeholder="Eigene Menge"
-              value={customQuantity}
-              onChange={(e) => setCustomQuantity(e.target.value)}
-              style={styles.input}
+              type="text"
+              placeholder="Titel"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+              className="input"
             />
-          </div>
 
-          <div style={styles.priceBox}>
-            <div style={styles.summaryTitle}>Deine Bestellung</div>
-
-            <div style={styles.summaryRow}>
-              <span>Eventseite Aktivierung</span>
-              <span>{EVENT_BASE_PRICE.toFixed(2)} €</span>
-            </div>
-
-            <div style={styles.summaryRow}>
-              <span>
-                {selectedKey.name} × {finalQuantity}
-              </span>
-              <span>{(selectedKey.price * finalQuantity).toFixed(2)} €</span>
-            </div>
-
-            <div style={styles.summaryDivider} />
-
-            <div style={styles.setupTotalPrice}>
-              Gesamt: {setupTotalPrice.toFixed(2)} €
-            </div>
-          </div>
-
-          <div style={styles.trustBox}>
-            <div style={styles.trustItem}>
-              ✓ Eventseite wird nach Zahlung freigeschaltet
-            </div>
-            <div style={styles.trustItem}>
-              ✓ Snapkeys führen direkt zum privaten Fotoalbum
-            </div>
-            <div style={styles.trustItem}>
-              ✓ Gäste können Fotos hochladen und Prints bestellen
-            </div>
-          </div>
-
-          <div style={styles.orderFormCard}>
-            <h4 style={styles.orderFormTitle}>Snapkeys bestellen</h4>
-            <p style={styles.orderFormText}>
-              Gib hier deine Kontaktdaten und Lieferadresse ein. Danach wirst du
-              direkt zur Zahlung weitergeleitet.
-            </p>
-
-            <div style={styles.orderFormGrid}>
-              <input
-                type="text"
-                placeholder="Vor- und Nachname"
-                value={snapkeyCustomerName}
-                onChange={(e) => setSnapkeyCustomerName(e.target.value)}
-                style={styles.orderInput}
-              />
-
-              <input
-                type="email"
-                placeholder="E-Mail"
-                value={snapkeyCustomerEmail}
-                onChange={(e) => setSnapkeyCustomerEmail(e.target.value)}
-                style={styles.orderInput}
-              />
-
-              <input
-                type="text"
-                placeholder="Telefon (optional)"
-                value={snapkeyCustomerPhone}
-                onChange={(e) => setSnapkeyCustomerPhone(e.target.value)}
-                style={styles.orderInput}
-              />
-
-              <input
-                type="text"
-                placeholder="Straße und Hausnummer"
-                value={snapkeyStreet}
-                onChange={(e) => setSnapkeyStreet(e.target.value)}
-                style={styles.orderInput}
-              />
-
-              <input
-                type="text"
-                placeholder="PLZ"
-                value={snapkeyPostalCode}
-                onChange={(e) => setSnapkeyPostalCode(e.target.value)}
-                style={styles.orderInput}
-              />
-
-              <input
-                type="text"
-                placeholder="Ort"
-                value={snapkeyCity}
-                onChange={(e) => setSnapkeyCity(e.target.value)}
-                style={styles.orderInput}
-              />
-
-              <input
-                type="text"
-                placeholder="Land"
-                value={snapkeyCountry}
-                onChange={(e) => setSnapkeyCountry(e.target.value)}
-                style={styles.orderInput}
-              />
-            </div>
-
-            <textarea
-              placeholder="Notiz zur Bestellung (optional)"
-              value={snapkeyOrderNote}
-              onChange={(e) => setSnapkeyOrderNote(e.target.value)}
-              rows={4}
-              style={styles.orderTextarea}
+            <input
+              type="text"
+              placeholder="Ort"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="input"
             />
-          </div>
 
-          <div style={styles.setupUrgency}>
-            Dein Event wird erst nach der Bestellung freigeschaltet.
-          </div>
-
-          <button
-            type="button"
-            style={{
-              ...styles.primaryButton,
-              ...(submittingSnapkeyOrder ? styles.buttonDisabled : {}),
-            }}
-            disabled={submittingSnapkeyOrder}
-            onClick={handleSubmitSnapkeyOrder}
-          >
-            {submittingSnapkeyOrder
-              ? "Snapkey-Bestellung wird vorbereitet..."
-              : "Jetzt bestellen & Event freischalten"}
-          </button>
-        </div>
-      )}
-
-      {editingEventId && isAdmin && (
-        <form onSubmit={handleUpdateEvent} style={styles.formCard}>
-          <div style={styles.editHeader}>
-            <h2 style={styles.formTitle}>Ereignis bearbeiten</h2>
-            <button type="button" onClick={cancelEditingEvent} style={styles.cancelButton}>
-              Abbrechen
-            </button>
-          </div>
-
-          <input
-            type="text"
-            placeholder="Titel"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={styles.input}
-          />
-
-          <input
-            type="text"
-            placeholder="Ort"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            style={styles.input}
-          />
-
-          <div style={{ display: "grid", gap: "4px" }}>
-            <label style={styles.label}>Kategorie</label>
-            <select value={category} onChange={(e) => setCategory(e.target.value)} style={styles.input}>
+            <select value={category} onChange={(e) => setCategory(e.target.value)} className="input">
               <option value="">Bitte auswählen</option>
               <option value="Hochzeit">Hochzeit</option>
               <option value="Geburtstag">Geburtstag</option>
@@ -1336,220 +1533,300 @@ export default function EventPage() {
               <option value="Rückblick">Rückblick</option>
               <option value="Sonstiges">Sonstiges</option>
             </select>
-          </div>
 
-          <div style={styles.twoCol}>
-            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} style={styles.input} />
-            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} style={styles.input} />
-          </div>
+            <div className="form-grid two">
+              <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="input" />
+              <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="input" />
+            </div>
 
-          <textarea
-            placeholder="Beschreibung"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={4}
-            style={{ ...styles.input, resize: "vertical" }}
-          />
+            <textarea
+              placeholder="Beschreibung"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={4}
+              className="textarea"
+            />
 
-          <button type="submit" disabled={updatingEvent} style={styles.primaryButton}>
-            {updatingEvent ? "Ereignis wird gespeichert..." : "Änderungen speichern"}
-          </button>
-        </form>
-      )}
+            <div className="button-row">
+              <button type="submit" disabled={updatingEvent} className="primary-button">
+                {updatingEvent ? "Wird gespeichert..." : "Änderungen speichern"}
+              </button>
 
-      {["familienalbum", "album", "rückblick"].includes(
-        (eventData.category || "").toLowerCase()
-      ) && (
-        <div style={styles.filterCard}>
-          <h2 style={styles.formTitle}>Filter</h2>
-
-          <div style={styles.filterGrid}>
-            <select value={selectedYearFilter} onChange={(e) => setSelectedYearFilter(e.target.value)} style={styles.input}>
-              <option value="all">Alle Jahre</option>
-              {availableYears.map((year) => (
-                <option key={year} value={String(year)}>
-                  {year}
-                </option>
-              ))}
-            </select>
-
-            <select value={selectedMonthFilter} onChange={(e) => setSelectedMonthFilter(e.target.value)} style={styles.input}>
-              <option value="all">Alle Monate</option>
-              <option value="1">Januar</option>
-              <option value="2">Februar</option>
-              <option value="3">März</option>
-              <option value="4">April</option>
-              <option value="5">Mai</option>
-              <option value="6">Juni</option>
-              <option value="7">Juli</option>
-              <option value="8">August</option>
-              <option value="9">September</option>
-              <option value="10">Oktober</option>
-              <option value="11">November</option>
-              <option value="12">Dezember</option>
-            </select>
-          </div>
-
-          <div style={styles.filterInfo}>Gefundene Fotos: {filteredPhotos.length}</div>
-        </div>
-      )}
-
-      {eventData?.setup_completed && (
-<form onSubmit={handlePhotoUpload} style={styles.uploadCard}>
-        <div style={styles.uploadTopRow}>
-          <div>
-            <h3 style={styles.formTitle}>Fotos hinzufügen</h3>
-            <p style={styles.uploadSubtitle}>
-              Mehrere Bilder auswählen und gesammelt hochladen.
-            </p>
-          </div>
-
-          <div style={styles.uploadBadge}>
-            {selectedFiles.length} Datei{selectedFiles.length === 1 ? "" : "en"}
-          </div>
-        </div>
-
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={(e) => handleFileSelection(e.target.files)}
-          style={{ display: "none" }}
-        />
-
-        <div style={styles.uploadPickerBox} onClick={() => fileInputRef.current?.click()}>
-          <div style={styles.uploadIcon}>↑</div>
-          <div style={styles.uploadPickerTitle}>Bilder auswählen</div>
-          <div style={styles.uploadPickerText}>
-            Tippe hier, um Fotos vom Handy oder Computer auszuwählen.
-          </div>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              fileInputRef.current?.click();
-            }}
-            style={styles.uploadPickerButton}
-          >
-            Dateien öffnen
-          </button>
-        </div>
-
-        {selectedFiles.length > 0 && (
-          <div style={styles.selectedFilesWrap}>
-            {selectedFiles.map((file, index) => (
-              <div key={`${file.name}-${file.lastModified}-${index}`} style={styles.fileChip}>
-                <img src={URL.createObjectURL(file)} alt={file.name} style={styles.fileChipPreview} />
-
-                <div style={styles.fileChipInfo}>
-                  <span style={styles.fileChipName}>{file.name}</span>
-                  <span style={styles.fileChipSize}>{(file.size / 1024 / 1024).toFixed(1)} MB</span>
-                </div>
-
-                <button type="button" onClick={() => removeSelectedFile(index)} style={styles.fileChipRemove}>
-                  ✕
-                </button>
-              </div>
-            ))}
-          </div>
+              <button type="button" onClick={cancelEditingEvent} className="secondary-button">
+                Abbrechen
+              </button>
+            </div>
+          </form>
         )}
 
-        <input
-          type="text"
-          placeholder="Gemeinsame Bildbeschreibung (optional)"
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          style={styles.input}
-        />
+        {eventData?.setup_completed && (
+          <>
+            <section ref={uploadRef} className="upload-card">
+              <div>
+                <div className="eyebrow">Fotos & Videos sammeln</div>
+                <h2>Erinnerungen hinzufügen</h2>
+                <p>
+                  Lade mehrere Bilder gesammelt hoch. Alles landet automatisch in diesem gemeinsamen Album.
+                </p>
+              </div>
 
-        <button
-          type="submit"
-          disabled={uploadingPhoto}
-          style={{
-            ...styles.primaryButton,
-            ...(uploadingPhoto ? styles.buttonDisabled : {}),
-          }}
-        >
-          {uploadingPhoto ? "Fotos werden hochgeladen..." : "Fotos hochladen"}
-        </button>
-      </form>
-          )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => handleFileSelection(e.target.files)}
+                style={{ display: "none" }}
+              />
 
-      {eventData?.setup_completed && (
-<div style={styles.selectionBar}>
-        <div style={styles.selectionInfo}>
-          {selectedPhotoIds.length} Bild{selectedPhotoIds.length === 1 ? "" : "er"} ausgewählt
-        </div>
-        <button
-          type="button"
-          style={{
-            ...styles.orderButton,
-            ...(selectedPhotoIds.length === 0 ? styles.orderButtonDisabled : {}),
-          }}
-          onClick={() => {
-            if (selectedPhotoIds.length === 0) {
-              alert("Bitte zuerst Bilder auswählen.");
-              return;
-            }
-            setCartOpen(true);
-          }}
-        >
-          Ausgewählte Bilder bestellen
-        </button>
-      </div>
-)}
-{eventData?.setup_completed && (
-  loadingPhotos || loadingLikes || loadingComments ? (
-    <div style={styles.emptyBox}>Inhalte werden geladen...</div>
-  ) : filteredPhotos.length === 0 ? (
-    <div style={styles.emptyBox}>Noch keine Fotos in diesem Ereignis.</div>
-  ) : (
-    <div style={styles.photoGrid}>
-      {filteredPhotos.map((photo, index) => {
-        const likesForPhoto = getLikesForPhoto(photo.id);
-        const commentsForPhoto = getCommentsForPhoto(photo.id);
-        const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
-        const isSelected = selectedPhotoIds.includes(photo.id);
+              <div className="upload-picker" onClick={() => fileInputRef.current?.click()}>
+                <div className="upload-icon">↑</div>
+                <strong>Bilder auswählen</strong>
+                <span>Tippe hier, um Fotos vom Handy oder Computer auszuwählen.</span>
 
-        return (
-          <div key={photo.id} style={styles.photoCard}>
-            <img src={photo.signed_url} style={styles.photo} />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                  className="secondary-button"
+                >
+                  Dateien öffnen
+                </button>
+              </div>
 
-            <div style={styles.photoInfoArea}>
-              {photo.caption && <div>{photo.caption}</div>}
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  )
-)}
+              {selectedFiles.length > 0 && (
+                <div className="file-list">
+                  {selectedFiles.map((file, index) => (
+                    <div key={`${file.name}-${file.lastModified}-${index}`} className="file-chip">
+                      <img src={URL.createObjectURL(file)} alt={file.name} />
+
+                      <div>
+                        <strong>{file.name}</strong>
+                        <span>{(file.size / 1024 / 1024).toFixed(1)} MB</span>
+                      </div>
+
+                      <button type="button" onClick={() => removeSelectedFile(index)}>
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <input
+                type="text"
+                placeholder="Gemeinsame Bildbeschreibung optional"
+                value={caption}
+                onChange={(e) => setCaption(e.target.value)}
+                className="input"
+              />
+
+              <button
+                type="submit"
+                onClick={handlePhotoUpload}
+                disabled={uploadingPhoto}
+                className="primary-button"
+              >
+                {uploadingPhoto ? "Fotos werden hochgeladen..." : "Fotos hochladen"}
+              </button>
+            </section>
+
+            {["familienalbum", "album", "rückblick"].includes(
+              (eventData.category || "").toLowerCase()
+            ) && (
+              <section className="filter-card">
+                <div className="section-label">Filter</div>
+
+                <div className="form-grid two">
+                  <select value={selectedYearFilter} onChange={(e) => setSelectedYearFilter(e.target.value)} className="input">
+                    <option value="all">Alle Jahre</option>
+                    {availableYears.map((year) => (
+                      <option key={year} value={String(year)}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+
+                  <select value={selectedMonthFilter} onChange={(e) => setSelectedMonthFilter(e.target.value)} className="input">
+                    <option value="all">Alle Monate</option>
+                    <option value="1">Januar</option>
+                    <option value="2">Februar</option>
+                    <option value="3">März</option>
+                    <option value="4">April</option>
+                    <option value="5">Mai</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Dezember</option>
+                  </select>
+                </div>
+
+                <p>{filteredPhotos.length} Foto{filteredPhotos.length === 1 ? "" : "s"} gefunden</p>
+              </section>
+            )}
+
+            <section ref={galleryRef} className="gallery-section">
+              <div className="gallery-header">
+                <div>
+                  <div className="eyebrow">Gemeinsame Erinnerungen</div>
+                  <h2>Galerie</h2>
+                  <p>
+                    Die besten Momente entstehen oft dann, wenn niemand darauf achtet.
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  className={selectedPhotoIds.length ? "primary-button" : "secondary-button disabled"}
+                  onClick={() => {
+                    if (selectedPhotoIds.length === 0) {
+                      alert("Bitte zuerst Bilder auswählen.");
+                      return;
+                    }
+                    setCartOpen(true);
+                  }}
+                >
+                  {selectedPhotoIds.length} Bild{selectedPhotoIds.length === 1 ? "" : "er"} bestellen
+                </button>
+              </div>
+
+              {loadingPhotos || loadingLikes || loadingComments ? (
+                <div className="center-card">Inhalte werden geladen...</div>
+              ) : filteredPhotos.length === 0 ? (
+                <div className="center-card">Noch keine Fotos in diesem Album.</div>
+              ) : (
+                <div className="masonry-grid">
+                  {filteredPhotos.map((photo, index) => {
+                    const likesForPhoto = getLikesForPhoto(photo.id);
+                    const commentsForPhoto = getCommentsForPhoto(photo.id);
+                    const likedByThisBrowser = isPhotoLikedByThisBrowser(photo.id);
+                    const isSelected = selectedPhotoIds.includes(photo.id);
+
+                    return (
+                      <article key={photo.id} className={isSelected ? "photo-item selected" : "photo-item"}>
+                        <img
+                          src={photo.signed_url}
+                          alt={photo.caption || photo.file_name || "Foto"}
+                          onClick={() => openLightbox(index)}
+                        />
+
+                        <div className="photo-overlay-actions">
+                          <button type="button" onClick={() => togglePhotoSelection(photo.id)}>
+                            {isSelected ? "Ausgewählt ✓" : "Auswählen"}
+                          </button>
+
+                          <button type="button" onClick={() => openLightbox(index)}>
+                            Ansehen
+                          </button>
+
+                          {isAdmin && (
+                            <button type="button" onClick={() => handleDeletePhoto(photo)}>
+                              Löschen
+                            </button>
+                          )}
+                        </div>
+
+                        {(photo.caption || eventData.likes_enabled !== false || eventData.comments_enabled !== false) && (
+                          <div className="photo-info">
+                            {photo.caption && <p>{photo.caption}</p>}
+
+                            {eventData.likes_enabled !== false && (
+                              <button
+                                type="button"
+                                onClick={() => handleToggleLike(photo.id)}
+                                disabled={likingPhotoId === photo.id}
+                                className={likedByThisBrowser ? "like-button active" : "like-button"}
+                              >
+                                ♥ {likesForPhoto.length}
+                              </button>
+                            )}
+
+                            {eventData.comments_enabled !== false && (
+                              <details>
+                                <summary>{commentsForPhoto.length} Kommentar{commentsForPhoto.length === 1 ? "" : "e"}</summary>
+
+                                <div className="comment-list">
+                                  {commentsForPhoto.map((comment) => (
+                                    <div key={comment.id} className="comment-item">
+                                      <strong>{comment.author_name || "Unbekannt"}</strong>
+                                      <p>{comment.comment_text}</p>
+                                      <small>{formatDateTime(comment.created_at)}</small>
+                                    </div>
+                                  ))}
+                                </div>
+
+                                <div className="comment-form">
+                                  <input
+                                    type="text"
+                                    placeholder="Dein Name"
+                                    value={commentNames[photo.id] || ""}
+                                    onChange={(e) =>
+                                      setCommentNames((prev) => ({
+                                        ...prev,
+                                        [photo.id]: e.target.value,
+                                      }))
+                                    }
+                                    className="input"
+                                  />
+
+                                  <textarea
+                                    placeholder="Kommentar schreiben"
+                                    value={commentDrafts[photo.id] || ""}
+                                    onChange={(e) =>
+                                      setCommentDrafts((prev) => ({
+                                        ...prev,
+                                        [photo.id]: e.target.value,
+                                      }))
+                                    }
+                                    className="textarea"
+                                    rows={3}
+                                  />
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSubmitComment(photo.id)}
+                                    disabled={submittingCommentPhotoId === photo.id}
+                                    className="secondary-button"
+                                  >
+                                    Kommentieren
+                                  </button>
+                                </div>
+                              </details>
+                            )}
+                          </div>
+                        )}
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </section>
+          </>
+        )}
+      </section>
 
       {cartOpen && (
-        <div style={styles.cartBackdrop} onClick={() => setCartOpen(false)}>
-          <div style={styles.cartPanel} onClick={(e) => e.stopPropagation()}>
-            <div style={styles.cartHandleWrap}>
-              <div style={styles.cartHandle} />
-            </div>
+        <div className="cart-backdrop" onClick={() => setCartOpen(false)}>
+          <div className="cart-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="cart-handle" />
 
-            <div style={styles.cartHeader}>
-              <h3 style={styles.cartTitle}>Ausgewählte Bilder</h3>
-              <button type="button" onClick={() => setCartOpen(false)} style={styles.cartCloseButton}>
+            <div className="cart-header">
+              <h3>Ausgewählte Bilder</h3>
+              <button type="button" onClick={() => setCartOpen(false)}>
                 ✕
               </button>
             </div>
 
             {selectedPhotos.length === 0 ? (
-              <div style={styles.emptyBox}>Keine Bilder ausgewählt.</div>
+              <div className="center-card">Keine Bilder ausgewählt.</div>
             ) : (
               <>
-                <div style={styles.cartInfo}>
-                  {selectedPhotos.length} Bild{selectedPhotos.length === 1 ? "" : "er"} im Warenkorb
-                </div>
-
-                <div style={styles.cartGrid}>
+                <div className="cart-grid">
                   {selectedPhotos.map((photo) => {
                     const options = photoOrderOptions[photo.id] || {
                       printOption: "13x18",
@@ -1560,136 +1837,111 @@ export default function EventPage() {
                       getProductPrice(options.printOption, options.frameOption) || 0;
 
                     return (
-                      <div key={photo.id} style={styles.cartPhotoCard}>
+                      <article key={photo.id} className="cart-photo-card">
                         <img
                           src={photo.signed_url || ""}
                           alt={photo.caption || photo.file_name || "Foto"}
-                          style={styles.cartPhoto}
                         />
 
-                        <div style={styles.cartPhotoInfo}>
-                          <div style={styles.cartPhotoName}>
-                            {photo.caption || photo.file_name || "Ausgewähltes Foto"}
+                        <div>
+                          <strong>{photo.caption || photo.file_name || "Ausgewähltes Foto"}</strong>
+
+                          <label>Format</label>
+                          <select
+                            value={options.printOption}
+                            onChange={(e) =>
+                              setPhotoOrderOptions((prev) => ({
+                                ...prev,
+                                [photo.id]: {
+                                  ...(prev[photo.id] || {}),
+                                  printOption: e.target.value,
+                                },
+                              }))
+                            }
+                            className="input"
+                          >
+                            {SIZE_OPTIONS.map((option) => {
+                              const price =
+                                getProductPrice(option.value, options.frameOption) || 0;
+
+                              return (
+                                <option key={option.value} value={option.value}>
+                                  {option.label} • {formatEuroFromCent(price)} €
+                                </option>
+                              );
+                            })}
+                          </select>
+
+                          <label>Rahmen</label>
+                          <select
+                            value={options.frameOption}
+                            onChange={(e) =>
+                              setPhotoOrderOptions((prev) => ({
+                                ...prev,
+                                [photo.id]: {
+                                  ...(prev[photo.id] || {}),
+                                  frameOption: e.target.value,
+                                },
+                              }))
+                            }
+                            className="input"
+                          >
+                            {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
+                              <option key={value} value={value}>
+                                {option.label} • {formatEuroFromCent(option.price)} €
+                              </option>
+                            ))}
+                          </select>
+
+                          <div className="cart-item-price">
+                            {(itemPriceInCent / 100).toFixed(2)} €
                           </div>
 
-                          <div style={styles.cartItemOptions}>
-                            <div style={styles.cartItemOptionBlock}>
-                              <label style={styles.orderLabel}>Format</label>
-                              <select
-                                value={options.printOption}
-                                onChange={(e) =>
-                                  setPhotoOrderOptions((prev) => ({
-                                    ...prev,
-                                    [photo.id]: {
-                                      ...(prev[photo.id] || {}),
-                                      printOption: e.target.value,
-                                    },
-                                  }))
-                                }
-                                style={styles.orderSelect}
-                              >
-                                {SIZE_OPTIONS.map((option) => {
-                                  const price =
-                                    getProductPrice(option.value, options.frameOption) || 0;
-
-                                  return (
-                                    <option key={option.value} value={option.value}>
-                                      {option.label} • {formatEuroFromCent(price)} €
-                                    </option>
-                                  );
-                                })}
-                              </select>
-                            </div>
-
-                            <div style={styles.cartItemOptionBlock}>
-                              <label style={styles.orderLabel}>Rahmen</label>
-                              <select
-                                value={options.frameOption}
-                                onChange={(e) =>
-                                  setPhotoOrderOptions((prev) => ({
-                                    ...prev,
-                                    [photo.id]: {
-                                      ...(prev[photo.id] || {}),
-                                      frameOption: e.target.value,
-                                    },
-                                  }))
-                                }
-                                style={styles.orderSelect}
-                              >
-                                {Object.entries(FRAME_OPTIONS).map(([value, option]) => (
-                                  <option key={value} value={value}>
-                                    {option.label} • {formatEuroFromCent(option.price)} €
-                                  </option>
-                                ))}
-                              </select>
-                            </div>
-                          </div>
-
-                          <div style={styles.cartItemPrice}>
-                            Preis für dieses Bild: {(itemPriceInCent / 100).toFixed(2)} €
-                          </div>
-
-                          <button type="button" onClick={() => togglePhotoSelection(photo.id)} style={styles.removeFromCartButton}>
+                          <button type="button" onClick={() => togglePhotoSelection(photo.id)} className="danger-button">
                             Entfernen
                           </button>
                         </div>
-                      </div>
+                      </article>
                     );
                   })}
                 </div>
 
-                <div style={styles.priceSummaryCard}>
-                  <div style={styles.priceRow}>
-                    <span>Anzahl Bilder</span>
-                    <span>{selectedPhotos.length}</span>
-                  </div>
-                  <div style={styles.totalRow}>
-                    <span>Gesamt</span>
-                    <span>{totalPrice.toFixed(2)} €</span>
-                  </div>
-                </div>
-
-                <div style={styles.orderFormCard}>
-                  <h4 style={styles.orderFormTitle}>Erinnerungen bestellen</h4>
-                  <p style={styles.orderFormText}>
-                    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine ausgewählten Bilder aus diesem Event werden mit ihren individuellen Format- und Rahmenoptionen gespeichert.
+                <section className="cart-order-card">
+                  <h4>Erinnerungen bestellen</h4>
+                  <p>
+                    Gib hier deine Kontaktdaten und Lieferadresse ein. Deine ausgewählten Bilder werden mit Format- und Rahmenoptionen gespeichert.
                   </p>
 
-                  <div style={styles.orderFormGrid}>
-                    <input type="text" placeholder="Vor- und Nachname" value={customerName} onChange={(e) => setCustomerName(e.target.value)} style={styles.orderInput} />
-                    <input type="email" placeholder="E-Mail" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} style={styles.orderInput} />
-                    <input type="text" placeholder="Telefon (optional)" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} style={styles.orderInput} />
-                    <input type="text" placeholder="Straße und Hausnummer" value={street} onChange={(e) => setStreet(e.target.value)} style={styles.orderInput} />
-                    <input type="text" placeholder="PLZ" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} style={styles.orderInput} />
-                    <input type="text" placeholder="Ort" value={city} onChange={(e) => setCity(e.target.value)} style={styles.orderInput} />
-                    <input type="text" placeholder="Land" value={country} onChange={(e) => setCountry(e.target.value)} style={styles.orderInput} />
+                  <div className="form-grid">
+                    <input type="text" placeholder="Vor- und Nachname" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="input" />
+                    <input type="email" placeholder="E-Mail" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} className="input" />
+                    <input type="text" placeholder="Telefon optional" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="input" />
+                    <input type="text" placeholder="Straße und Hausnummer" value={street} onChange={(e) => setStreet(e.target.value)} className="input" />
+                    <input type="text" placeholder="PLZ" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} className="input" />
+                    <input type="text" placeholder="Ort" value={city} onChange={(e) => setCity(e.target.value)} className="input" />
+                    <input type="text" placeholder="Land" value={country} onChange={(e) => setCountry(e.target.value)} className="input" />
                   </div>
 
                   <textarea
-                    placeholder="Notiz zur Bestellung (optional)"
+                    placeholder="Notiz zur Bestellung optional"
                     value={orderNote}
                     onChange={(e) => setOrderNote(e.target.value)}
                     rows={4}
-                    style={styles.orderTextarea}
+                    className="textarea"
                   />
-                </div>
+                </section>
 
-                <div style={styles.cartFooter}>
-                  <div style={styles.cartFooterSummary}>
-                    <div style={styles.cartFooterSmall}>
-                      {selectedPhotos.length} Bild{selectedPhotos.length === 1 ? "" : "er"} individuell konfiguriert
-                    </div>
-                    <div style={styles.cartFooterTotal}>{totalPrice.toFixed(2)} €</div>
+                <div className="cart-footer">
+                  <div>
+                    <small>{selectedPhotos.length} Bild{selectedPhotos.length === 1 ? "" : "er"} ausgewählt</small>
+                    <strong>{totalPrice.toFixed(2)} €</strong>
                   </div>
 
                   <button
                     type="button"
-                    style={{
-                      ...styles.checkoutButton,
-                      ...(submittingOrder ? styles.buttonDisabled : {}),
-                    }}
                     onClick={handleSubmitOrder}
                     disabled={submittingOrder}
+                    className="primary-button"
                   >
                     {submittingOrder ? "Bestellung wird gespeichert..." : "Erinnerungen bestellen"}
                   </button>
@@ -1701,24 +1953,24 @@ export default function EventPage() {
       )}
 
       {lightboxOpen && currentPhoto && (
-        <div style={styles.lightboxBackdrop} onClick={closeLightbox}>
+        <div className="lightbox-backdrop" onClick={closeLightbox}>
           <div
-            style={styles.lightboxContent}
+            className="lightbox-content"
             onClick={(e) => e.stopPropagation()}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
-            <button type="button" style={styles.closeButton} onClick={closeLightbox}>
+            <button type="button" className="lightbox-close" onClick={closeLightbox}>
               ✕
             </button>
 
             {filteredPhotos.length > 1 && (
               <>
-                <button type="button" style={{ ...styles.navButton, left: "16px" }} onClick={showPrevPhoto}>
+                <button type="button" className="lightbox-nav left" onClick={showPrevPhoto}>
                   ‹
                 </button>
 
-                <button type="button" style={{ ...styles.navButton, right: "16px" }} onClick={showNextPhoto}>
+                <button type="button" className="lightbox-nav right" onClick={showNextPhoto}>
                   ›
                 </button>
               </>
@@ -1727,1308 +1979,1335 @@ export default function EventPage() {
             <img
               src={currentPhoto?.signed_url || ""}
               alt={currentPhoto.caption || currentPhoto.file_name || "Foto"}
-              style={styles.lightboxImage}
             />
 
-            <div style={styles.lightboxFooter}>
-              <div style={styles.lightboxCounter}>
-                {selectedPhotoIndex + 1} / {filteredPhotos.length}
-              </div>
-              {currentPhoto.caption && (
-                <div style={styles.lightboxCaption}>{currentPhoto.caption}</div>
-              )}
+            <div className="lightbox-footer">
+              <span>{selectedPhotoIndex + 1} / {filteredPhotos.length}</span>
+              {currentPhoto.caption && <p>{currentPhoto.caption}</p>}
             </div>
           </div>
         </div>
       )}
-    </div>
+    </main>
   );
 }
-const styles = {
-  setupCard: {
-  background: "#fff",
-  borderRadius: "24px",
-  padding: "20px",
-  marginBottom: "24px",
-  border: "1px solid #e8ebf2",
-  display: "grid",
-  gap: "16px",
-},
-  setupHeader: {
-  display: "grid",
-  gap: "6px",
-  marginBottom: "10px",
-},
-
-setupEyebrow: {
-  fontSize: "12px",
-  textTransform: "uppercase",
-  letterSpacing: "1px",
-  color: "#667085",
-  fontWeight: "700",
-},
-
-setupIntroText: {
-  margin: 0,
-  fontSize: "14px",
-  color: "#667085",
-  lineHeight: "1.6",
-},
-
-summaryTitle: {
-  fontWeight: "800",
-  fontSize: "16px",
-  marginBottom: "6px",
-  color: "#111827",
-},
-
-summaryRow: {
-  display: "flex",
-  justifyContent: "space-between",
-  fontSize: "14px",
-  color: "#475467",
-},
-
-summaryDivider: {
-  height: "1px",
-  background: "#e8ebf2",
-  margin: "8px 0",
-},
-
-trustBox: {
-  background: "#f8fafc",
-  border: "1px solid #e8ebf2",
-  borderRadius: "14px",
-  padding: "12px",
-  display: "grid",
-  gap: "6px",
-  marginBottom: "10px",
-},
-
-trustItem: {
-  fontSize: "14px",
-  color: "#111827",
-  fontWeight: "600",
-},
-
-setupTitle: {
-  margin: 0,
-  fontSize: "22px",
-  fontWeight: "800",
-  color: "#111827",
-},
-
-setupSection: {
-  display: "grid",
-  gap: "10px",
-},
-
-setupLabel: {
-  fontWeight: "700",
-  color: "#111827",
-  fontSize: "15px",
-},
-
-keyGrid: {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-  gap: "10px",
-},
-
-keyCard: {
-  border: "1px solid #d7deea",
-  borderRadius: "14px",
-  padding: "12px",
-  cursor: "pointer",
-  background: "#fff",
-  display: "grid",
-  gap: "6px",
-},
-
-keyCardActive: {
-  border: "2px solid #111827",
-  boxShadow: "0 8px 18px rgba(17, 24, 39, 0.08)",
-},
-
-keyName: {
-  fontWeight: "700",
-  color: "#111827",
-  fontSize: "15px",
-},
-
-keyDesc: {
-  fontSize: "13px",
-  color: "#667085",
-  lineHeight: "1.5",
-},
-
-keyPrice: {
-  marginTop: "4px",
-  fontWeight: "700",
-  color: "#111827",
-  fontSize: "14px",
-},
-
-quantityRow: {
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-},
-
-qtyButton: {
-  padding: "10px 14px",
-  borderRadius: "10px",
-  border: "1px solid #d7deea",
-  cursor: "pointer",
-  background: "#fff",
-  color: "#111827",
-  fontWeight: "700",
-},
-
-qtyButtonActive: {
-  background: "#111827",
-  color: "#fff",
-  border: "1px solid #111827",
-},
-
-priceBox: {
-  background: "#f8fafc",
-  padding: "14px",
-  borderRadius: "14px",
-  display: "grid",
-  gap: "6px",
-  border: "1px solid #e8ebf2",
-},
-  setupTotalPrice: {
-  fontWeight: "800",
-  fontSize: "18px",
-  color: "#111827",
-},
-  page: {
-    position: "relative",
-    width: "100%",
-    maxWidth: "1180px",
-    margin: "0 auto",
-    padding: "14px",
-    paddingBottom: "120px",
-    backgroundColor: "#f6f7fb",
-    minHeight: "100vh",
-    boxSizing: "border-box",
-    overflowX: "hidden",
-    touchAction: "pan-y",
-  },
-
-  loginBox: {
-    maxWidth: "420px",
-    margin: "120px auto",
-    display: "grid",
-    gap: "14px",
-    background: "#ffffff",
-    padding: "24px",
-    borderRadius: "24px",
-    border: "1px solid #e8ebf2",
-    boxShadow: "0 12px 32px rgba(15, 23, 42, 0.06)",
-  },
-
-  title: {
-    fontSize: "32px",
-    fontWeight: "800",
-    margin: 0,
-    color: "#111827",
-    lineHeight: "1.15",
-  },
-
-  subtitle: {
-    marginTop: "8px",
-    marginBottom: 0,
-    color: "#667085",
-    fontSize: "15px",
-    lineHeight: "1.5",
-  },
-
-  accessInfo: {
-    marginTop: "10px",
-    marginBottom: 0,
-    color: "#111827",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
-
-  formTitle: {
-    margin: 0,
-    marginBottom: "4px",
-    fontSize: "19px",
-    fontWeight: "800",
-    color: "#111827",
-    lineHeight: "1.2",
-  },
-
-  label: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-
-  editHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-
-  formCard: {
-    display: "grid",
-    gap: "12px",
-    background: "#ffffff",
-    padding: "18px",
-    borderRadius: "22px",
-    marginBottom: "24px",
-    border: "1px solid #e8ebf2",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
-    width: "100%",
-    boxSizing: "border-box",
-  },
-
-  filterCard: {
-    display: "grid",
-    gap: "14px",
-    background: "#ffffff",
-    padding: "18px",
-    borderRadius: "22px",
-    marginBottom: "24px",
-    border: "1px solid #e8ebf2",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
-  },
-
-  filterGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-    gap: "12px",
-    width: "100%",
-  },
-
-  filterInfo: {
-    color: "#667085",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-
-  uploadCard: {
-    display: "grid",
-    gap: "16px",
-    background: "#ffffff",
-    padding: "18px",
-    borderRadius: "24px",
-    marginBottom: "24px",
-    border: "1px solid #e8ebf2",
-    boxShadow: "0 10px 24px rgba(15, 23, 42, 0.04)",
-  },
-
-  uploadTopRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-  },
-
-  uploadSubtitle: {
-    margin: 0,
-    color: "#667085",
-    fontSize: "14px",
-    lineHeight: "1.5",
-  },
-
-  uploadBadge: {
-    background: "#eef2f7",
-    color: "#111827",
-    borderRadius: "999px",
-    padding: "10px 14px",
-    fontSize: "13px",
-    fontWeight: "700",
-    whiteSpace: "nowrap",
-  },
-
-  uploadPickerBox: {
-    border: "1.5px dashed #cdd5df",
-    borderRadius: "22px",
-    padding: "24px 18px",
-    background: "#fafbfc",
-    display: "grid",
-    justifyItems: "center",
-    textAlign: "center",
-    gap: "10px",
-    cursor: "pointer",
-  },
-
-  uploadIcon: {
-    width: "52px",
-    height: "52px",
-    borderRadius: "16px",
-    background: "#111827",
-    color: "#fff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "24px",
-    fontWeight: "800",
-    boxShadow: "0 10px 20px rgba(17, 24, 39, 0.16)",
-  },
-
-  uploadPickerTitle: {
-    fontSize: "19px",
-    fontWeight: "800",
-    color: "#111827",
-  },
-
-  uploadPickerText: {
-    color: "#667085",
-    fontSize: "14px",
-    lineHeight: "1.5",
-    maxWidth: "460px",
-  },
-
-  uploadPickerButton: {
-    backgroundColor: "#111827",
-    color: "#fff",
-    border: "none",
-    padding: "13px 18px",
-    borderRadius: "14px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-    minWidth: "170px",
-    boxShadow: "0 8px 18px rgba(17, 24, 39, 0.14)",
-    marginTop: "6px",
-  },
-
-  selectedFilesWrap: {
-    display: "flex",
-    flexWrap: "wrap",
-    gap: "10px",
-  },
-
-fileChip: {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: "10px",
-  padding: "10px 12px",
-  borderRadius: "14px",
-  background: "#f4f6fa",
-  border: "1px solid #e8ebf2",
-  maxWidth: "100%",
-},
-fileChipPreview: {
-  width: "52px",
-  height: "52px",
-  borderRadius: "12px",
-  objectFit: "cover",
-  flex: "0 0 auto",
-  border: "1px solid #e8ebf2",
-  backgroundColor: "#e5e7eb",
-},
-
-fileChipInfo: {
-  display: "grid",
-  gap: "2px",
-  minWidth: 0,
-},
-
-fileChipRemove: {
-  width: "28px",
-  height: "28px",
-  borderRadius: "999px",
-  border: "none",
-  background: "#111827",
-  color: "#fff",
-  cursor: "pointer",
-  fontSize: "14px",
-  fontWeight: "700",
-  flex: "0 0 auto",
-},
-
-  fileChipName: {
-    color: "#111827",
-    fontSize: "13px",
-    fontWeight: "700",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-    maxWidth: "220px",
-  },
-
-  fileChipSize: {
-    color: "#667085",
-    fontSize: "12px",
-    fontWeight: "600",
-    whiteSpace: "nowrap",
-  },
-
-  twoCol: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(0, 1fr))",
-    gap: "12px",
-    width: "100%",
-  },
-
-  input: {
-    width: "100%",
-    padding: "14px 15px",
-    borderRadius: "14px",
-    border: "1px solid #d7deea",
-    fontSize: "15px",
-    outline: "none",
-    backgroundColor: "#fff",
-    boxSizing: "border-box",
-    color: "#111827",
-  },
-
-  primaryButton: {
-    backgroundColor: "#111827",
-    color: "white",
-    border: "none",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "700",
-    boxShadow: "0 10px 22px rgba(17, 24, 39, 0.16)",
-  },
-
-  secondaryButton: {
-    backgroundColor: "#1f2937",
-    color: "#fff",
-    border: "none",
-    padding: "14px 18px",
-    borderRadius: "14px",
-    cursor: "pointer",
-    fontSize: "15px",
-    fontWeight: "700",
-    minWidth: "170px",
-    boxShadow: "0 8px 18px rgba(17, 24, 39, 0.12)",
-  },
-
-  buttonDisabled: {
-    opacity: 0.7,
-    cursor: "not-allowed",
-  },
-
-  cancelButton: {
-    backgroundColor: "#eef2f7",
-    color: "#111827",
-    border: "none",
-    padding: "11px 15px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
-
-  deleteButton: {
-    position: "absolute",
-    top: "10px",
-    right: "10px",
-    background: "rgba(220, 38, 38, 0.95)",
-    color: "#fff",
-    border: "none",
-    borderRadius: "10px",
-    padding: "8px 10px",
-    fontSize: "12px",
-    cursor: "pointer",
-    fontWeight: "700",
-    zIndex: 3,
-  },
-
-  selectionBar: {
-    position: "fixed",
-    left: "12px",
-    right: "12px",
-    bottom: "12px",
-    zIndex: 999,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    gap: "12px",
-    flexWrap: "wrap",
-    background: "rgba(255,255,255,0.94)",
-    border: "1px solid #e8ebf2",
-    borderRadius: "20px",
-    padding: "14px 16px",
-    boxShadow: "0 16px 38px rgba(15, 23, 42, 0.12)",
-    backdropFilter: "blur(12px)",
-    boxSizing: "border-box",
-  },
-
-  selectionInfo: {
-    fontSize: "15px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-
-  orderButton: {
-    backgroundColor: "#111827",
-    color: "#fff",
-    border: "none",
-    padding: "12px 16px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-    minWidth: "220px",
-  },
-
-  orderButtonDisabled: {
-    backgroundColor: "#98a2b3",
-  },
-
-  photoGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "16px",
-    alignItems: "start",
-  },
-
-  photoCard: {
-    position: "relative",
-    borderRadius: "24px",
-    overflow: "hidden",
-    boxShadow: "0 8px 22px rgba(15, 23, 42, 0.06)",
-    background: "#fff",
-    cursor: "pointer",
-    border: "1px solid #e8ebf2",
-  },
-
-  photoMediaWrap: {
-    position: "relative",
-    width: "100%",
-    background: "#e5e7eb",
-    overflow: "hidden",
-  },
-
-  photo: {
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    display: "block",
-  },
-
-  photoOverlay: {
-    position: "absolute",
-    inset: 0,
-    background:
-      "linear-gradient(to top, rgba(15,23,42,0.22), rgba(15,23,42,0.04))",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    pointerEvents: "none",
-  },
-
-  photoOverlayText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: "14px",
-    padding: "8px 12px",
-    borderRadius: "999px",
-    background: "rgba(15,23,42,0.38)",
-    backdropFilter: "blur(4px)",
-  },
-
-  photoInfoArea: {
-    padding: "14px",
-    display: "grid",
-    gap: "12px",
-    background: "#fff",
-  },
-
-  photoCaption: {
-    fontSize: "14px",
-    color: "#475467",
-    lineHeight: "1.5",
-  },
-
-  photoActionRow: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "10px",
-  },
-
-  selectPhotoButton: {
-    backgroundColor: "#eef2f7",
-    color: "#111827",
-    border: "none",
-    padding: "10px 14px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
-
-  selectPhotoButtonActive: {
-    backgroundColor: "#111827",
-    color: "#ffffff",
-  },
-
-  previewButton: {
-    backgroundColor: "#ffffff",
-    color: "#111827",
-    border: "1px solid #d7deea",
-    padding: "10px 14px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
-
-  likeRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    gap: "12px",
-    flexWrap: "wrap",
-  },
-
-  likeButton: {
-    backgroundColor: "#eef2f7",
-    color: "#111827",
-    border: "none",
-    padding: "10px 14px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
-
-  likeButtonActive: {
-    backgroundColor: "#fee4e2",
-    color: "#b42318",
-  },
-
-  likeCount: {
-    color: "#667085",
-    fontSize: "14px",
-    fontWeight: "600",
-  },
-
-  commentForm: {
-    display: "grid",
-    gap: "10px",
-  },
-
-  commentInput: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: "12px",
-    border: "1px solid #d7deea",
-    fontSize: "14px",
-    outline: "none",
-    backgroundColor: "#fff",
-    boxSizing: "border-box",
-  },
-
-  commentTextarea: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: "12px",
-    border: "1px solid #d7deea",
-    fontSize: "14px",
-    outline: "none",
-    backgroundColor: "#fff",
-    boxSizing: "border-box",
-    resize: "vertical",
-    fontFamily: "inherit",
-  },
-  setupUrgency: {
-  marginTop: "10px",
-  padding: "10px 12px",
-  borderRadius: "12px",
-  background: "#fff3cd",
-  border: "1px solid #ffe69c",
-  fontSize: "13px",
-  fontWeight: "600",
-  color: "#7a5c00",
-},
-
-  commentButton: {
-    backgroundColor: "#111827",
-    color: "#fff",
-    border: "none",
-    padding: "12px 14px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    fontSize: "14px",
-    fontWeight: "700",
-  },
-
-  commentList: {
-    display: "grid",
-    gap: "10px",
-  },
-
-  noCommentsText: {
-    color: "#667085",
-    fontSize: "14px",
-  },
-
-  commentItem: {
-    backgroundColor: "#f8fafc",
-    border: "1px solid #e8ebf2",
-    borderRadius: "14px",
-    padding: "12px",
-  },
-
-  commentAuthorRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    gap: "10px",
-    marginBottom: "6px",
-    flexWrap: "wrap",
-  },
-
-  commentAuthor: {
-    fontWeight: "700",
-    color: "#111827",
-    fontSize: "14px",
-  },
-
-  commentDate: {
-    color: "#667085",
-    fontSize: "12px",
-  },
-
-  commentText: {
-    color: "#475467",
-    fontSize: "14px",
-    lineHeight: "1.5",
-    whiteSpace: "pre-wrap",
-  },
-
-cartBackdrop: {
-  position: "fixed",
-  inset: 0,
-  backgroundColor: "rgba(15, 23, 42, 0.42)",
-  zIndex: 9999,
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "flex-end",
-  padding: "0",
-  overflow: "hidden",
-},
-
-cartPanel: {
-  width: "100%",
-  maxWidth: "920px",
-  height: "min(88vh, 920px)",
-  overflowY: "auto",
-  overflowX: "hidden",
-  background: "#ffffff",
-  borderTopLeftRadius: "28px",
-  borderTopRightRadius: "28px",
-  borderBottomLeftRadius: "0",
-  borderBottomRightRadius: "0",
-  padding: "12px 16px calc(24px + env(safe-area-inset-bottom)) 16px",
-  boxShadow: "0 -12px 40px rgba(15, 23, 42, 0.18)",
-  boxSizing: "border-box",
-  overscrollBehavior: "contain",
-  touchAction: "pan-y",
-},
-
-cartHeader: {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "12px",
-  marginBottom: "14px",
-  position: "sticky",
-  top: 0,
-  background: "rgba(255,255,255,0.96)",
-  backdropFilter: "blur(10px)",
-  paddingBottom: "10px",
-  zIndex: 5,
-},
-
-cartTitle: {
-  margin: 0,
-  fontSize: "22px",
-  fontWeight: "800",
-  color: "#111827",
-  lineHeight: "1.2",
-},
-
-cartCloseButton: {
-  width: "42px",
-  height: "42px",
-  borderRadius: "999px",
-  border: "none",
-  background: "#111827",
-  color: "#fff",
-  fontSize: "18px",
-  cursor: "pointer",
-  fontWeight: "700",
-  flex: "0 0 auto",
-},
-
-  cartInfo: {
-    marginBottom: "16px",
-    fontSize: "15px",
-    fontWeight: "700",
-    color: "#475467",
-  },
-
-  orderOptionsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "14px",
-    marginBottom: "18px",
-    width: "100%",
-  },
-
-  orderOptionCard: {
-    background: "#f8fafc",
-    border: "1px solid #e8ebf2",
-    borderRadius: "18px",
-    padding: "14px",
-  },
-
-  orderLabel: {
-    display: "block",
-    marginBottom: "8px",
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-
-  orderSelect: {
-    width: "100%",
-    padding: "12px 14px",
-    borderRadius: "12px",
-    border: "1px solid #d7deea",
-    fontSize: "14px",
-    backgroundColor: "#fff",
-    boxSizing: "border-box",
-  },
-
-  priceSummaryCard: {
-    background: "#ffffff",
-    border: "1px solid #e8ebf2",
-    borderRadius: "20px",
-    padding: "16px",
-    marginBottom: "18px",
-    boxShadow: "0 6px 18px rgba(15, 23, 42, 0.04)",
-  },
-
-  priceRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    padding: "6px 0",
-    color: "#475467",
-    fontSize: "14px",
-  },
-
-  totalRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: "12px",
-    paddingTop: "12px",
-    marginTop: "8px",
-    borderTop: "1px solid #e8ebf2",
-    color: "#111827",
-    fontSize: "18px",
-    fontWeight: "800",
-  },
-
-  cartGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "16px",
-    width: "100%",
-    overflowX: "hidden",
-    marginBottom: "18px",
-  },
-
-  cartPhotoCard: {
-    background: "#fff",
-    border: "1px solid #e8ebf2",
-    borderRadius: "20px",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    boxShadow: "0 8px 18px rgba(15, 23, 42, 0.04)",
-  },
-
-  cartPhoto: {
-    width: "100%",
-    height: "180px",
-    objectFit: "cover",
-    display: "block",
-    backgroundColor: "#e5e7eb",
-  },
-
-  cartPhotoInfo: {
-    display: "grid",
-    gap: "12px",
-    padding: "14px",
-  },
-
-  cartPhotoName: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#111827",
-    lineHeight: "1.4",
-    overflow: "hidden",
-    display: "-webkit-box",
-    WebkitLineClamp: 2,
-    WebkitBoxOrient: "vertical",
-  },
-
-  cartItemOptions: {
-    display: "grid",
-    gap: "10px",
-  },
-
-  cartItemOptionBlock: {
-    display: "grid",
-    gap: "6px",
-  },
-
-  cartItemPrice: {
-    fontSize: "14px",
-    fontWeight: "700",
-    color: "#111827",
-  },
-
-  removeFromCartButton: {
-    width: "100%",
-    border: "none",
-    background: "#fee4e2",
-    color: "#b42318",
-    padding: "10px 12px",
-    fontWeight: "700",
-    cursor: "pointer",
-    borderRadius: "12px",
-    fontSize: "13px",
-  },
-
-  orderFormCard: {
-    background: "#f8fafc",
-    border: "1px solid #e8ebf2",
-    borderRadius: "20px",
-    padding: "18px",
-    marginTop: "18px",
-    marginBottom: "18px",
-    display: "grid",
-    gap: "14px",
-  },
-
-  orderFormTitle: {
-    margin: 0,
-    fontSize: "22px",
-    fontWeight: "800",
-    color: "#111827",
-  },
-
-  orderFormText: {
-    margin: 0,
-    fontSize: "14px",
-    lineHeight: "1.7",
-    color: "#667085",
-  },
-
-orderFormGrid: {
-  display: "grid",
-  gridTemplateColumns: "1fr",
-  gap: "12px",
-  width: "100%",
-},
-orderInput: {
-  width: "100%",
-  display: "block",
-  boxSizing: "border-box",
-  padding: "14px 14px",
-  borderRadius: "14px",
-  border: "1px solid #d7deea",
-  fontSize: "14px",
-  backgroundColor: "#fff",
-  outline: "none",
-},
-
-orderTextarea: {
-  width: "100%",
-  display: "block",
-  boxSizing: "border-box",
-  padding: "14px 14px",
-  borderRadius: "14px",
-  border: "1px solid #d7deea",
-  fontSize: "14px",
-  backgroundColor: "#fff",
-  outline: "none",
-  resize: "vertical",
-  fontFamily: "inherit",
-  minHeight: "110px",
-},
-
-cartFooter: {
-  position: "sticky",
-  bottom: "calc(-12px - env(safe-area-inset-bottom))",
-  marginTop: "12px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  gap: "14px",
-  flexWrap: "wrap",
-  background: "rgba(255,255,255,0.98)",
-  borderTop: "1px solid #e8ebf2",
-  paddingTop: "14px",
-  paddingBottom: "calc(10px + env(safe-area-inset-bottom))",
-  backdropFilter: "blur(12px)",
-},
-  
-  cartFooterSummary: {
-    display: "grid",
-    gap: "4px",
-  },
-
-  cartFooterSmall: {
-    fontSize: "13px",
-    color: "#667085",
-    fontWeight: "600",
-  },
-
-  cartFooterTotal: {
-    fontSize: "26px",
-    fontWeight: "800",
-    color: "#111827",
-  },
-
-checkoutButton: {
-  backgroundColor: "#111827",
-  color: "#fff",
-  border: "none",
-  padding: "14px 20px",
-  borderRadius: "16px",
-  cursor: "pointer",
-  fontSize: "15px",
-  fontWeight: "700",
-  minWidth: "220px",
-  boxShadow: "0 10px 24px rgba(17, 24, 39, 0.16)",
-},
-
-  cartHandleWrap: {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  paddingTop: "2px",
-  paddingBottom: "10px",
-  position: "sticky",
-  top: 0,
-  background: "rgba(255,255,255,0.96)",
-  zIndex: 6,
-},
-
-cartHandle: {
-  width: "44px",
-  height: "5px",
-  borderRadius: "999px",
-  background: "#d0d5dd",
-},
-
-  emptyBox: {
-    backgroundColor: "#fff",
-    border: "1px solid #e8ebf2",
-    borderRadius: "20px",
-    padding: "22px",
-    color: "#667085",
-  },
-
-  lightboxBackdrop: {
-    position: "fixed",
-    inset: 0,
-    backgroundColor: "rgba(2, 6, 23, 0.92)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    zIndex: 9999,
-    padding: "20px",
-    touchAction: "none",
-  },
-
-  lightboxContent: {
-    position: "relative",
-    width: "100%",
-    maxWidth: "1100px",
-    maxHeight: "90vh",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    overflow: "hidden",
-  },
-
-  lightboxImage: {
-    maxWidth: "100%",
-    maxHeight: "75vh",
-    objectFit: "contain",
-    borderRadius: "18px",
-  },
-
-  closeButton: {
-    position: "absolute",
-    top: "-8px",
-    right: "0",
-    backgroundColor: "rgba(255,255,255,0.14)",
-    color: "#fff",
-    border: "none",
-    width: "44px",
-    height: "44px",
-    borderRadius: "999px",
-    fontSize: "22px",
-    cursor: "pointer",
-  },
-
-  navButton: {
-    position: "absolute",
-    top: "50%",
-    transform: "translateY(-50%)",
-    backgroundColor: "rgba(255,255,255,0.14)",
-    color: "#fff",
-    border: "none",
-    width: "52px",
-    height: "52px",
-    borderRadius: "999px",
-    fontSize: "34px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  lightboxFooter: {
-    marginTop: "14px",
-    textAlign: "center",
-    color: "#fff",
-  },
-
-  lightboxCounter: {
-    fontSize: "13px",
-    opacity: 0.8,
-    marginBottom: "6px",
-  },
-
-  lightboxCaption: {
-    fontSize: "15px",
-    lineHeight: "1.5",
-  },
-
-  newHeroCard: {
-    width: "100%",
-    maxWidth: "680px",
-    margin: "0 auto 28px auto",
-    background:
-      "linear-gradient(135deg, #111827 0%, #1f2937 50%, #374151 100%)",
-    color: "#fff",
-    padding: "22px",
-    borderRadius: "28px",
-    boxShadow: "0 18px 42px rgba(17, 24, 39, 0.22)",
-    position: "relative",
-    boxSizing: "border-box",
-    overflow: "hidden",
-  },
-
-  newHeroTop: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "10px",
-    gap: "10px",
-  },
-
-  newHeroBrand: {
-    fontSize: "12px",
-    textTransform: "uppercase",
-    letterSpacing: "1.2px",
-    opacity: 0.78,
-  },
-
-  newHeroBadge: {
-    background: "rgba(255,255,255,0.14)",
-    padding: "6px 12px",
-    borderRadius: "10px",
-    fontSize: "12px",
-    fontWeight: "700",
-    whiteSpace: "nowrap",
-  },
-
-  newHeroTitle: {
-    fontSize: "28px",
-    fontWeight: "800",
-    margin: "10px 0 4px 0",
-    lineHeight: "1.15",
-  },
-
-  newHeroSubtitle: {
-    fontSize: "14px",
-    opacity: 0.86,
-    marginBottom: "16px",
-    lineHeight: "1.5",
-  },
-
-  newHeroImage: {
-    width: "100%",
-    borderRadius: "20px",
-    overflow: "hidden",
-    marginBottom: "16px",
-  },
-
-  newHeroImageTag: {
-    width: "100%",
-    height: "230px",
-    objectFit: "cover",
-    display: "block",
-  },
-
-  newHeroDescription: {
-    margin: "0 0 16px 0",
-    fontSize: "14px",
-    opacity: 0.9,
-    lineHeight: "1.6",
-  },
-
-newHeroPreviewRow: {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, 1fr)",
-  gap: "10px",
-  marginTop: "10px",
-  maxHeight: "256px",
-  overflowY: "auto",
-  overflowX: "hidden",
-  paddingRight: "4px",
-  alignContent: "start",
-},
-
-newHeroPreviewImg: {
-  width: "100%",
-  aspectRatio: "1 / 1",
-  borderRadius: "14px",
-  objectFit: "cover",
-  cursor: "pointer",
-  border: "1px solid rgba(255,255,255,0.12)",
-  display: "block",
-},
-
-  newHeroMoreBox: {
-    width: "72px",
-    height: "72px",
-    borderRadius: "14px",
-    background: "rgba(255,255,255,0.1)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: "700",
-    fontSize: "18px",
-    flex: "0 0 auto",
-    scrollSnapAlign: "center",
-  },
-};
+
+function EventStyles() {
+  return (
+    <style jsx global>{`
+      @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+      :root {
+        --bg: #faf8f5;
+        --surface: #ffffff;
+        --surface-elevated: #fffefe;
+        --accent: #1a1612;
+        --accent-soft: #2d251f;
+        --text: #1a1612;
+        --text-secondary: #6b5f54;
+        --text-muted: #9a8d82;
+        --border: #ebe5dd;
+        --border-hover: #d4cbc0;
+        --warm: #f5efe7;
+        --warm-deep: #ebe2d5;
+        --gold: #c9a76c;
+        --gold-soft: #e8d9bb;
+        --danger: #b42318;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
+      }
+
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .event-page {
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top right, rgba(201, 167, 108, 0.14), transparent 36%),
+          linear-gradient(180deg, #faf8f5 0%, #ffffff 100%);
+        padding: 24px 14px 120px;
+      }
+
+      .event-shell {
+        width: min(1180px, 100%);
+        margin: 0 auto;
+        display: grid;
+        gap: 28px;
+      }
+
+      .brand {
+        font-size: 25px;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        color: var(--accent);
+      }
+
+      .brand-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .eyebrow,
+      .section-label {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--gold);
+      }
+
+      .album-hero {
+        display: grid;
+        gap: 22px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 28px 80px rgba(26, 22, 18, 0.1);
+        overflow: hidden;
+      }
+
+      .album-hero-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .hero-badge {
+        display: inline-flex;
+        width: fit-content;
+        padding: 8px 14px;
+        margin-bottom: 18px;
+        border-radius: 999px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .album-hero h1 {
+        margin: 0;
+        font-size: clamp(40px, 7vw, 72px);
+        line-height: 1.02;
+        letter-spacing: -0.06em;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .album-hero h1 span {
+        display: block;
+        background: linear-gradient(135deg, var(--gold) 0%, #a88a4a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .hero-event-name {
+        margin: 20px 0 0;
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .hero-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .hero-meta span {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .hero-description {
+        max-width: 600px;
+        margin: 20px 0 0;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.75;
+      }
+
+      .hero-actions,
+      .button-row,
+      .admin-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 28px;
+      }
+
+      .album-hero-visual {
+        min-height: 280px;
+        border-radius: 28px;
+        overflow: hidden;
+        background: var(--warm);
+        border: 1px solid var(--border);
+      }
+
+      .album-hero-visual img {
+        width: 100%;
+        height: 100%;
+        min-height: 280px;
+        display: block;
+        object-fit: cover;
+      }
+
+      .hero-placeholder {
+        height: 100%;
+        min-height: 280px;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        padding: 32px;
+        color: var(--text-secondary);
+      }
+
+      .hero-placeholder span {
+        font-size: 42px;
+      }
+
+      .hero-placeholder strong {
+        display: block;
+        margin-top: 8px;
+        color: var(--accent);
+        font-size: 20px;
+      }
+
+      .hero-placeholder small {
+        display: block;
+        max-width: 300px;
+        margin-top: 4px;
+      }
+
+      .primary-button,
+      .secondary-button,
+      .ghost-button,
+      .small-link-button,
+      .danger-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 52px;
+        padding: 0 22px;
+        border-radius: 999px;
+        border: none;
+        font-size: 15px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.22s ease;
+      }
+
+      .primary-button {
+        background: var(--accent);
+        color: #fff;
+        box-shadow: 0 12px 34px rgba(26, 22, 18, 0.18);
+      }
+
+      .primary-button:hover {
+        background: var(--accent-soft);
+        transform: translateY(-2px);
+      }
+
+      .primary-button:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .primary-button.full {
+        width: 100%;
+      }
+
+      .secondary-button,
+      .ghost-button,
+      .small-link-button {
+        background: #fff;
+        color: var(--accent);
+        border: 1px solid var(--border);
+      }
+
+      .secondary-button:hover,
+      .ghost-button:hover,
+      .small-link-button:hover {
+        background: var(--warm);
+      }
+
+      .secondary-button.disabled {
+        opacity: 0.55;
+      }
+
+      .danger-button {
+        min-height: 42px;
+        background: #fee4e2;
+        color: var(--danger);
+      }
+
+      .locked-card,
+      .admin-card,
+      .upload-card,
+      .filter-card,
+      .gallery-section,
+      .setup-card {
+        border: 1px solid var(--border);
+        border-radius: 30px;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow: 0 20px 60px rgba(26, 22, 18, 0.07);
+      }
+
+      .locked-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        padding: 26px;
+        flex-wrap: wrap;
+      }
+
+      .locked-card h2,
+      .upload-card h2,
+      .gallery-section h2 {
+        margin: 8px 0 0;
+        font-size: clamp(26px, 4vw, 38px);
+        line-height: 1.1;
+        letter-spacing: -0.045em;
+        color: var(--accent);
+      }
+
+      .locked-card p,
+      .upload-card p,
+      .gallery-section p,
+      .section-help {
+        margin: 10px 0 0;
+        color: var(--text-secondary);
+      }
+
+      .setup-card {
+        padding: 18px;
+        background:
+          radial-gradient(circle at top right, rgba(201, 167, 108, 0.12), transparent 34%),
+          rgba(255,255,255,0.92);
+      }
+
+      .setup-hero {
+        padding: 28px;
+        border-radius: 26px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+      }
+
+      .setup-hero h2 {
+        margin: 14px 0 0;
+        font-size: clamp(34px, 6vw, 56px);
+        line-height: 1.05;
+        letter-spacing: -0.06em;
+        color: var(--accent);
+      }
+
+      .setup-hero h2 span {
+        display: block;
+        background: linear-gradient(135deg, var(--gold) 0%, #a88a4a 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      .setup-hero p {
+        max-width: 760px;
+        margin: 18px 0 0;
+        color: var(--text-secondary);
+        font-size: 16px;
+        line-height: 1.75;
+      }
+
+      .progress-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+      }
+
+      .progress-row span {
+        padding: 9px 12px;
+        border-radius: 999px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .progress-row span.active {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      .setup-layout {
+        display: grid;
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .setup-main {
+        display: grid;
+        gap: 18px;
+      }
+
+      .setup-section,
+      .summary-card {
+        padding: 22px;
+        border-radius: 26px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+      }
+
+      .snapkey-grid,
+      .design-grid {
+        display: grid;
+        gap: 14px;
+        margin-top: 16px;
+      }
+
+      .snapkey-card {
+        padding: 0;
+        text-align: left;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.25s ease;
+      }
+
+      .snapkey-card:hover,
+      .snapkey-card.selected {
+        transform: translateY(-3px);
+        border-color: var(--accent);
+        box-shadow: 0 18px 48px rgba(26, 22, 18, 0.1);
+      }
+
+      .snapkey-card.featured {
+        box-shadow: 0 0 0 1px var(--gold-soft);
+      }
+
+      .snapkey-image {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        background: var(--warm);
+        overflow: hidden;
+      }
+
+      .snapkey-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .snapkey-image span {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: var(--gold);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      .snapkey-body {
+        padding: 18px;
+      }
+
+      .snapkey-title-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .snapkey-title-row h3 {
+        margin: 0;
+        font-size: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .snapkey-title-row strong {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--warm);
+        font-size: 13px;
+      }
+
+      .snapkey-body p {
+        margin: 10px 0 0;
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.65;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .chip-row span {
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--warm);
+        color: var(--text-secondary);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .design-card {
+        display: grid;
+        gap: 6px;
+        text-align: left;
+        padding: 16px;
+        border-radius: 20px;
+        background: #fff;
+        border: 1px solid var(--border);
+        transition: all 0.22s ease;
+      }
+
+      .design-card span {
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 16px;
+        background: var(--warm);
+        font-size: 22px;
+      }
+
+      .design-card strong {
+        color: var(--accent);
+      }
+
+      .design-card small {
+        color: var(--text-secondary);
+        line-height: 1.4;
+      }
+
+      .design-card.selected {
+        border-color: var(--accent);
+        box-shadow: 0 12px 34px rgba(26,22,18,0.08);
+        transform: translateY(-2px);
+      }
+
+      .custom-design-box {
+        display: grid;
+        gap: 14px;
+        margin-top: 16px;
+        padding: 18px;
+        border-radius: 22px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+      }
+
+      .custom-design-upload {
+        display: grid;
+        gap: 8px;
+      }
+
+      .custom-design-upload p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 13px;
+      }
+
+      .checkbox-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .checkbox-row input {
+        margin-top: 4px;
+      }
+
+      .quantity-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .quantity-button {
+        min-width: 112px;
+        min-height: 58px;
+        padding: 10px 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .quantity-button small {
+        display: block;
+        color: var(--gold);
+        font-size: 11px;
+        margin-top: 2px;
+      }
+
+      .quantity-button.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+
+      .input,
+      .textarea,
+      select {
+        width: 100%;
+        padding: 15px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: #fff;
+        color: var(--text);
+        font-size: 15px;
+        outline: none;
+        transition: all 0.2s ease;
+      }
+
+      .textarea {
+        resize: vertical;
+        min-height: 96px;
+      }
+
+      .input:focus,
+      .textarea:focus,
+      select:focus {
+        border-color: var(--gold);
+        box-shadow: 0 0 0 4px rgba(201, 167, 108, 0.14);
+      }
+
+      .input-error {
+        border-color: #dc2626;
+        background: #fef2f2;
+      }
+
+      .error-text {
+        color: #dc2626;
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .form-grid {
+        display: grid;
+        gap: 12px;
+        margin-top: 16px;
+      }
+
+      .form-grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .summary-card {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+        display: grid;
+        gap: 14px;
+        box-shadow: 0 22px 70px rgba(26, 22, 18, 0.09);
+      }
+
+      .summary-title {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+      }
+
+      .summary-line {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .summary-line strong {
+        color: var(--accent);
+      }
+
+      .summary-divider {
+        height: 1px;
+        background: var(--border);
+        margin: 4px 0;
+      }
+
+      .summary-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 14px;
+      }
+
+      .summary-total span {
+        font-weight: 800;
+      }
+
+      .summary-total strong {
+        font-size: 34px;
+        letter-spacing: -0.05em;
+        color: var(--accent);
+      }
+
+      .trust-box {
+        display: grid;
+        gap: 8px;
+        padding: 16px;
+        border-radius: 20px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+      }
+
+      .trust-box div {
+        font-size: 13px;
+        color: var(--accent);
+        font-weight: 700;
+      }
+
+      .storage-note {
+        color: var(--text-muted);
+        font-size: 12px;
+        line-height: 1.55;
+        text-align: center;
+      }
+
+      .admin-card,
+      .upload-card,
+      .filter-card,
+      .gallery-section {
+        padding: 24px;
+      }
+
+      .upload-card {
+        display: grid;
+        gap: 16px;
+      }
+
+      .upload-picker {
+        display: grid;
+        justify-items: center;
+        gap: 10px;
+        padding: 30px 18px;
+        border: 1.5px dashed var(--border-hover);
+        border-radius: 26px;
+        background: var(--warm);
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .upload-icon {
+        width: 58px;
+        height: 58px;
+        display: grid;
+        place-items: center;
+        border-radius: 18px;
+        background: var(--accent);
+        color: #fff;
+        font-size: 28px;
+        font-weight: 800;
+        box-shadow: 0 12px 28px rgba(26, 22, 18, 0.16);
+      }
+
+      .upload-picker span {
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .file-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .file-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        max-width: 100%;
+        padding: 10px;
+        border-radius: 16px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+      }
+
+      .file-chip img {
+        width: 52px;
+        height: 52px;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+
+      .file-chip div {
+        display: grid;
+        min-width: 0;
+      }
+
+      .file-chip strong {
+        max-width: 180px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 13px;
+      }
+
+      .file-chip span {
+        color: var(--text-muted);
+        font-size: 12px;
+      }
+
+      .file-chip button {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+      }
+
+      .filter-card p {
+        margin: 10px 0 0;
+        color: var(--text-secondary);
+      }
+
+      .gallery-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+      }
+
+      .masonry-grid {
+        column-count: 1;
+        column-gap: 16px;
+      }
+
+      .photo-item {
+        display: inline-block;
+        width: 100%;
+        margin: 0 0 16px;
+        position: relative;
+        break-inside: avoid;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #fff;
+        border: 1px solid var(--border);
+        box-shadow: 0 8px 22px rgba(26, 22, 18, 0.05);
+      }
+
+      .photo-item.selected {
+        box-shadow: 0 0 0 3px var(--gold), 0 12px 32px rgba(26, 22, 18, 0.08);
+      }
+
+      .photo-item > img {
+        width: 100%;
+        display: block;
+        cursor: zoom-in;
+      }
+
+      .photo-overlay-actions {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        opacity: 0;
+        transform: translateY(6px);
+        transition: all 0.2s ease;
+      }
+
+      .photo-item:hover .photo-overlay-actions {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .photo-overlay-actions button {
+        min-height: 34px;
+        padding: 0 10px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(255,255,255,0.92);
+        color: var(--accent);
+        font-size: 12px;
+        font-weight: 800;
+        box-shadow: 0 8px 22px rgba(26,22,18,0.12);
+      }
+
+      .photo-info {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+      }
+
+      .photo-info p {
+        margin: 0;
+        color: var(--text-secondary);
+        font-size: 14px;
+      }
+
+      .like-button {
+        width: fit-content;
+        border: none;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: var(--warm);
+        color: var(--text-secondary);
+        font-weight: 800;
+      }
+
+      .like-button.active {
+        background: #fee4e2;
+        color: var(--danger);
+      }
+
+      details summary {
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .comment-list,
+      .comment-form {
+        display: grid;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .comment-item {
+        padding: 10px;
+        border-radius: 14px;
+        background: var(--warm);
+      }
+
+      .comment-item strong {
+        font-size: 13px;
+      }
+
+      .comment-item p {
+        margin: 4px 0;
+        font-size: 13px;
+      }
+
+      .comment-item small {
+        color: var(--text-muted);
+      }
+
+      .center-card {
+        max-width: 520px;
+        margin: 80px auto;
+        padding: 26px;
+        border-radius: 24px;
+        background: #fff;
+        border: 1px solid var(--border);
+        text-align: center;
+        color: var(--text-secondary);
+        box-shadow: 0 20px 60px rgba(26,22,18,0.08);
+      }
+
+      .login-shell {
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+      }
+
+      .login-card {
+        width: min(100%, 440px);
+        padding: 30px;
+        border-radius: 32px;
+        background: rgba(255,255,255,0.94);
+        border: 1px solid var(--border);
+        box-shadow: 0 30px 90px rgba(26,22,18,0.12);
+        display: grid;
+        gap: 14px;
+      }
+
+      .login-card h1 {
+        margin: 0;
+        font-size: 34px;
+        line-height: 1.08;
+        letter-spacing: -0.05em;
+      }
+
+      .login-card p {
+        margin: 0;
+        color: var(--text-secondary);
+      }
+
+      .cart-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        background: rgba(26, 22, 18, 0.5);
+        padding: 0;
+      }
+
+      .cart-panel {
+        width: min(100%, 980px);
+        height: min(90vh, 920px);
+        overflow: auto;
+        background: #fff;
+        border-radius: 32px 32px 0 0;
+        padding: 14px 18px 24px;
+        box-shadow: 0 -20px 70px rgba(26,22,18,0.22);
+      }
+
+      .cart-handle {
+        width: 46px;
+        height: 5px;
+        margin: 0 auto 14px;
+        border-radius: 999px;
+        background: var(--border-hover);
+      }
+
+      .cart-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding-bottom: 14px;
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(12px);
+      }
+
+      .cart-header h3 {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: -0.04em;
+      }
+
+      .cart-header button,
+      .lightbox-close {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        border: none;
+        background: var(--accent);
+        color: #fff;
+        font-weight: 800;
+      }
+
+      .cart-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      .cart-photo-card {
+        display: grid;
+        gap: 14px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: var(--surface);
+      }
+
+      .cart-photo-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        border-radius: 18px;
+      }
+
+      .cart-photo-card > div {
+        display: grid;
+        gap: 10px;
+      }
+
+      .cart-photo-card label {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .cart-item-price {
+        font-size: 18px;
+        font-weight: 800;
+        color: var(--accent);
+      }
+
+      .cart-order-card {
+        display: grid;
+        gap: 14px;
+        margin-top: 18px;
+        padding: 18px;
+        border-radius: 24px;
+        background: var(--warm);
+        border: 1px solid var(--border);
+      }
+
+      .cart-order-card h4 {
+        margin: 0;
+        font-size: 22px;
+      }
+
+      .cart-order-card p {
+        margin: 0;
+        color: var(--text-secondary);
+      }
+
+      .cart-footer {
+        position: sticky;
+        bottom: 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        padding-top: 16px;
+        background: rgba(255,255,255,0.96);
+        border-top: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+      }
+
+      .cart-footer div {
+        display: grid;
+      }
+
+      .cart-footer small {
+        color: var(--text-secondary);
+        font-weight: 700;
+      }
+
+      .cart-footer strong {
+        font-size: 30px;
+        color: var(--accent);
+      }
+
+      .lightbox-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        padding: 18px;
+        background: rgba(2, 6, 23, 0.92);
+      }
+
+      .lightbox-content {
+        position: relative;
+        max-width: 1100px;
+        width: 100%;
+        max-height: 92vh;
+        display: grid;
+        place-items: center;
+      }
+
+      .lightbox-content img {
+        max-width: 100%;
+        max-height: 78vh;
+        object-fit: contain;
+        border-radius: 18px;
+      }
+
+      .lightbox-close {
+        position: absolute;
+        top: -10px;
+        right: 0;
+        z-index: 3;
+        background: rgba(255,255,255,0.16);
+      }
+
+      .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        z-index: 3;
+        transform: translateY(-50%);
+        width: 52px;
+        height: 52px;
+        border-radius: 999px;
+        border: none;
+        background: rgba(255,255,255,0.16);
+        color: #fff;
+        font-size: 36px;
+      }
+
+      .lightbox-nav.left {
+        left: 14px;
+      }
+
+      .lightbox-nav.right {
+        right: 14px;
+      }
+
+      .lightbox-footer {
+        margin-top: 12px;
+        color: #fff;
+        text-align: center;
+      }
+
+      .lightbox-footer p {
+        margin: 4px 0 0;
+      }
+
+      @media (min-width: 680px) {
+        .masonry-grid {
+          column-count: 2;
+        }
+
+        .snapkey-grid,
+        .design-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .form-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .cart-photo-card {
+          grid-template-columns: 240px 1fr;
+        }
+
+        .cart-photo-card img {
+          height: 100%;
+          min-height: 240px;
+        }
+      }
+
+      @media (min-width: 920px) {
+        .event-page {
+          padding: 32px 28px 140px;
+        }
+
+        .album-hero {
+          grid-template-columns: minmax(0, 1fr) minmax(380px, 0.9fr);
+          padding: 32px;
+        }
+
+        .album-hero-visual,
+        .album-hero-visual img,
+        .hero-placeholder {
+          min-height: 520px;
+        }
+
+        .setup-layout {
+          grid-template-columns: minmax(0, 1fr) 360px;
+        }
+
+        .snapkey-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .design-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .masonry-grid {
+          column-count: 3;
+        }
+      }
+
+      @media (min-width: 1180px) {
+        .masonry-grid {
+          column-count: 4;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .event-page {
+          padding: 16px 12px 120px;
+        }
+
+        .album-hero,
+        .setup-card,
+        .upload-card,
+        .gallery-section,
+        .locked-card,
+        .admin-card,
+        .filter-card {
+          border-radius: 24px;
+        }
+
+        .album-hero {
+          padding: 18px;
+        }
+
+        .brand-row {
+          margin-bottom: 22px;
+        }
+
+        .primary-button,
+        .secondary-button,
+        .ghost-button,
+        .small-link-button {
+          width: 100%;
+        }
+
+        .gallery-header {
+          display: grid;
+        }
+
+        .photo-overlay-actions {
+          opacity: 1;
+          transform: none;
+        }
+
+        .summary-total strong {
+          font-size: 28px;
+        }
+
+        .cart-panel {
+          border-radius: 26px 26px 0 0;
+        }
+      }
+    `}</style>
+  );
+}
