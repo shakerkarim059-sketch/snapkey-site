@@ -3439,80 +3439,92 @@ select {
   margin-top: 26px;
 }
 
-/* Finaler Mobile-Fix gegen seitliches Wischen */
+/* Echter Mobile-Fix gegen horizontales Wischen */
 
 html,
 body {
   width: 100%;
   max-width: 100%;
-  overflow-x: clip;
-  position: relative;
+  overflow-x: hidden;
 }
-#__next,
-main {
+
+.event-page {
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.event-shell {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
 }
 
-.event-page,
-.event-shell,
-.album-hero,
-.album-hero-content,
-.setup-card,
-.setup-layout,
-.setup-main,
-.setup-section,
-.summary-card {
+.album-hero {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.album-hero-content {
   width: 100%;
   max-width: 100%;
   min-width: 0;
-  overflow-x: clip;
+  overflow: hidden;
 }
 
-.album-hero h1 {
-  max-width: 100%;
-  overflow-wrap: break-word;
-  word-break: normal;
-}
-
+.album-hero h1,
 .album-hero h1 span {
+  width: 100%;
   max-width: 100%;
-  overflow-wrap: break-word;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 @media (max-width: 520px) {
   .event-page {
-    padding-left: 10px;
-    padding-right: 10px;
-    overflow-x: clip;
+    padding-left: 8px;
+    padding-right: 8px;
   }
 
   .album-hero {
-    padding: 16px;
-    overflow-x: clip;
+    padding-left: 16px;
+    padding-right: 16px;
   }
 
   .album-hero h1 {
-    font-size: 42px;
-    line-height: 1.04;
-    letter-spacing: -0.055em;
+    font-size: 34px;
+    line-height: 1.08;
+    letter-spacing: -0.045em;
   }
 
   .album-hero h1 span {
-    font-size: 42px;
-    line-height: 1.04;
+    font-size: 34px;
+    line-height: 1.08;
+    letter-spacing: -0.045em;
   }
 
   .brand-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
     width: 100%;
     max-width: 100%;
     min-width: 0;
   }
 
-  .hero-meta {
-    max-width: 100%;
-    overflow-x: clip;
+  .brand {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .ghost-button {
+    min-width: 112px;
+    max-width: 132px;
+    padding-left: 14px;
+    padding-right: 14px;
   }
 }
     `}</style>
