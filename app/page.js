@@ -36,27 +36,83 @@ const snapkeyTypes = [
 
 const steps = [
   {
-    icon: "✦",
     title: "Event erstellen",
-    text: "In wenigen Minuten legt ihr euer persönliches Hochzeitsalbum an — mit eurem Namen, Datum und Design.",
+    text: "In wenigen Minuten legt ihr euer persönliches Eventalbum an — mit Namen, Datum und einem Look, der zu euch passt.",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 3v3M17 3v3M4.5 9.2h15M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z" />
+        <path d="m9.2 14 1.8 1.8 4-4" />
+      </svg>
+    ),
   },
   {
-    icon: "◇",
     title: "Snapkeys verteilen",
-    text: "Gäste öffnen das Album per Tap oder QR-Code direkt im Browser. Keine App, kein Login.",
+    text: "Legt die Snapkeys auf Tische, in Einladungen oder als Gastgeschenk aus. Gäste öffnen alles direkt per Tap oder QR-Code.",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8.5 8.5h7A3.5 3.5 0 0 1 19 12v0a3.5 3.5 0 0 1-3.5 3.5h-7A3.5 3.5 0 0 1 5 12v0a3.5 3.5 0 0 1 3.5-3.5Z" />
+        <path d="M9.5 12h5M12 9.5v5" />
+        <path d="M3.5 6.5c1-1.4 2.4-2.4 4-3M20.5 17.5c-1 1.4-2.4 2.4-4 3" />
+      </svg>
+    ),
   },
   {
-    icon: "○",
     title: "Gemeinsam sammeln",
-    text: "Fotos und Videos von allen Gästen landen automatisch an einem Ort — für immer.",
+    text: "Fotos und Videos von allen Gästen landen automatisch an einem Ort — übersichtlich, emotional und jederzeit abrufbar.",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4.5 7.5A2.5 2.5 0 0 1 7 5h10a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 17 19H7a2.5 2.5 0 0 1-2.5-2.5v-9Z" />
+        <path d="m7 15 3.2-3.2a1.2 1.2 0 0 1 1.7 0L14 14l1-1a1.2 1.2 0 0 1 1.7 0L19.5 16" />
+        <path d="M15.5 9.2h.01" />
+      </svg>
+    ),
   },
 ];
 
 const features = [
-  { icon: "⚡", text: "Ohne App" },
-  { icon: "📱", text: "Tap & QR" },
-  { icon: "💒", text: "Für Hochzeiten" },
-  { icon: "📸", text: "Ein Album für alle" },
+  { icon: "✓", text: "Ohne App" },
+  { icon: "↗", text: "Tap & QR" },
+  { icon: "♡", text: "Für Hochzeiten" },
+  { icon: "▦", text: "Ein Album für alle" },
+];
+
+const testimonials = [
+  {
+    quote:
+      "Wir hatten am nächsten Morgen so viele schöne Momente gesammelt, die wir selbst gar nicht mitbekommen hätten.",
+    name: "Laura & Tim Schneider",
+    event: "Hochzeit in Köln",
+  },
+  {
+    quote:
+      "Für unsere Gäste war es super einfach. Kein Erklären, keine App — einfach öffnen und Bilder hochladen.",
+    name: "Miriam Hoffmann",
+    event: "Sommerhochzeit",
+  },
+  {
+    quote:
+      "Die Snapkeys lagen auf den Tischen und wurden wirklich genutzt. Genau so hatten wir uns das vorgestellt.",
+    name: "Anna & Daniel Weber",
+    event: "Feier mit 92 Gästen",
+  },
+  {
+    quote:
+      "Besonders schön waren die spontanen Videos von Freunden und Familie. Das fühlt sich viel persönlicher an.",
+    name: "Sophie Krüger",
+    event: "Geburtstag & Familienfeier",
+  },
+  {
+    quote:
+      "Schick, unkompliziert und die perfekte Ergänzung zum Fotografen. Wir würden es sofort wieder nutzen.",
+    name: "Nadine & Felix Bauer",
+    event: "Hochzeit im Garten",
+  },
+  {
+    quote:
+      "Endlich nicht mehr überall einzelne Bilder zusammensuchen. Alles war an einem Ort und sah hochwertig aus.",
+    name: "Katharina Meier",
+    event: "Jubiläumsfeier",
+  },
 ];
 
 const faqs = [
@@ -68,7 +124,7 @@ const faqs = [
   {
     question: "Funktioniert das auch mit älteren Handys?",
     answer:
-      "Ja. Moderne Smartphones nutzen NFC, bei älteren Geräten funktioniert der QR-Code als Alternative genauso einfach.",
+      "Ja. Bei älteren Geräten funktioniert der QR-Code als Alternative genauso einfach.",
   },
   {
     question: "Können wir Snapkey auch für andere Events nutzen?",
@@ -87,12 +143,15 @@ function useInView(options = {}) {
   const [isInView, setIsInView] = useState(false);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setIsInView(true);
-        observer.disconnect();
-      }
-    }, { threshold: 0.1, ...options });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1, ...options }
+    );
 
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
@@ -110,6 +169,7 @@ export default function HomePage() {
   const [stepsRef, stepsInView] = useInView();
   const [showcaseRef, showcaseInView] = useInView();
   const [productsRef, productsInView] = useInView();
+  const [reviewsRef, reviewsInView] = useInView();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -138,7 +198,7 @@ export default function HomePage() {
   return (
     <main className="snap-page">
       <style jsx global>{`
-        @import url("[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap)");
+        @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
         :root {
           --bg: #faf8f5;
@@ -164,14 +224,22 @@ export default function HomePage() {
         html {
           scroll-behavior: smooth;
           -webkit-font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
         }
 
         body {
           margin: 0;
           background: var(--bg);
           color: var(--text);
-          font-family: "DM Sans", system-ui, sans-serif;
+          font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
           line-height: 1.6;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+          font: inherit;
         }
 
         .snap-page {
@@ -184,7 +252,6 @@ export default function HomePage() {
           margin: 0 auto;
         }
 
-        /* Navigation */
         .nav {
           position: fixed;
           top: 0;
@@ -212,12 +279,11 @@ export default function HomePage() {
         }
 
         .logo {
-          font-family: "Playfair Display", serif;
-          font-size: 26px;
-          font-weight: 600;
+          font-size: 25px;
+          font-weight: 800;
           color: var(--accent);
           text-decoration: none;
-          letter-spacing: -0.02em;
+          letter-spacing: -0.04em;
         }
 
         .nav-links {
@@ -229,7 +295,7 @@ export default function HomePage() {
           color: var(--text-secondary);
           text-decoration: none;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           transition: color 0.2s;
         }
 
@@ -246,7 +312,7 @@ export default function HomePage() {
           color: #fff;
           text-decoration: none;
           font-size: 14px;
-          font-weight: 600;
+          font-weight: 700;
           border-radius: 100px;
           transition: all 0.2s;
         }
@@ -256,7 +322,6 @@ export default function HomePage() {
           transform: translateY(-1px);
         }
 
-        /* Hero */
         .hero {
           min-height: 100svh;
           display: flex;
@@ -303,7 +368,7 @@ export default function HomePage() {
           border: 1px solid var(--border);
           border-radius: 100px;
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 700;
           color: var(--text-secondary);
           margin-bottom: 24px;
         }
@@ -317,11 +382,10 @@ export default function HomePage() {
 
         .hero-title {
           margin: 0;
-          font-family: "Playfair Display", serif;
           font-size: clamp(42px, 8vw, 72px);
-          font-weight: 600;
-          line-height: 1.05;
-          letter-spacing: -0.03em;
+          font-weight: 800;
+          line-height: 1.02;
+          letter-spacing: -0.06em;
           color: var(--accent);
         }
 
@@ -336,9 +400,9 @@ export default function HomePage() {
         .hero-description {
           margin: 24px 0 0;
           font-size: 18px;
-          line-height: 1.7;
+          line-height: 1.75;
           color: var(--text-secondary);
-          max-width: 480px;
+          max-width: 500px;
         }
 
         .hero-actions {
@@ -355,7 +419,7 @@ export default function HomePage() {
           height: 56px;
           padding: 0 28px;
           font-size: 15px;
-          font-weight: 600;
+          font-weight: 700;
           border-radius: 100px;
           text-decoration: none;
           transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
@@ -400,11 +464,22 @@ export default function HomePage() {
           align-items: center;
           gap: 8px;
           font-size: 14px;
+          font-weight: 600;
           color: var(--text-secondary);
         }
 
         .hero-feature-icon {
-          font-size: 16px;
+          width: 22px;
+          height: 22px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--warm);
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          color: var(--gold);
+          font-size: 13px;
+          font-weight: 800;
         }
 
         .hero-visual {
@@ -423,16 +498,50 @@ export default function HomePage() {
           position: relative;
           border-radius: 24px;
           overflow: hidden;
-          aspect-ratio: 4/3;
-          box-shadow: 
-            0 24px 80px rgba(26, 22, 18, 0.12),
-            0 0 0 1px rgba(26, 22, 18, 0.04);
+          aspect-ratio: 4 / 3;
+          box-shadow: 0 24px 80px rgba(26, 22, 18, 0.12), 0 0 0 1px rgba(26, 22, 18, 0.04);
+          background: var(--warm);
+        }
+
+        .hero-image-wrapper::after,
+        .product-image::after,
+        .showcase-image::after {
+          content: "Bild vergrößern";
+          position: absolute;
+          right: 14px;
+          bottom: 14px;
+          padding: 8px 12px;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.9);
+          color: var(--accent);
+          font-size: 12px;
+          font-weight: 800;
+          opacity: 0;
+          transform: translateY(6px);
+          transition: all 0.25s ease;
+          pointer-events: none;
+          box-shadow: 0 8px 24px rgba(26, 22, 18, 0.12);
+        }
+
+        .hero-image-wrapper:hover::after,
+        .product-image:hover::after,
+        .showcase-image:hover::after {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .hero-image-wrapper img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
+          object-position: center;
+          cursor: zoom-in;
+          background: var(--warm);
+          transition: transform 0.5s ease;
+        }
+
+        .hero-image-wrapper img:hover {
+          transform: scale(1.02);
         }
 
         .hero-float {
@@ -440,9 +549,7 @@ export default function HomePage() {
           background: var(--surface);
           border-radius: 16px;
           padding: 16px 20px;
-          box-shadow: 
-            0 12px 40px rgba(26, 22, 18, 0.1),
-            0 0 0 1px rgba(26, 22, 18, 0.04);
+          box-shadow: 0 12px 40px rgba(26, 22, 18, 0.1), 0 0 0 1px rgba(26, 22, 18, 0.04);
           animation: float 4s ease-in-out infinite;
         }
 
@@ -465,7 +572,7 @@ export default function HomePage() {
 
         .hero-float-text {
           font-size: 13px;
-          font-weight: 600;
+          font-weight: 800;
           color: var(--text);
         }
 
@@ -479,14 +586,13 @@ export default function HomePage() {
           50% { transform: translateY(-8px); }
         }
 
-        /* Sections */
         .section {
           padding: 80px 0;
         }
 
         .section-header {
           text-align: center;
-          max-width: 640px;
+          max-width: 680px;
           margin: 0 auto 56px;
         }
 
@@ -495,7 +601,7 @@ export default function HomePage() {
           align-items: center;
           gap: 8px;
           font-size: 12px;
-          font-weight: 700;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.1em;
           color: var(--gold);
@@ -504,29 +610,33 @@ export default function HomePage() {
 
         .section-title {
           margin: 0;
-          font-family: "Playfair Display", serif;
           font-size: clamp(32px, 5vw, 48px);
-          font-weight: 600;
-          line-height: 1.15;
-          letter-spacing: -0.02em;
+          font-weight: 800;
+          line-height: 1.12;
+          letter-spacing: -0.045em;
           color: var(--accent);
         }
 
         .section-description {
           margin: 16px 0 0;
           font-size: 17px;
-          line-height: 1.7;
+          line-height: 1.75;
           color: var(--text-secondary);
         }
 
-        /* Steps */
-        .steps-wrapper {
+        .steps-wrapper,
+        .showcase-wrapper,
+        .products-wrapper,
+        .reviews-wrapper {
           opacity: 0;
           transform: translateY(40px);
           transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .steps-wrapper.visible {
+        .steps-wrapper.visible,
+        .showcase-wrapper.visible,
+        .products-wrapper.visible,
+        .reviews-wrapper.visible {
           opacity: 1;
           transform: translateY(0);
         }
@@ -552,72 +662,77 @@ export default function HomePage() {
         }
 
         .step-icon {
-          width: 48px;
-          height: 48px;
+          width: 54px;
+          height: 54px;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: var(--warm);
-          border-radius: 14px;
-          font-size: 20px;
+          background: linear-gradient(135deg, var(--warm), #fff);
+          border: 1px solid var(--border);
+          border-radius: 16px;
           margin-bottom: 20px;
+          color: var(--accent);
+          box-shadow: inset 0 0 0 1px rgba(255,255,255,0.7);
+        }
+
+        .step-icon svg {
+          width: 27px;
+          height: 27px;
+          fill: none;
+          stroke: currentColor;
+          stroke-width: 1.8;
+          stroke-linecap: round;
+          stroke-linejoin: round;
         }
 
         .step-number {
           position: absolute;
           top: 24px;
           right: 24px;
-          font-family: "Playfair Display", serif;
-          font-size: 48px;
-          font-weight: 600;
+          font-size: 42px;
+          font-weight: 800;
           color: var(--warm-deep);
           line-height: 1;
+          letter-spacing: -0.04em;
         }
 
         .step-title {
           margin: 0 0 8px;
           font-size: 20px;
-          font-weight: 700;
+          font-weight: 800;
           color: var(--accent);
+          letter-spacing: -0.02em;
         }
 
         .step-text {
           margin: 0;
           font-size: 15px;
-          line-height: 1.65;
+          line-height: 1.7;
           color: var(--text-secondary);
-        }
-
-        /* Showcase */
-        .showcase-wrapper {
-          opacity: 0;
-          transform: translateY(40px);
-          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .showcase-wrapper.visible {
-          opacity: 1;
-          transform: translateY(0);
         }
 
         .showcase {
           display: grid;
-          gap: 24px;
+          gap: 0;
           background: var(--accent);
           border-radius: 28px;
           overflow: hidden;
         }
 
         .showcase-image {
-          aspect-ratio: 16/10;
+          position: relative;
+          aspect-ratio: 16 / 11;
           overflow: hidden;
+          background: #241f1a;
+          min-height: 320px;
         }
 
         .showcase-image img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
-          cursor: pointer;
+          object-fit: contain;
+          object-position: center;
+          cursor: zoom-in;
           transition: transform 0.5s ease;
         }
 
@@ -632,7 +747,7 @@ export default function HomePage() {
 
         .showcase-eyebrow {
           font-size: 12px;
-          font-weight: 700;
+          font-weight: 800;
           text-transform: uppercase;
           letter-spacing: 0.1em;
           color: var(--gold-soft);
@@ -641,17 +756,16 @@ export default function HomePage() {
 
         .showcase-title {
           margin: 0;
-          font-family: "Playfair Display", serif;
           font-size: clamp(28px, 5vw, 40px);
-          font-weight: 600;
-          line-height: 1.15;
-          letter-spacing: -0.02em;
+          font-weight: 800;
+          line-height: 1.12;
+          letter-spacing: -0.045em;
         }
 
         .showcase-text {
           margin: 16px 0 0;
           font-size: 16px;
-          line-height: 1.7;
+          line-height: 1.75;
           color: rgba(255, 255, 255, 0.8);
         }
 
@@ -666,7 +780,7 @@ export default function HomePage() {
           align-items: center;
           gap: 12px;
           font-size: 15px;
-          font-weight: 500;
+          font-weight: 600;
         }
 
         .showcase-list-icon {
@@ -678,18 +792,6 @@ export default function HomePage() {
           background: rgba(255, 255, 255, 0.1);
           border-radius: 8px;
           font-size: 12px;
-        }
-
-        /* Products */
-        .products-wrapper {
-          opacity: 0;
-          transform: translateY(40px);
-          transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .products-wrapper.visible {
-          opacity: 1;
-          transform: translateY(0);
         }
 
         .products-grid {
@@ -717,7 +819,7 @@ export default function HomePage() {
 
         .product-image {
           position: relative;
-          aspect-ratio: 4/3;
+          aspect-ratio: 4 / 3;
           overflow: hidden;
           background: var(--warm);
         }
@@ -726,7 +828,8 @@ export default function HomePage() {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          cursor: pointer;
+          object-position: center;
+          cursor: zoom-in;
           transition: transform 0.5s ease;
         }
 
@@ -742,7 +845,7 @@ export default function HomePage() {
           background: var(--surface);
           border-radius: 100px;
           font-size: 12px;
-          font-weight: 700;
+          font-weight: 800;
           color: var(--text);
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
@@ -767,8 +870,9 @@ export default function HomePage() {
         .product-title {
           margin: 0;
           font-size: 22px;
-          font-weight: 700;
+          font-weight: 800;
           color: var(--accent);
+          letter-spacing: -0.03em;
         }
 
         .product-price {
@@ -777,14 +881,14 @@ export default function HomePage() {
           background: var(--warm);
           border-radius: 8px;
           font-size: 13px;
-          font-weight: 700;
+          font-weight: 800;
           color: var(--text-secondary);
         }
 
         .product-description {
           margin: 0 0 16px;
           font-size: 14px;
-          line-height: 1.65;
+          line-height: 1.7;
           color: var(--text-secondary);
         }
 
@@ -799,7 +903,7 @@ export default function HomePage() {
           background: var(--warm);
           border-radius: 8px;
           font-size: 12px;
-          font-weight: 600;
+          font-weight: 700;
           color: var(--text-secondary);
         }
 
@@ -821,48 +925,57 @@ export default function HomePage() {
           color: var(--text);
         }
 
-        /* Testimonial */
-        .testimonial {
+        .reviews-grid {
+          display: grid;
+          gap: 18px;
+        }
+
+        .review-card {
+          display: flex;
+          flex-direction: column;
+          min-height: 100%;
+          padding: 26px;
           background: var(--surface);
           border: 1px solid var(--border);
-          border-radius: 28px;
-          padding: 48px 32px;
-          text-align: center;
+          border-radius: 22px;
+          transition: all 0.25s ease;
         }
 
-        .testimonial-stars {
-          display: flex;
-          justify-content: center;
-          gap: 4px;
-          margin-bottom: 24px;
+        .review-card:hover {
+          border-color: var(--border-hover);
+          transform: translateY(-3px);
+          box-shadow: 0 16px 44px rgba(26, 22, 18, 0.07);
+        }
+
+        .review-stars {
           color: var(--gold);
-          font-size: 20px;
+          font-size: 18px;
+          letter-spacing: 0.08em;
+          margin-bottom: 16px;
         }
 
-        .testimonial-quote {
+        .review-quote {
           margin: 0;
-          font-family: "Playfair Display", serif;
-          font-size: clamp(24px, 4vw, 36px);
+          color: var(--text);
+          font-size: 15px;
+          line-height: 1.75;
           font-weight: 500;
-          line-height: 1.3;
-          color: var(--accent);
-          font-style: italic;
         }
 
-        .testimonial-author {
-          margin-top: 24px;
+        .review-author {
+          margin-top: auto;
+          padding-top: 20px;
           font-size: 14px;
           color: var(--text-muted);
         }
 
-        .testimonial-author strong {
+        .review-author strong {
           display: block;
-          font-weight: 600;
-          color: var(--text-secondary);
+          color: var(--accent);
+          font-weight: 800;
           margin-bottom: 2px;
         }
 
-        /* FAQ */
         .faq-grid {
           display: grid;
           gap: 16px;
@@ -883,18 +996,18 @@ export default function HomePage() {
         .faq-question {
           margin: 0 0 8px;
           font-size: 17px;
-          font-weight: 700;
+          font-weight: 800;
           color: var(--accent);
+          letter-spacing: -0.02em;
         }
 
         .faq-answer {
           margin: 0;
           font-size: 15px;
-          line-height: 1.65;
+          line-height: 1.7;
           color: var(--text-secondary);
         }
 
-        /* CTA */
         .cta-section {
           padding: 80px 0;
         }
@@ -922,20 +1035,19 @@ export default function HomePage() {
         .cta-title {
           position: relative;
           margin: 0;
-          font-family: "Playfair Display", serif;
           font-size: clamp(32px, 6vw, 52px);
-          font-weight: 600;
-          line-height: 1.1;
-          letter-spacing: -0.02em;
+          font-weight: 800;
+          line-height: 1.08;
+          letter-spacing: -0.05em;
           color: #fff;
         }
 
         .cta-text {
           position: relative;
           margin: 20px auto 0;
-          max-width: 520px;
+          max-width: 540px;
           font-size: 17px;
-          line-height: 1.7;
+          line-height: 1.75;
           color: rgba(255, 255, 255, 0.8);
         }
 
@@ -968,7 +1080,6 @@ export default function HomePage() {
           background: rgba(255, 255, 255, 0.15);
         }
 
-        /* Footer */
         .footer {
           padding: 32px 0 48px;
           border-top: 1px solid var(--border);
@@ -991,7 +1102,7 @@ export default function HomePage() {
           color: var(--text-secondary);
           text-decoration: none;
           font-size: 14px;
-          font-weight: 500;
+          font-weight: 600;
           transition: color 0.2s;
         }
 
@@ -1004,7 +1115,6 @@ export default function HomePage() {
           color: var(--text-muted);
         }
 
-        /* Lightbox */
         .lightbox {
           position: fixed;
           inset: 0;
@@ -1026,27 +1136,26 @@ export default function HomePage() {
 
         .lightbox-content {
           position: relative;
-          max-width: 90vw;
-          max-height: 90vh;
+          max-width: 94vw;
+          max-height: 92vh;
           animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes scaleIn {
-          from { 
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to { 
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.95); }
+          to { opacity: 1; transform: scale(1); }
         }
 
         .lightbox-image {
-          max-width: 90vw;
-          max-height: 85vh;
+          display: block;
+          max-width: 94vw;
+          max-height: 88vh;
+          width: auto;
+          height: auto;
+          object-fit: contain;
           border-radius: 16px;
           box-shadow: 0 32px 80px rgba(0, 0, 0, 0.4);
+          background: var(--warm);
         }
 
         .lightbox-close {
@@ -1071,7 +1180,6 @@ export default function HomePage() {
           transform: scale(1.1);
         }
 
-        /* Responsive */
         @media (min-width: 768px) {
           .container {
             width: min(1200px, calc(100% - 80px));
@@ -1082,7 +1190,7 @@ export default function HomePage() {
           }
 
           .hero-grid {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1fr) minmax(360px, 1fr);
             gap: 64px;
           }
 
@@ -1099,17 +1207,27 @@ export default function HomePage() {
           }
 
           .showcase {
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+            align-items: stretch;
+          }
+
+          .showcase-image {
+            min-height: 520px;
+            aspect-ratio: auto;
           }
 
           .showcase-content {
-            padding: 48px;
+            padding: 56px;
             display: flex;
             flex-direction: column;
             justify-content: center;
           }
 
           .products-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+
+          .reviews-grid {
             grid-template-columns: repeat(3, 1fr);
           }
 
@@ -1127,6 +1245,12 @@ export default function HomePage() {
           }
         }
 
+        @media (max-width: 767px) {
+          .showcase-image img {
+            object-fit: cover;
+          }
+        }
+
         @media (max-width: 480px) {
           .container {
             width: calc(100% - 32px);
@@ -1134,10 +1258,21 @@ export default function HomePage() {
 
           .nav-inner {
             height: 64px;
+            padding: 0 16px;
+          }
+
+          .logo {
+            font-size: 23px;
+          }
+
+          .nav-cta {
+            height: 40px;
+            padding: 0 14px;
+            font-size: 13px;
           }
 
           .hero {
-            padding-top: 80px;
+            padding-top: 84px;
           }
 
           .hero-float {
@@ -1148,20 +1283,23 @@ export default function HomePage() {
             width: 100%;
           }
 
-          .testimonial {
-            padding: 32px 24px;
+          .hero-image-wrapper::after,
+          .product-image::after,
+          .showcase-image::after {
+            opacity: 1;
+            transform: none;
           }
         }
       `}</style>
 
-      {/* Navigation */}
       <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
         <div className="nav-inner">
           <Link href="/" className="logo">snapkey</Link>
-          
+
           <div className="nav-links">
             <a href="#how-it-works" className="nav-link">So funktioniert's</a>
             <a href="#products" className="nav-link">Varianten</a>
+            <a href="#reviews" className="nav-link">Bewertungen</a>
             <a href="#faq" className="nav-link">FAQ</a>
           </div>
 
@@ -1169,7 +1307,6 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* Hero */}
       <section className="hero" ref={heroRef}>
         <div className="container">
           <div className="hero-grid">
@@ -1185,7 +1322,7 @@ export default function HomePage() {
               </h1>
 
               <p className="hero-description">
-                Eure Gäste teilen Fotos und Videos mit einem Tap — ohne App, 
+                Eure Gäste teilen Fotos und Videos mit einem Tap — ohne App,
                 ohne Chaos und ohne verlorene Momente.
               </p>
 
@@ -1210,7 +1347,11 @@ export default function HomePage() {
 
             <div className={`hero-visual ${heroInView ? "visible" : ""}`}>
               <div className="hero-image-wrapper">
-                <img src="/hero-snapkey.jpg" alt="Snapkey bei einer Hochzeit" />
+                <img
+                  src="/hero-snapkey.jpg"
+                  alt="Snapkey bei einer Hochzeit"
+                  onClick={() => openImage("/hero-snapkey.jpg", "Snapkey bei einer Hochzeit")}
+                />
               </div>
 
               <div className="hero-float hero-float-1">
@@ -1229,11 +1370,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How it works */}
       <section className="section" id="how-it-works" ref={stepsRef}>
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">✦ So funktioniert's</div>
+            <div className="section-eyebrow">So funktioniert's</div>
             <h2 className="section-title">Drei Schritte zu eurem gemeinsamen Album</h2>
             <p className="section-description">
               Snapkey verbindet euer digitales Album mit einem physischen Zugang für alle Gäste.
@@ -1255,7 +1395,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Showcase */}
       <section className="section" ref={showcaseRef}>
         <div className="container">
           <div className={`showcase-wrapper ${showcaseInView ? "visible" : ""}`}>
@@ -1274,7 +1413,7 @@ export default function HomePage() {
                   Aus spontanen Momenten wird eine gemeinsame Geschichte.
                 </h2>
                 <p className="showcase-text">
-                  Die schönsten Bilder entstehen oft nicht beim Fotografen — 
+                  Die schönsten Bilder entstehen oft nicht beim Fotografen —
                   sondern bei euren Gästen. Snapkey sammelt genau diese Perspektiven.
                 </p>
 
@@ -1285,7 +1424,7 @@ export default function HomePage() {
                   </div>
                   <div className="showcase-list-item">
                     <span className="showcase-list-icon">✓</span>
-                    Zugang per NFC-Tap oder QR-Code
+                    Zugang per Tap oder QR-Code
                   </div>
                   <div className="showcase-list-item">
                     <span className="showcase-list-icon">✓</span>
@@ -1298,11 +1437,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Products */}
       <section className="section" id="products" ref={productsRef}>
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">◇ Snapkey Varianten</div>
+            <div className="section-eyebrow">Snapkey Varianten</div>
             <h2 className="section-title">Wählt den Zugang, der zu euch passt</h2>
             <p className="section-description">
               Vom günstigen Mini für viele Gäste bis zum Erinnerungsstück aus Holz.
@@ -1312,8 +1450,8 @@ export default function HomePage() {
           <div className={`products-wrapper ${productsInView ? "visible" : ""}`}>
             <div className="products-grid">
               {snapkeyTypes.map((product) => (
-                <article 
-                  className={`product-card ${product.featured ? "featured" : ""}`} 
+                <article
+                  className={`product-card ${product.featured ? "featured" : ""}`}
                   key={product.title}
                 >
                   <div className="product-image">
@@ -1345,7 +1483,7 @@ export default function HomePage() {
 
             <div className="pricing-info">
               <p>
-                <strong>Eventseite ab 29 €</strong> + Snapkeys je nach Auswahl. 
+                <strong>Eventseite ab 29 €</strong> + Snapkeys je nach Auswahl.
                 Design und Farben lassen sich später anpassen.
               </p>
             </div>
@@ -1353,27 +1491,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonial */}
-      <section className="section">
+      <section className="section" id="reviews" ref={reviewsRef}>
         <div className="container">
-          <div className="testimonial">
-            <div className="testimonial-stars">★★★★★</div>
-            <blockquote className="testimonial-quote">
-              „Am Ende hatten wir nicht nur die offiziellen Fotos, sondern 
-              hunderte echte Momente von unseren Gästen."
-            </blockquote>
-            <div className="testimonial-author">
-              <strong>Frank Lucas</strong>
+          <div className="section-header">
+            <div className="section-eyebrow">Bewertungen</div>
+            <h2 className="section-title">Das sagen unsere ersten Paare und Gastgeber</h2>
+            <p className="section-description">
+              Beispielbewertungen als Platzhalter, bis echte Rückmeldungen eingebunden werden.
+            </p>
+          </div>
+
+          <div className={`reviews-wrapper ${reviewsInView ? "visible" : ""}`}>
+            <div className="reviews-grid">
+              {testimonials.map((review) => (
+                <article className="review-card" key={review.name}>
+                  <div className="review-stars" aria-label="5 von 5 Sternen">★★★★★</div>
+                  <p className="review-quote">„{review.quote}”</p>
+                  <div className="review-author">
+                    <strong>{review.name}</strong>
+                    {review.event}
+                  </div>
+                </article>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="section" id="faq">
         <div className="container">
           <div className="section-header">
-            <div className="section-eyebrow">○ Häufige Fragen</div>
+            <div className="section-eyebrow">Häufige Fragen</div>
             <h2 className="section-title">Einfach für euch. Einfach für eure Gäste.</h2>
           </div>
 
@@ -1388,13 +1536,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="cta-section">
         <div className="container">
           <div className="cta-card">
             <h2 className="cta-title">Bereit für Erinnerungen, die bleiben?</h2>
             <p className="cta-text">
-              Erstellt euer Eventalbum, wählt eure Snapkeys und gebt euren Gästen 
+              Erstellt euer Eventalbum, wählt eure Snapkeys und gebt euren Gästen
               einen einfachen Weg, Momente zu teilen.
             </p>
 
@@ -1410,7 +1557,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="footer">
         <div className="container">
           <div className="footer-inner">
@@ -1423,21 +1569,20 @@ export default function HomePage() {
         </div>
       </footer>
 
-      {/* Lightbox */}
       {lightboxImage && (
-        <div className="lightbox" onClick={closeImage}>
+        <div className="lightbox" onClick={closeImage} role="dialog" aria-modal="true">
           <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <button 
-              className="lightbox-close" 
+            <button
+              className="lightbox-close"
               onClick={closeImage}
               aria-label="Schließen"
             >
               ×
             </button>
-            <img 
-              src={lightboxImage} 
-              alt={lightboxAlt} 
-              className="lightbox-image" 
+            <img
+              src={lightboxImage}
+              alt={lightboxAlt}
+              className="lightbox-image"
             />
           </div>
         </div>
