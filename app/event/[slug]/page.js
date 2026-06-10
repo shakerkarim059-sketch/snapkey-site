@@ -20,7 +20,7 @@ const KEY_TYPES = {
     label: "Für viele Gäste",
     description:
       "Der leichte Einstieg für große Feiern. Klein, praktisch und perfekt, damit jeder Gast Erinnerungen teilen kann.",
-    price: 2.5,
+    price: 1.9,
     image: "/nfc-chip.jpg",
     points: ["Tap + QR-Code", "Für viele Gäste", "Günstigste Variante"],
   },
@@ -29,7 +29,7 @@ const KEY_TYPES = {
     label: "Am beliebtesten",
     description:
       "Eine elegante Karte mit persönlichem Design. Perfekt für Tische, Einladungen oder als hochwertiges Gastgeschenk.",
-    price: 4,
+    price: 2.9,
     image: "/pvc-cards.jpg",
     points: ["Premium Kartenlook", "Persönliches Design", "Für jeden Anlass"],
     featured: true,
@@ -39,7 +39,7 @@ const KEY_TYPES = {
     label: "Als Erinnerung",
     description:
       "Ein natürlicher Holz-Snapkey, der nach dem Event bleibt. Emotional, hochwertig und besonders persönlich.",
-    price: 6,
+    price: 7.9,
     image: "/wood-keychain.jpg",
     points: ["Natürliches Holz", "Sehr emotional", "Zum Mitnehmen"],
   },
@@ -3197,7 +3197,95 @@ function EventStyles() {
       .lightbox-footer p {
         margin: 4px 0 0;
       }
+/* Mobile Premium Fixes */
 
+.ghost-button {
+  min-height: 42px;
+  width: auto;
+  min-width: 128px;
+  padding: 0 18px;
+  font-size: 14px;
+  box-shadow: none;
+}
+
+.quantity-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.quantity-button {
+  width: 100%;
+  min-height: 88px;
+  padding: 14px 12px;
+  border-radius: 22px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--accent);
+  font-size: 18px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+}
+
+.quantity-button small {
+  display: block;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 800;
+  margin-top: 2px;
+}
+
+.quantity-button.active {
+  background: #fff;
+  color: var(--accent);
+  border: 2px solid var(--gold);
+  box-shadow: 0 12px 28px rgba(201, 167, 108, 0.16);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.input,
+.textarea,
+select {
+  width: 100%;
+  min-height: 64px;
+  padding: 0 18px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 150px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.summary-card {
+  margin-top: 8px;
+}
+
+.summary-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  color: var(--text-secondary);
+  font-size: 15px;
+  padding: 4px 0;
+}
       @media (min-width: 680px) {
         .masonry-grid {
           column-count: 2;
@@ -3284,12 +3372,16 @@ function EventStyles() {
           margin-bottom: 22px;
         }
 
-        .primary-button,
-        .secondary-button,
-        .ghost-button,
-        .small-link-button {
-          width: 100%;
-        }
+.primary-button,
+.secondary-button,
+.small-link-button {
+  width: 100%;
+}
+
+.ghost-button {
+  width: auto;
+  min-width: 128px;
+}
 
         .gallery-header {
           display: grid;
