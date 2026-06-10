@@ -3438,62 +3438,82 @@ select {
 .snapkey-note-textarea {
   margin-top: 26px;
 }
-/* Finaler Mobile-Overflow-Fix */
+
+/* Finaler Mobile-Fix gegen seitliches Wischen */
 
 html,
 body {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
+  position: relative;
 }
-
-.event-page {
+#__next,
+main {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
 }
 
-.event-shell {
-  width: 100%;
-  max-width: 1180px;
-  overflow-x: hidden;
-}
-
+.event-page,
+.event-shell,
 .album-hero,
+.album-hero-content,
 .setup-card,
-.setup-hero,
 .setup-layout,
 .setup-main,
 .setup-section,
-.summary-card,
-.snapkey-grid,
-.design-grid,
-.quantity-row,
-.form-grid,
-.upload-card,
-.gallery-section,
-.locked-card,
-.admin-card,
-.filter-card {
+.summary-card {
+  width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  min-width: 0;
+  overflow-x: clip;
 }
 
-.snapkey-card,
-.design-card,
-.quantity-button,
-.input,
-.textarea,
-select,
-.primary-button,
-.secondary-button,
-.ghost-button,
-.small-link-button {
+.album-hero h1 {
   max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
-img {
+.album-hero h1 span {
   max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 520px) {
+  .event-page {
+    padding-left: 10px;
+    padding-right: 10px;
+    overflow-x: clip;
+  }
+
+  .album-hero {
+    padding: 16px;
+    overflow-x: clip;
+  }
+
+  .album-hero h1 {
+    font-size: 42px;
+    line-height: 1.04;
+    letter-spacing: -0.055em;
+  }
+
+  .album-hero h1 span {
+    font-size: 42px;
+    line-height: 1.04;
+  }
+
+  .brand-row {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .hero-meta {
+    max-width: 100%;
+    overflow-x: clip;
+  }
 }
     `}</style>
   );
