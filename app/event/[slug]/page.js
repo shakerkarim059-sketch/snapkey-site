@@ -1441,7 +1441,7 @@ export default function EventPage() {
                     value={snapkeyOrderNote}
                     onChange={(e) => setSnapkeyOrderNote(e.target.value)}
                     rows={4}
-                    className="textarea"
+                    className="textarea snapkey-note-textarea"
                   />
                 </section>
               </div>
