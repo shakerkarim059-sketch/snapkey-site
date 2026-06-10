@@ -1563,6 +1563,37 @@ export default function EventPage() {
 
         {eventData?.setup_completed && (
           <>
+{filteredPhotos.length > 0 && (
+  <section className="album-overview-card">
+    <div className="album-overview-header">
+      <div>
+        <div className="eyebrow">Album-Übersicht</div>
+        <h2>Alle Momente auf einen Blick</h2>
+      </div>
+
+      <span>
+        {filteredPhotos.length} Foto{filteredPhotos.length === 1 ? "" : "s"}
+      </span>
+    </div>
+
+    <div className="album-thumb-row">
+      {filteredPhotos.map((photo, index) => (
+        <button
+          type="button"
+          key={photo.id}
+          className="album-thumb"
+          onClick={() => openLightbox(index)}
+        >
+          <img
+            src={photo.signed_url}
+            alt={photo.caption || `Foto ${index + 1}`}
+          />
+        </button>
+      ))}
+    </div>
+  </section>
+)}
+          
             <section ref={uploadRef} className="upload-card">
               <div>
                 <div className="eyebrow">Fotos & Videos sammeln</div>
@@ -3526,6 +3557,73 @@ body {
     padding-left: 14px;
     padding-right: 14px;
   }
+}
+.album-overview-card {
+  padding: 22px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 60px rgba(26, 22, 18, 0.07);
+  overflow: hidden;
+}
+
+.album-overview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.album-overview-header h2 {
+  margin: 8px 0 0;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+
+.album-overview-header span {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.album-thumb-row {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 2px 2px 10px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.album-thumb-row::-webkit-scrollbar {
+  display: none;
+}
+
+.album-thumb {
+  flex: 0 0 74px;
+  width: 74px;
+  height: 74px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--warm);
+  scroll-snap-align: start;
+}
+
+.album-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
     `}</style>
   );
