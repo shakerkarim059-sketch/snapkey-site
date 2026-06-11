@@ -1359,7 +1359,7 @@ export default function HomePage() {
 
       <nav className={`nav ${scrolled ? "scrolled" : ""}`}>
         <div className="nav-inner">
-          <Link href="/" className="logo">snapkey</Link>
+          <Link href="/" className="logo">getsnapkey</Link>
 
 <div className="nav-links">
   <a href="#occasions" className="nav-link">
