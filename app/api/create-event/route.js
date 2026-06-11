@@ -108,7 +108,7 @@ export async function POST(request) {
               <div style="max-width:620px;margin:0 auto;padding:32px 18px;">
                 <div style="background:#ffffff;border:1px solid #ebe5dd;border-radius:28px;padding:32px;box-shadow:0 18px 50px rgba(26,22,18,0.08);">
                   <div style="font-size:28px;font-weight:800;letter-spacing:-0.04em;color:#1a1612;margin-bottom:24px;">
-                    snapkey
+                    getsnapkey
                   </div>
 
                   <div style="display:inline-block;padding:8px 14px;background:#f5efe7;border:1px solid #ebe5dd;border-radius:999px;font-size:13px;font-weight:700;color:#6b5f54;margin-bottom:18px;">
