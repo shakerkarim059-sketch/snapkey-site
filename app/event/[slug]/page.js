@@ -1079,7 +1079,7 @@ export default function EventPage() {
 
         <section className="login-shell">
           <div className="login-card">
-            <div className="brand">snapkey</div>
+            <div className="brand">getsnapkey</div>
             <div className="eyebrow">Privates Album</div>
 
             <h1>{eventData.title || "Gemeinsames Album"}</h1>
