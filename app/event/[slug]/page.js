@@ -371,6 +371,7 @@ const [resendingAdminCode, setResendingAdminCode] = useState(false);
       setLoginError("Login fehlgeschlagen. Bitte später erneut versuchen.");
     }
   }
+  
 async function handleResendAdminCode() {
   if (!slug) {
     alert("Event wurde nicht gefunden.");
