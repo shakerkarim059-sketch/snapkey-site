@@ -140,6 +140,7 @@ export default function EventPage() {
   const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
 
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
   const customDesignInputRef = useRef(null);
   const galleryRef = useRef(null);
   const uploadRef = useRef(null);
@@ -1611,6 +1612,14 @@ export default function EventPage() {
                 onChange={(e) => handleFileSelection(e.target.files)}
                 style={{ display: "none" }}
               />
+                <input
+  ref={cameraInputRef}
+  type="file"
+  accept="image/*"
+  capture="environment"
+  onChange={(e) => handleFileSelection(e.target.files)}
+  style={{ display: "none" }}
+/>
 
               <div className="upload-picker" onClick={() => fileInputRef.current?.click()}>
                 <div className="upload-icon">↑</div>
@@ -1628,7 +1637,16 @@ export default function EventPage() {
                   Dateien öffnen
                 </button>
               </div>
-
+<button
+  type="button"
+  onClick={(e) => {
+    e.stopPropagation();
+    cameraInputRef.current?.click();
+  }}
+  className="secondary-button"
+>
+  📷 Foto direkt aufnehmen
+</button>
               {selectedFiles.length > 0 && (
                 <div className="file-list">
                   {selectedFiles.map((file, index) => (
