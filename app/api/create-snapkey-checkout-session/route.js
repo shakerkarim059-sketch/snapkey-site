@@ -87,7 +87,7 @@ if (eventError || !eventData?.slug) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
-     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?event=${eventData.slug}&code=${encodeURIComponent(order.access_password || "")}`,
+     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?event=${eventData.slug}&code=${encodeURIComponent(eventData.access_password || "")}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
       customer_email: order.customer_email || undefined,
       metadata: {
