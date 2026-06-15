@@ -116,8 +116,9 @@ const [resendingAdminCode, setResendingAdminCode] = useState(false);
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
-  const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
-  const [cartOpen, setCartOpen] = useState(false);
+const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
+const [selectedPhotosLoaded, setSelectedPhotosLoaded] = useState(false);
+const [cartOpen, setCartOpen] = useState(false);
 
   const [photoOrderOptions, setPhotoOrderOptions] = useState({});
 
@@ -154,26 +155,24 @@ const [resendingAdminCode, setResendingAdminCode] = useState(false);
     fetchEventBySlug();
   }, [slug]);
 
-  useEffect(() => {
-    if (!slug) return;
-    checkExistingSession();
-  }, [slug]);
-
-  useEffect(() => {
+useEffect(() => {
   if (!eventData?.id || typeof window === "undefined") return;
+  if (!selectedPhotosLoaded) return;
 
   try {
     const raw = window.localStorage.getItem(LOCAL_SELECTED_PHOTOS_KEY);
     const storedMap = raw ? JSON.parse(raw) : {};
-    const storedIds = storedMap[eventData.id] || [];
 
-    if (Array.isArray(storedIds)) {
-      setSelectedPhotoIds(storedIds);
-    }
+    storedMap[String(eventData.id)] = selectedPhotoIds;
+
+    window.localStorage.setItem(
+      LOCAL_SELECTED_PHOTOS_KEY,
+      JSON.stringify(storedMap)
+    );
   } catch (error) {
-    console.error("Gespeicherte Bildauswahl konnte nicht geladen werden:", error);
+    console.error("Bildauswahl konnte nicht gespeichert werden:", error);
   }
-}, [eventData?.id]);
+}, [selectedPhotoIds, eventData?.id, selectedPhotosLoaded]);
 
   useEffect(() => {
   if (!eventData?.id || typeof window === "undefined") return;
