@@ -73,7 +73,7 @@ export async function POST(req) {
     ];
 const { data: eventData, error: eventError } = await supabase
   .from("events")
-  .select("slug")
+  .select("slug, access_password")
   .eq("id", order.event_id)
   .single();
 
@@ -87,7 +87,7 @@ if (eventError || !eventData?.slug) {
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
-     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?event=${eventData.slug}`,
+     success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?event=${eventData.slug}&code=${encodeURIComponent(order.access_password || "")}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
       customer_email: order.customer_email || undefined,
       metadata: {
