@@ -1155,7 +1155,13 @@ export default function EventPage() {
                 <button type="button" onClick={scrollToUpload} className="primary-button">
                   Fotos hochladen
                 </button>
-
+<button
+  type="button"
+  onClick={() => cameraInputRef.current?.click()}
+  className="secondary-button"
+>
+  📷 Kamera öffnen
+</button>
                 <button type="button" onClick={scrollToGallery} className="secondary-button">
                   Galerie ansehen
                 </button>
@@ -1664,13 +1670,7 @@ export default function EventPage() {
                 onChange={(e) => setCaption(e.target.value)}
                 className="input"
               />
-<button
-  type="button"
-  onClick={() => cameraInputRef.current?.click()}
-  className="secondary-button upload-camera-button"
->
-  📷 Foto direkt aufnehmen
-</button>
+
               <button
                 type="submit"
                 onClick={handlePhotoUpload}
