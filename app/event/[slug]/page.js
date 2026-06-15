@@ -157,6 +157,24 @@ const [cartOpen, setCartOpen] = useState(false);
 
 useEffect(() => {
   if (!eventData?.id || typeof window === "undefined") return;
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SELECTED_PHOTOS_KEY);
+    const storedMap = raw ? JSON.parse(raw) : {};
+    const storedIds = storedMap[String(eventData.id)] || [];
+
+    if (Array.isArray(storedIds)) {
+      setSelectedPhotoIds(storedIds);
+    }
+  } catch (error) {
+    console.error("Gespeicherte Bildauswahl konnte nicht geladen werden:", error);
+  }
+
+  setSelectedPhotosLoaded(true);
+}, [eventData?.id]);
+
+useEffect(() => {
+  if (!eventData?.id || typeof window === "undefined") return;
   if (!selectedPhotosLoaded) return;
 
   try {
@@ -173,24 +191,6 @@ useEffect(() => {
     console.error("Bildauswahl konnte nicht gespeichert werden:", error);
   }
 }, [selectedPhotoIds, eventData?.id, selectedPhotosLoaded]);
-
-  useEffect(() => {
-  if (!eventData?.id || typeof window === "undefined") return;
-
-  try {
-    const raw = window.localStorage.getItem(LOCAL_SELECTED_PHOTOS_KEY);
-    const storedMap = raw ? JSON.parse(raw) : {};
-
-    storedMap[eventData.id] = selectedPhotoIds;
-
-    window.localStorage.setItem(
-      LOCAL_SELECTED_PHOTOS_KEY,
-      JSON.stringify(storedMap)
-    );
-  } catch (error) {
-    console.error("Bildauswahl konnte nicht gespeichert werden:", error);
-  }
-}, [selectedPhotoIds, eventData?.id]);
   
   useEffect(() => {
     function handleKeyDown(e) {
