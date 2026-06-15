@@ -69,7 +69,8 @@ export default function EventPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [passwordInput, setPasswordInput] = useState("");
   const [loginError, setLoginError] = useState("");
-
+const [adminResetEmail, setAdminResetEmail] = useState("");
+const [resendingAdminCode, setResendingAdminCode] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [photoLikes, setPhotoLikes] = useState([]);
   const [photoComments, setPhotoComments] = useState([]);
@@ -370,7 +371,52 @@ export default function EventPage() {
       setLoginError("Login fehlgeschlagen. Bitte später erneut versuchen.");
     }
   }
+async function handleResendAdminCode() {
+  if (!slug) {
+    alert("Event wurde nicht gefunden.");
+    return;
+  }
 
+  if (!adminResetEmail.trim()) {
+    alert("Bitte gib deine E-Mail-Adresse ein.");
+    return;
+  }
+
+  setResendingAdminCode(true);
+
+  try {
+    const response = await fetch("/api/resend-admin-code", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        slug,
+        email: adminResetEmail,
+      }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Admin-Code konnte nicht versendet werden.");
+      setResendingAdminCode(false);
+      return;
+    }
+
+    alert(
+      result.message ||
+        "Falls diese E-Mail zum Event passt, wurde der Admin-Code erneut versendet."
+    );
+
+    setAdminResetEmail("");
+  } catch (error) {
+    console.error("Fehler beim erneuten Senden des Admin-Codes:", error);
+    alert("Admin-Code konnte nicht versendet werden.");
+  }
+
+  setResendingAdminCode(false);
+}
   async function handleLogout() {
     try {
       await fetch("/api/event-logout", { method: "POST" });
@@ -1108,6 +1154,32 @@ export default function EventPage() {
             <button onClick={handleLogin} className="primary-button">
               Album öffnen
             </button>
+              <div className="admin-code-reset-box">
+  <div className="admin-code-reset-title">
+    Admin-Code vergessen?
+  </div>
+
+  <p>
+    Gib die E-Mail-Adresse ein, mit der das Album erstellt wurde. Dann senden wir dir den Admin-Code erneut zu.
+  </p>
+
+  <input
+    type="email"
+    placeholder="E-Mail des Erstellers"
+    value={adminResetEmail}
+    onChange={(e) => setAdminResetEmail(e.target.value)}
+    className="input"
+  />
+
+  <button
+    type="button"
+    onClick={handleResendAdminCode}
+    disabled={resendingAdminCode}
+    className="secondary-button"
+  >
+    {resendingAdminCode ? "Wird gesendet..." : "Admin-Code erneut senden"}
+  </button>
+</div>
           </div>
         </section>
       </main>
@@ -3643,6 +3715,29 @@ body {
 .upload-camera-button {
   width: 100%;
   margin-top: 4px;
+}
+.admin-code-reset-box {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 22px;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.admin-code-reset-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.admin-code-reset-box p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
 }
     `}</style>
   );
