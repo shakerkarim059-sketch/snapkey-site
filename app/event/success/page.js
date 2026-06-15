@@ -5,21 +5,31 @@ import Link from "next/link";
 
 export default function SuccessPage() {
   const params = useSearchParams();
-  const slug = params.get("slug");
+const slug = params.get("slug");
+const guestCode = params.get("code");
 
-  const eventUrl = slug ? `https://getsnapkey.de/event/${slug}` : "";
+const eventUrl = slug ? `https://getsnapkey.de/event/${slug}` : "";
 
   function copyLink() {
     navigator.clipboard.writeText(eventUrl);
     alert("Link kopiert!");
   }
 
-  function shareWhatsApp() {
-    const text = encodeURIComponent(
-      `Hier ist unser gemeinsames Album: ${eventUrl}`
-    );
-    window.open(`https://wa.me/?text=${text}`, "_blank");
-  }
+function shareWhatsApp() {
+  const text = encodeURIComponent(
+`📸 Willkommen in unserem gemeinsamen Snapkey Album.
+
+Album:
+${eventUrl}
+
+🔑 Zugangscode:
+${guestCode || "Bitte Zugangscode beim Gastgeber erfragen."}
+
+Hier können alle Gäste Fotos und Videos hochladen und ansehen.`
+  );
+
+  window.open(`https://wa.me/?text=${text}`, "_blank");
+}
 
   return (
     <main className="success-page">
@@ -262,7 +272,7 @@ export default function SuccessPage() {
             WhatsApp teilen
           </button>
 
-          <button
+<button
   onClick={() => {
     if (!eventUrl) {
       alert("Event-Link wurde nicht gefunden.");
@@ -271,7 +281,7 @@ export default function SuccessPage() {
 
     window.location.href = eventUrl;
   }}
-  style={styles.button}
+  className="button-secondary"
 >
   Event öffnen
 </button>
