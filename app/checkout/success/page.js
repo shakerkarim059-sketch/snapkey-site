@@ -2,6 +2,7 @@ import Link from "next/link";
 
 export default function SuccessPage({ searchParams }) {
   const eventSlug = searchParams?.event;
+  const guestCode = searchParams?.code;
   const eventUrl = eventSlug
     ? `https://getsnapkey.de/event/${eventSlug}`
     : "https://getsnapkey.de";
@@ -276,7 +277,7 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`
       `}</style>
 
       <section className="success-card">
-        <div className="brand">snapkey</div>
+        <div className="brand">getsnapkey</div>
 
         <div className="badge">Zahlung erfolgreich</div>
 
