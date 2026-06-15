@@ -11,6 +11,7 @@ import {
 } from "../../../lib/pricing";
 
 const LOCAL_LIKE_STORAGE_KEY = "family-photo-liked-map";
+const LOCAL_SELECTED_PHOTOS_KEY = "snapkey-selected-photos-map";
 
 const EVENT_BASE_PRICE = 29;
 
@@ -158,6 +159,40 @@ const [resendingAdminCode, setResendingAdminCode] = useState(false);
     checkExistingSession();
   }, [slug]);
 
+  useEffect(() => {
+  if (!eventData?.id || typeof window === "undefined") return;
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SELECTED_PHOTOS_KEY);
+    const storedMap = raw ? JSON.parse(raw) : {};
+    const storedIds = storedMap[eventData.id] || [];
+
+    if (Array.isArray(storedIds)) {
+      setSelectedPhotoIds(storedIds);
+    }
+  } catch (error) {
+    console.error("Gespeicherte Bildauswahl konnte nicht geladen werden:", error);
+  }
+}, [eventData?.id]);
+
+  useEffect(() => {
+  if (!eventData?.id || typeof window === "undefined") return;
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SELECTED_PHOTOS_KEY);
+    const storedMap = raw ? JSON.parse(raw) : {};
+
+    storedMap[eventData.id] = selectedPhotoIds;
+
+    window.localStorage.setItem(
+      LOCAL_SELECTED_PHOTOS_KEY,
+      JSON.stringify(storedMap)
+    );
+  } catch (error) {
+    console.error("Bildauswahl konnte nicht gespeichert werden:", error);
+  }
+}, [selectedPhotoIds, eventData?.id]);
+  
   useEffect(() => {
     function handleKeyDown(e) {
       if (cartOpen && e.key === "Escape") {
