@@ -263,11 +263,18 @@ export default function SuccessPage() {
           </button>
 
           <button
-            onClick={() => window.open(eventUrl, "_blank")}
-            className="button-secondary"
-          >
-            Event öffnen
-          </button>
+  onClick={() => {
+    if (!eventUrl) {
+      alert("Event-Link wurde nicht gefunden.");
+      return;
+    }
+
+    window.location.href = eventUrl;
+  }}
+  style={styles.button}
+>
+  Event öffnen
+</button>
         </div>
 
         <p className="hint">
