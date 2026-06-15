@@ -1122,7 +1122,7 @@ export default function EventPage() {
         <header className="album-hero">
           <div className="album-hero-content">
             <div className="brand-row">
-              <div className="brand">snapkey</div>
+              <div className="brand">getsnapkey</div>
               <button type="button" onClick={handleLogout} className="ghost-button">
                 Abmelden
               </button>
@@ -1637,16 +1637,7 @@ export default function EventPage() {
                   Dateien öffnen
                 </button>
               </div>
-<button
-  type="button"
-  onClick={(e) => {
-    e.stopPropagation();
-    cameraInputRef.current?.click();
-  }}
-  className="secondary-button"
->
-  📷 Foto direkt aufnehmen
-</button>
+
               {selectedFiles.length > 0 && (
                 <div className="file-list">
                   {selectedFiles.map((file, index) => (
@@ -1673,7 +1664,13 @@ export default function EventPage() {
                 onChange={(e) => setCaption(e.target.value)}
                 className="input"
               />
-
+<button
+  type="button"
+  onClick={() => cameraInputRef.current?.click()}
+  className="secondary-button upload-camera-button"
+>
+  📷 Foto direkt aufnehmen
+</button>
               <button
                 type="submit"
                 onClick={handlePhotoUpload}
