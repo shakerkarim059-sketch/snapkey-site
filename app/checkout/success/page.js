@@ -6,11 +6,19 @@ export default function SuccessPage({ searchParams }) {
     ? `https://getsnapkey.de/event/${eventSlug}`
     : "https://getsnapkey.de";
 
-  const whatsappText = encodeURIComponent(
-    eventSlug
-      ? `Unser gemeinsames Snapkey Album ist bereit: ${eventUrl}`
-      : "Unser Snapkey Album ist bereit."
-  );
+const whatsappText = encodeURIComponent(
+  eventSlug
+    ? `📸 Willkommen in unserem gemeinsamen Snapkey Album.
+
+Album:
+${eventUrl}
+
+🔑 Zugangscode:
+${guestCode || "Bitte Zugangscode beim Gastgeber erfragen."}
+
+Hier können alle Gäste Fotos und Videos hochladen und ansehen.`
+    : "Unser Snapkey Album ist bereit."
+);
 
   return (
     <main className="success-page">
