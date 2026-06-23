@@ -1089,7 +1089,53 @@ async function handleResendAdminCode() {
   function scrollToGallery() {
     galleryRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+async function handleShareAlbum() {
+  if (!slug) {
+    alert("Album-Link wurde nicht gefunden.");
+    return;
+  }
 
+  try {
+    const response = await fetch("/api/event-share-info", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ slug }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error || "Album konnte nicht geteilt werden.");
+      return;
+    }
+
+    const shareText = `📸 Willkommen in unserem gemeinsamen Snapkey Album.
+
+Album:
+${result.eventUrl}
+
+🔑 Zugangscode:
+${result.guestCode}
+
+Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
+
+    if (navigator.share) {
+      await navigator.share({
+        title: "Snapkey Album",
+        text: shareText,
+      });
+      return;
+    }
+
+    await navigator.clipboard.writeText(shareText);
+    alert("Album-Link mit Zugangscode wurde kopiert.");
+  } catch (error) {
+    console.error("Fehler beim Teilen:", error);
+    alert("Album konnte nicht geteilt werden.");
+  }
+}
   const availableYears = useMemo(() => {
     const years = photos
       .map((photo) => {
@@ -1269,9 +1315,13 @@ async function handleResendAdminCode() {
 >
   📷 Kamera öffnen
 </button>
-                <button type="button" onClick={scrollToGallery} className="secondary-button">
-                  Galerie ansehen
-                </button>
+<button type="button" onClick={handleShareAlbum} className="secondary-button">
+  🔗 Album teilen
+</button>
+
+<button type="button" onClick={scrollToGallery} className="secondary-button">
+  Galerie ansehen
+</button>
               </div>
             )}
 
