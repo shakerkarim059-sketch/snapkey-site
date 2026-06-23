@@ -1769,7 +1769,7 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
                 <div className="eyebrow">Fotos & Videos sammeln</div>
                 <h2>Erinnerungen hinzufügen</h2>
                 <p>
-                  Lade mehrere Bilder gesammelt hoch. Alles landet automatisch in diesem gemeinsamen Album.
+               Teile Fotos und Videos mit Familie, Freunden und Gästen.
                 </p>
               </div>
 
@@ -1790,22 +1790,13 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
   style={{ display: "none" }}
 />
 
-              <div className="upload-picker" onClick={() => fileInputRef.current?.click()}>
-                <div className="upload-icon">↑</div>
-                <strong>Bilder auswählen</strong>
-                <span>Tippe hier, um Fotos vom Handy oder Computer auszuwählen.</span>
-
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
-                  className="secondary-button"
-                >
-                  Dateien öffnen
-                </button>
-              </div>
+<button
+  type="button"
+  onClick={() => fileInputRef.current?.click()}
+  className="primary-button"
+>
+  🖼️ Fotos & Videos auswählen
+</button>
 
               {selectedFiles.length > 0 && (
                 <div className="file-list">
@@ -1840,7 +1831,11 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
                 disabled={uploadingPhoto}
                 className="primary-button"
               >
-                {uploadingPhoto ? "Fotos werden hochgeladen..." : "Fotos hochladen"}
+{uploadingPhoto
+  ? "Fotos werden hochgeladen..."
+  : selectedFiles.length > 0
+    ? `${selectedFiles.length} Foto${selectedFiles.length === 1 ? "" : "s"} hochladen`
+    : "Fotos hochladen"}
               </button>
             </section>
 
