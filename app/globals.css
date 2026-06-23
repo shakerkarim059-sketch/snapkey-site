@@ -7,3 +7,23 @@ body {
   margin: 0;
   font-family: system-ui, sans-serif;
 }
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
+}
+
+#__next,
+main {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+* {
+  max-width: 100%;
+  box-sizing: border-box;
+}
