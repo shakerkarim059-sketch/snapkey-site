@@ -1795,7 +1795,7 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
   onClick={() => fileInputRef.current?.click()}
   className="primary-button"
 >
-  🖼️ Fotos & Videos auswählen
+  Fotos & Videos auswählen
 </button>
 
               {selectedFiles.length > 0 && (
