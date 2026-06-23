@@ -1740,21 +1740,27 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
       </span>
     </div>
 
-    <div className="album-thumb-row">
-      {filteredPhotos.map((photo, index) => (
-        <button
-          type="button"
-          key={photo.id}
-          className="album-thumb"
-          onClick={() => openLightbox(index)}
-        >
-          <img
-            src={photo.signed_url}
-            alt={photo.caption || `Foto ${index + 1}`}
-          />
-        </button>
-      ))}
-    </div>
+<div className="album-thumb-grid">
+  {filteredPhotos.slice(0, 12).map((photo, index) => {
+    const isSelected = selectedPhotoIds.includes(String(photo.id));
+
+    return (
+      <button
+        type="button"
+        key={photo.id}
+        className={isSelected ? "album-thumb selected" : "album-thumb"}
+        onClick={() => openLightbox(index)}
+      >
+        <img
+          src={photo.signed_url}
+          alt={photo.caption || `Foto ${index + 1}`}
+        />
+
+        {isSelected && <span>✓</span>}
+      </button>
+    );
+  })}
+</div>
   </section>
 )}
           
@@ -2186,10 +2192,25 @@ Hier können alle Gäste Fotos und Videos hochladen und ansehen.`;
               alt={currentPhoto.caption || currentPhoto.file_name || "Foto"}
             />
 
-            <div className="lightbox-footer">
-              <span>{selectedPhotoIndex + 1} / {filteredPhotos.length}</span>
-              {currentPhoto.caption && <p>{currentPhoto.caption}</p>}
-            </div>
+<div className="lightbox-footer">
+  <span>{selectedPhotoIndex + 1} / {filteredPhotos.length}</span>
+
+  {currentPhoto.caption && <p>{currentPhoto.caption}</p>}
+
+  <button
+    type="button"
+    className={
+      selectedPhotoIds.includes(String(currentPhoto.id))
+        ? "primary-button lightbox-select-button"
+        : "secondary-button lightbox-select-button"
+    }
+    onClick={() => togglePhotoSelection(currentPhoto.id)}
+  >
+    {selectedPhotoIds.includes(String(currentPhoto.id))
+      ? "Ausgewählt ✓"
+      : "Bild zum Kaufen auswählen"}
+  </button>
+</div>
           </div>
         </div>
       )}
@@ -3766,29 +3787,44 @@ body {
   font-weight: 800;
 }
 
-.album-thumb-row {
-  display: flex;
-  gap: 12px;
-  overflow-x: auto;
-  padding: 2px 2px 10px;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-}
-
-.album-thumb-row::-webkit-scrollbar {
-  display: none;
+.album-thumb-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding-right: 4px;
 }
 
 .album-thumb {
-  flex: 0 0 74px;
-  width: 74px;
-  height: 74px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
   padding: 0;
   border: 2px solid transparent;
-  border-radius: 18px;
+  border-radius: 16px;
   overflow: hidden;
   background: var(--warm);
-  scroll-snap-align: start;
+}
+
+.album-thumb.selected {
+  border-color: var(--gold);
+  box-shadow: 0 8px 22px rgba(201, 167, 108, 0.22);
+}
+
+.album-thumb span {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
 }
 
 .album-thumb img {
@@ -3823,6 +3859,10 @@ body {
   font-size: 13px;
   line-height: 1.55;
   color: var(--text-secondary);
+}
+.lightbox-select-button {
+  width: 100%;
+  margin-top: 12px;
 }
     `}</style>
   );
