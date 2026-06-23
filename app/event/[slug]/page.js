@@ -155,6 +155,11 @@ const [cartOpen, setCartOpen] = useState(false);
     fetchEventBySlug();
   }, [slug]);
 
+  useEffect(() => {
+  if (!slug) return;
+  checkExistingSession();
+}, [slug]);
+
 useEffect(() => {
   if (!eventData?.id || typeof window === "undefined") return;
 
@@ -278,20 +283,30 @@ useEffect(() => {
     setLoadingEvent(false);
   }
 
-  async function checkExistingSession() {
-    try {
-      const response = await fetch("/api/event-session");
-      const result = await response.json();
+async function checkExistingSession() {
+  if (!slug) return;
 
-      if (!response.ok || !result?.authenticated) return;
-      if (!result.globalAdmin && result.slug !== slug) return;
+  try {
+    const response = await fetch("/api/event-session", {
+      method: "GET",
+      credentials: "include",
+      cache: "no-store",
+    });
 
-      setIsAuthenticated(true);
-      setIsAdmin(result.role === "admin");
-    } catch (error) {
-      console.error("Fehler beim Prüfen der Session:", error);
+    const result = await response.json();
+
+    if (!response.ok || !result?.authenticated) return;
+
+    if (!result.globalAdmin && String(result.slug) !== String(slug)) {
+      return;
     }
+
+    setIsAuthenticated(true);
+    setIsAdmin(result.role === "admin");
+  } catch (error) {
+    console.error("Fehler beim Prüfen der Session:", error);
   }
+}
 
   async function attachSignedUrls(photoRows) {
     return await Promise.all(
