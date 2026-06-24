@@ -205,7 +205,7 @@ export default function CheckoutCancelPage({ searchParams }) {
       `}</style>
 
       <section className="cancel-card">
-        <div className="brand">snapkey</div>
+        <div className="brand">getsnapkey</div>
 
         <div className="badge">
           Zahlung nicht abgeschlossen
@@ -260,17 +260,17 @@ export default function CheckoutCancelPage({ searchParams }) {
         </div>
 
         <div className="actions">
-          <Link href="/" className="button button-primary">
-            Zur Startseite
-          </Link>
+  <Link
+    href={eventSlug ? `/event/${eventSlug}?setup=true` : "/"}
+    className="button button-primary"
+  >
+    Zurück zur Zahlung
+  </Link>
 
-<Link
-  href={eventSlug ? `/event/${eventSlug}?setup=true` : "/"}
-  className="button button-primary"
->
-  Zurück zur Zahlung
-</Link>
-        </div>
+  <Link href="/" className="button button-secondary">
+    Zur Startseite
+  </Link>
+</div>
 
         <p className="hint">
           Falls während der Zahlung ein technisches Problem aufgetreten ist,
