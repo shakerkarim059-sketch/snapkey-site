@@ -263,9 +263,12 @@ export default function CheckoutCancelPage() {
             Zur Startseite
           </Link>
 
-          <Link href="/" className="button button-secondary">
-            Später fortfahren
-          </Link>
+<Link
+  href={eventSlug ? `/event/${eventSlug}?setup=true` : "/"}
+  className="button button-primary"
+>
+  Zurück zur Zahlung
+</Link>
         </div>
 
         <p className="hint">
