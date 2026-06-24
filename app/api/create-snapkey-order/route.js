@@ -11,16 +11,16 @@ const EVENT_BASE_PRICE = 29;
 
 const KEY_TYPES = {
   basic: {
-    name: "Karte / NFC Key",
-    price: 250,
+    name: "Snapkey Mini",
+    price: 190,
   },
   standard: {
-    name: "Snapkey Anhänger",
-    price: 400,
+    name: "Snapkey Card",
+    price: 290,
   },
   premium: {
-    name: "Premium Holz-Snapkey",
-    price: 600,
+    name: "Snapkey Wood",
+    price: 790,
   },
 };
 
