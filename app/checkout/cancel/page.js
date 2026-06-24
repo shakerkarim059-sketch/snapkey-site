@@ -1,6 +1,7 @@
 import Link from "next/link";
 
-export default function CheckoutCancelPage() {
+export default function CheckoutCancelPage({ searchParams }) {
+  const eventSlug = searchParams?.event;
   return (
     <main className="cancel-page">
       <style>{`
