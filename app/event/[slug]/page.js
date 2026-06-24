@@ -12,6 +12,7 @@ import {
 
 const LOCAL_LIKE_STORAGE_KEY = "family-photo-liked-map";
 const LOCAL_SELECTED_PHOTOS_KEY = "snapkey-selected-photos-map";
+const LOCAL_SNAPKEY_ORDER_FORM_KEY = "snapkey-order-form-map";
 
 const EVENT_BASE_PRICE = 29;
 
@@ -141,6 +142,7 @@ const [cartOpen, setCartOpen] = useState(false);
   const [snapkeyCountry, setSnapkeyCountry] = useState("Deutschland");
   const [snapkeyOrderNote, setSnapkeyOrderNote] = useState("");
   const [submittingSnapkeyOrder, setSubmittingSnapkeyOrder] = useState(false);
+  const [snapkeyOrderFormLoaded, setSnapkeyOrderFormLoaded] = useState(false);
 
   const fileInputRef = useRef(null);
   const cameraInputRef = useRef(null);
@@ -159,6 +161,88 @@ const [cartOpen, setCartOpen] = useState(false);
   if (!slug) return;
   checkExistingSession();
 }, [slug]);
+
+  useEffect(() => {
+  if (!eventData?.id || typeof window === "undefined") return;
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SNAPKEY_ORDER_FORM_KEY);
+    const storedMap = raw ? JSON.parse(raw) : {};
+    const saved = storedMap[String(eventData.id)];
+
+    if (!saved) return;
+
+    setSnapkeyCustomerName(saved.snapkeyCustomerName || "");
+    setSnapkeyCustomerEmail(saved.snapkeyCustomerEmail || "");
+    setSnapkeyCustomerPhone(saved.snapkeyCustomerPhone || "");
+    setSnapkeyStreet(saved.snapkeyStreet || "");
+    setSnapkeyPostalCode(saved.snapkeyPostalCode || "");
+    setSnapkeyCity(saved.snapkeyCity || "");
+    setSnapkeyCountry(saved.snapkeyCountry || "Deutschland");
+    setSnapkeyOrderNote(saved.snapkeyOrderNote || "");
+    setSelectedKeyType(saved.selectedKeyType || "standard");
+    setSelectedQuantity(saved.selectedQuantity || 25);
+    setCustomQuantity(saved.customQuantity || "");
+    setSelectedDesign(saved.selectedDesign || "modern");
+    setCustomDesignNote(saved.customDesignNote || "");
+    setWantsDesignConsulting(Boolean(saved.wantsDesignConsulting));
+ } catch (error) {
+  console.error("Snapkey-Bestelldaten konnten nicht geladen werden:", error);
+}
+
+setSnapkeyOrderFormLoaded(true);
+}, [eventData?.id]);
+
+useEffect(() => {
+  if (!eventData?.id || typeof window === "undefined") return;
+  if (!snapkeyOrderFormLoaded) return;
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SNAPKEY_ORDER_FORM_KEY);
+    const storedMap = raw ? JSON.parse(raw) : {};
+
+    storedMap[String(eventData.id)] = {
+      snapkeyCustomerName,
+      snapkeyCustomerEmail,
+      snapkeyCustomerPhone,
+      snapkeyStreet,
+      snapkeyPostalCode,
+      snapkeyCity,
+      snapkeyCountry,
+      snapkeyOrderNote,
+      selectedKeyType,
+      selectedQuantity,
+      customQuantity,
+      selectedDesign,
+      customDesignNote,
+      wantsDesignConsulting,
+    };
+
+    window.localStorage.setItem(
+      LOCAL_SNAPKEY_ORDER_FORM_KEY,
+      JSON.stringify(storedMap)
+    );
+  } catch (error) {
+    console.error("Snapkey-Bestelldaten konnten nicht gespeichert werden:", error);
+  }
+}, [
+  eventData?.id,
+  snapkeyCustomerName,
+  snapkeyCustomerEmail,
+  snapkeyCustomerPhone,
+  snapkeyStreet,
+  snapkeyPostalCode,
+  snapkeyCity,
+  snapkeyCountry,
+  snapkeyOrderNote,
+  selectedKeyType,
+  selectedQuantity,
+  customQuantity,
+  selectedDesign,
+  customDesignNote,
+  wantsDesignConsulting,
+  snapkeyOrderFormLoaded,
+]);
 
 useEffect(() => {
   if (!eventData?.id || typeof window === "undefined") return;
