@@ -88,7 +88,7 @@ if (eventError || !eventData?.slug) {
       mode: "payment",
       line_items,
      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/success?event=${eventData.slug}&code=${encodeURIComponent(eventData.access_password || "")}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel`,
+      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/checkout/cancel?event=${eventData.slug}`,
       customer_email: order.customer_email || undefined,
       metadata: {
         snapkey_order_id: String(order.id),
